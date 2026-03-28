@@ -905,20 +905,8 @@ function buildRoom() {
 
   var bin=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.1,0.3,8),mMet);bin.position.set(-1.3,0.15,-0.5);gSc.add(bin);
 
-  // Notice board — moved to RIGHT side wall (x=3.9), visible when player looks right
-  // Side wall at x≈4, board faces inward (-x direction)
-  gB(3.88,2.0,-2.5, 0.05,0.9,1.4, new THREE.MeshLambertMaterial({color:0x2a1e0e}));
-  gB(3.86,2.0,-2.5, 0.05,0.78,1.25, new THREE.MeshLambertMaterial({color:0x5a3818}));
-  [[0,-0.1,0.15],[0,0.1,-0.2],[0,-0.05,-0.35],[0,0.18,0.3]].forEach(function(p){
-    var np=new THREE.Mesh(new THREE.PlaneGeometry(0.22,0.16),new THREE.MeshBasicMaterial({color:0xd4c8a0}));
-    np.rotation.y=Math.PI/2; np.position.set(3.83,2.0+p[1],-2.5+p[2]); gSc.add(np);
-    var pin2=new THREE.Mesh(new THREE.SphereGeometry(0.015,6,4),new THREE.MeshBasicMaterial({color:0xff2020}));
-    pin2.position.set(3.82,2.08+p[1],-2.5+p[2]); gSc.add(pin2);
-  });
-  // String connecting pins
-  var strMat = new THREE.MeshBasicMaterial({color:0xcc4400});
-  var str1=new THREE.Mesh(new THREE.BoxGeometry(0.004,0.004,0.55),strMat); str1.position.set(3.83,2.05,-2.35); gSc.add(str1);
-  var str2=new THREE.Mesh(new THREE.BoxGeometry(0.004,0.004,0.38),strMat); str2.rotation.y=0.3; str2.position.set(3.83,1.92,-2.55); gSc.add(str2);
+  // Notice board — available as shop upgrade (upgradeBoard), not placed by default
+
 
   // Back wall decorations (z≈4.8 — behind player)
   var mWallBack = new THREE.MeshLambertMaterial({color:0x1a1208});
@@ -946,16 +934,8 @@ function buildRoom() {
   // Small box on lower shelf
   var sbox=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.1,0.12),new THREE.MeshLambertMaterial({color:0x3a2808})); sbox.position.set(1.88,1.18,4.82); gSc.add(sbox);
 
-  // Worn poster frame on back wall left side
-  gB(-2.2,1.8,4.88, 0.65,0.9,0.04, new THREE.MeshLambertMaterial({color:0x0e0e0e}));
-  var moonCanvas2=document.createElement('canvas'); moonCanvas2.width=65; moonCanvas2.height=90;
-  var mc2=moonCanvas2.getContext('2d');
-  mc2.fillStyle='#080820'; mc2.fillRect(0,0,65,90);
-  mc2.fillStyle='#cc1100'; mc2.beginPath(); mc2.arc(32,45,24,0,Math.PI*2); mc2.fill();
-  mc2.fillStyle='#080820'; mc2.beginPath(); mc2.arc(41,36,18,0,Math.PI*2); mc2.fill();
-  var moonTex2=new THREE.CanvasTexture(moonCanvas2);
-  var moonPoster=new THREE.Mesh(new THREE.PlaneGeometry(0.58,0.82),new THREE.MeshBasicMaterial({map:moonTex2}));
-  moonPoster.rotation.y=Math.PI; moonPoster.position.set(-2.2,1.8,4.85); gSc.add(moonPoster);
+  // Moon poster — available as shop upgrade (upgradePainting), not placed by default
+
 
   // Wall frames — only left side (center one was blocking tunnel view)
 
@@ -3661,6 +3641,7 @@ function resetNight() {
   if (!G.upgrades.sofa) G.upgrades.sofa = 0;
 
   if (!G.upgrades.posters) G.upgrades.posters = 0;
+  if (!G.upgrades.painting) G.upgrades.painting = 0;
 
   if (!G.upgrades.mask) G.upgrades.mask = 0;
 
@@ -4013,7 +3994,13 @@ var SITEMS = [
 
    apply:function(){G.upgrades.sofa=1;upgradeSofa(1);}},
 
-  {id:'off4', name:'Posters',        desc:'Dark NIGHTWATCH posters on the walls', cost:70,  icon:'🖼',
+  {id:'off4', name:'Moon Painting',  desc:'Eerie red moon painting on the back wall', cost:70,  icon:'🎑',
+
+   preview:'Office: moon painting on the back wall',
+
+   apply:function(){G.upgrades.painting=1;upgradePainting(1);}},
+
+  {id:'off4b', name:'Posters',       desc:'Dark NIGHTWATCH posters on the walls', cost:50, icon:'🖼',
 
    preview:'Office: posters on the walls',
 
@@ -4146,23 +4133,37 @@ function upgradePlant(lvl) {
 
 function upgradeBoard(lvl) {
   if (!gSc) return;
-  // Board on BACK wall, centered — x=0.5, z=-4.94
-  // Between the two posters (if bought at x=±2.5), no conflict
-  var mB2 = new THREE.MeshLambertMaterial({color:0x251a0a});
-  var mS2 = new THREE.MeshBasicMaterial({color:0x2e2600});
-  var board = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 0.06), mB2);
-  board.position.set(0, 2.05, -4.95); gSc.add(board);
-  var surf = new THREE.Mesh(new THREE.PlaneGeometry(1.48, 0.98), mS2);
-  surf.position.set(0, 2.05, -4.91); gSc.add(surf);
-  // Strings
-  [[0.18,0.28],[-0.25,-0.18],[0.38,-0.12],[-0.08,0.22],[0.1,-0.28]].forEach(function(p) {
-    var pin = new THREE.Mesh(new THREE.SphereGeometry(0.024,6,4), new THREE.MeshBasicMaterial({color:0xff2222}));
-    pin.position.set(p[0], 2.05+p[1], -4.89); gSc.add(pin); offExtras.push(pin);
-    var str = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.002, 0.22), new THREE.MeshBasicMaterial({color:0xcc4400}));
-    str.position.set(p[0]+0.08, 2.05+p[1]-0.06, -4.89); str.rotation.z=0.3; gSc.add(str); offExtras.push(str);
+  // Notice board on RIGHT side wall (x=3.9)
+  var nb1 = new THREE.Mesh(new THREE.BoxGeometry(0.05,0.9,1.4), new THREE.MeshLambertMaterial({color:0x2a1e0e}));
+  nb1.position.set(3.88,2.0,-2.5); gSc.add(nb1); offExtras.push(nb1);
+  var nb2 = new THREE.Mesh(new THREE.BoxGeometry(0.05,0.78,1.25), new THREE.MeshLambertMaterial({color:0x5a3818}));
+  nb2.position.set(3.86,2.0,-2.5); gSc.add(nb2); offExtras.push(nb2);
+  [[0,-0.1,0.15],[0,0.1,-0.2],[0,-0.05,-0.35],[0,0.18,0.3]].forEach(function(p){
+    var np=new THREE.Mesh(new THREE.PlaneGeometry(0.22,0.16),new THREE.MeshBasicMaterial({color:0xd4c8a0}));
+    np.rotation.y=Math.PI/2; np.position.set(3.83,2.0+p[1],-2.5+p[2]); gSc.add(np); offExtras.push(np);
+    var pin2=new THREE.Mesh(new THREE.SphereGeometry(0.015,6,4),new THREE.MeshBasicMaterial({color:0xff2020}));
+    pin2.position.set(3.82,2.08+p[1],-2.5+p[2]); gSc.add(pin2); offExtras.push(pin2);
   });
-  offExtras.push(board); offExtras.push(surf);
+  var strMat2 = new THREE.MeshBasicMaterial({color:0xcc4400});
+  var nbs1=new THREE.Mesh(new THREE.BoxGeometry(0.004,0.004,0.55),strMat2); nbs1.position.set(3.83,2.05,-2.35); gSc.add(nbs1); offExtras.push(nbs1);
+  var nbs2=new THREE.Mesh(new THREE.BoxGeometry(0.004,0.004,0.38),strMat2); nbs2.rotation.y=0.3; nbs2.position.set(3.83,1.92,-2.55); gSc.add(nbs2); offExtras.push(nbs2);
 }
+
+function upgradePainting(lvl) {
+  if (!gSc) return;
+  // Moon painting on back wall left side — same position as the old default poster
+  var frame = new THREE.Mesh(new THREE.BoxGeometry(0.65,0.9,0.04), new THREE.MeshLambertMaterial({color:0x0e0e0e}));
+  frame.position.set(-2.2,1.8,4.88); gSc.add(frame); offExtras.push(frame);
+  var moonCanvas2=document.createElement('canvas'); moonCanvas2.width=65; moonCanvas2.height=90;
+  var mc2=moonCanvas2.getContext('2d');
+  mc2.fillStyle='#080820'; mc2.fillRect(0,0,65,90);
+  mc2.fillStyle='#cc1100'; mc2.beginPath(); mc2.arc(32,45,24,0,Math.PI*2); mc2.fill();
+  mc2.fillStyle='#080820'; mc2.beginPath(); mc2.arc(41,36,18,0,Math.PI*2); mc2.fill();
+  var moonTex2=new THREE.CanvasTexture(moonCanvas2);
+  var moonPoster=new THREE.Mesh(new THREE.PlaneGeometry(0.58,0.82),new THREE.MeshBasicMaterial({map:moonTex2}));
+  moonPoster.rotation.y=Math.PI; moonPoster.position.set(-2.2,1.8,4.85); gSc.add(moonPoster); offExtras.push(moonPoster);
+}
+
 
 function upgradePurple(lvl) {
   if (!gSc) return;
@@ -4191,7 +4192,7 @@ function reapplyUpgrades() {
 
   if (G.upgrades.sofa    >= 1) upgradeSofa(1);
 
-  if (G.upgrades.posters >= 1) upgradePosters(1);
+  if (G.upgrades.painting >= 1) upgradePainting(1);
 
   if (G.upgrades.plant   >= 1) upgradePlant(1);
 
@@ -4369,7 +4370,7 @@ function loadGame() {
 
     G.maxBattery  = data.maxBattery  || 100;
 
-    G.upgrades    = data.upgrades    || {battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,mask:0};
+    G.upgrades    = data.upgrades    || {battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,painting:0,mask:0};
 
     G.nightTimer  = data.nightTimer  || 0;
 
@@ -4995,14 +4996,45 @@ function update(dt) {
           var cooldownOk = !G.lastMonsterLeft || (Date.now() - G.lastMonsterLeft) > 2500;
 
           if (activeCount < G.nightMaxActive && cooldownOk) {
-            // Ruszaj — losuj typ potwora
+            // Losuj WOLNY korytarz — może to być dowolny z trzech,
+            // włącznie z hollow-slotem gdy hollow akurat czeka
+            var freeSlots = ['left','front','right'].filter(function(s) {
+              var m = MONS[s];
+              // slot wolny: normalny i czekający LUB hollow-slot gdy hollow czeka
+              return (m === mn) || // własny slot zawsze ok
+                     (!m._isHollowSlot && m.waiting) ||
+                     (m._isHollowSlot && m.waiting && !hollowRunning);
+            });
+            var targetSide = freeSlots[Math.floor(Math.random() * freeSlots.length)];
+
+            // Jeśli losujemy inny korytarz niż własny — zamień dane między slotami
+            if (targetSide !== mn.id) {
+              var tgt = MONS[targetSide];
+              // Przenieś dane bota do docelowego slotu
+              var tmpDef = mn.defIdx, tmpBase = mn.baseSpeed, tmpSpd = mn.speed;
+              tgt.defIdx    = tmpDef;
+              tgt.baseSpeed = tmpBase;
+              tgt.speed     = tmpSpd;
+              tgt.waiting   = false;
+              tgt.pos       = 0;
+              tgt.rushing   = false;
+              tgt.frozen    = false;
+              tgt.waitTimer = 0;
+              // Ten slot wraca do czekania z nowym timerem
+              mn.waitTimer = 8000 + Math.random() * 8000;
+              var mesh0 = monMeshes[mn.id]; if (mesh0) mesh0.visible = false;
+              G.lastMonsterLeft = null;
+              return;
+            }
+
+            // Własny korytarz — ruszaj normalnie
             var pool2 = G.nightMonsterPool;
             mn.defIdx = pool2[Math.floor(Math.random() * pool2.length)];
             mn.baseSpeed = MDEFS[mn.defIdx].speed * Math.max(0.3, 1 + (G.day - 1) * 0.10);
             mn.speed = mn.baseSpeed;
             mn.waiting = false;
             mn.pos = 0;
-            G.lastMonsterLeft = null; // reset cooldown po spawnie
+            G.lastMonsterLeft = null;
           } else {
             // Quota pełna lub cooldown — sprawdź za chwilę
             mn.waitTimer = 1500 + Math.random() * 2000;
@@ -5462,7 +5494,7 @@ function startGame(loadSave) {
 
       G.day=1;G.money=0;G.dead=false;G.morning=false;
 
-      G.upgrades={battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,mask:0};
+      G.upgrades={battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,painting:0,mask:0};
 
       G.maxBattery=100;G.battery=G.maxBattery;bought={};
 
@@ -5478,7 +5510,7 @@ function startGame(loadSave) {
 
     G.day=1;G.money=0;G.dead=false;G.morning=false;
 
-    G.upgrades={battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,mask:0};
+    G.upgrades={battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,painting:0,mask:0};
 
     G.maxBattery=100;G.battery=G.maxBattery;bought={};
 
