@@ -1,0 +1,5524 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+
+<title>NIGHTWATCH</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0a2a'/><circle cx='16' cy='16' r='12' fill='%23cc1100'/><circle cx='21' cy='12' r='9' fill='%230a0a2a'/></svg>">
+
+<style>
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none;color:#0f0;}
+
+#lobby{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:300;}
+
+#lobby h1{font-size:clamp(24px,5vw,52px);letter-spacing:12px;text-shadow:0 0 40px #0f0,0 0 80px #0f03;animation:glow 2s infinite;}
+
+@keyframes glow{0%,100%{opacity:1}50%{opacity:.45}}
+
+.lb{color:#0f0;border:2px solid #0f07;padding:11px 30px;cursor:pointer;letter-spacing:4px;font-size:12px;background:transparent;font-family:inherit;transition:all .18s;}
+
+.lb:hover{background:#0f02;border-color:#0f0;}
+
+.lb.mb{border-color:#f806;color:#f80;}
+
+.lb.mb:hover{background:#f802;border-color:#f80;}
+
+#lrules{color:#0f04;font-size:9px;letter-spacing:1px;max-width:300px;text-align:center;line-height:2.2;border:1px solid #0f02;padding:10px;}
+
+#lnl{color:#0f02;font-size:9px;letter-spacing:5px;}
+
+
+
+
+
+
+
+
+
+
+
+#vblood.on{background:#f002;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.vmb:hover{border-color:#0f06;color:#0f0;}
+
+.vmb.act{border-color:#0f0;color:#0f0;background:#0f01;}
+
+
+
+
+
+.vpb:hover{border-color:#f806;color:#f80;}
+
+.vpb.act{border-color:#f80;color:#f80;background:#f801;}
+
+#vinfo{padding:7px;flex:1;overflow-y:auto;font-size:9px;line-height:1.7;color:#444;}
+
+#gc{position:fixed;top:0;left:0;display:none;}
+
+#gc.show{display:block;}
+
+#day{position:fixed;top:10px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:3px;pointer-events:none;z-index:20;display:none;}
+
+#day.show{display:block;}
+
+#batwrap{position:fixed;right:10px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;align-items:center;gap:3px;pointer-events:none;z-index:20;}
+
+#batwrap.show{display:flex;}
+
+#batcap{width:9px;height:4px;background:#0f0;border-radius:2px;}
+
+#batout{width:20px;height:90px;border:2px solid #0f0;border-radius:3px;position:relative;}
+
+#batfill{position:absolute;bottom:0;left:0;right:0;border-radius:1px;}
+
+#batlbl{font-size:9px;letter-spacing:2px;}
+
+#ventui{position:fixed;top:10px;left:10px;display:none;flex-direction:column;gap:3px;pointer-events:none;z-index:20;}
+
+#ventui.show{display:flex;}
+
+#ventlbl{color:#f80;font-size:9px;letter-spacing:2px;}
+
+.vpip{width:10px;height:10px;border-radius:50%;border:1px solid #f80;}
+
+.vpip.on{background:#f80;box-shadow:0 0 8px #f80;}
+
+#shopbtn{position:fixed;top:10px;right:44px;font-size:9px;letter-spacing:2px;border:1px solid #ff04;color:#ff0;padding:4px 9px;cursor:pointer;background:#1100;z-index:20;display:none;}
+
+#shopbtn.show{display:block;}
+
+#helpbtn{position:fixed;top:10px;right:10px;border:1px solid #0af6;color:#0af;padding:5px 12px;cursor:pointer;font-size:9px;letter-spacing:2px;background:rgba(0,10,20,.85);font-family:inherit;z-index:310;display:block;}
+
+#chgwrap{position:fixed;bottom:0;left:0;right:0;height:34px;display:none;align-items:center;justify-content:center;gap:12px;background:rgba(0,8,0,.85);border-top:1px solid #0f03;z-index:20;}
+
+#chgwrap.show{display:flex;}
+
+#chgwrap.hld{border-top-color:#0f0;background:rgba(0,20,0,.9);}
+
+#chglbl{font-size:10px;letter-spacing:2px;color:#0f04;}
+
+#chgwrap.hld #chglbl{color:#0f0;text-shadow:0 0 8px #0f0;}
+
+#chgout{width:130px;height:7px;border:1px solid #0f03;border-radius:4px;overflow:hidden;}
+
+#chgbar{height:100%;width:0;background:linear-gradient(to right,#0f0,#8f8);}
+
+#shop{position:fixed;inset:0;background:#000d;z-index:350;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow-y:auto;}
+
+#shop.open{display:flex;}
+
+#shop h2{color:#ff0;font-size:18px;letter-spacing:6px;}
+
+#shopitems{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:460px;}
+
+.sitem{border:1px solid #ff04;background:#110;border-radius:6px;padding:10px 12px;color:#ff0;font-size:10px;cursor:pointer;min-width:100px;text-align:center;}
+
+.sitem:hover{background:#ff02;border-color:#ff0;}
+
+.sitem.bgt{opacity:.35;pointer-events:none;}
+
+.sc{color:#0f0;font-size:9px;margin-top:4px;}
+
+#shopx{color:#f00;letter-spacing:3px;font-size:11px;cursor:pointer;border:1px solid #f004;padding:8px 18px;}
+
+#warn{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);font-size:15px;letter-spacing:3px;opacity:0;pointer-events:none;z-index:25;transition:opacity .4s;text-align:center;}
+
+#warn.show{opacity:1;}
+
+#js{position:fixed;inset:0;z-index:200;display:none;background:#000;}
+
+#js.on{display:flex;align-items:center;justify-content:center;}
+
+#jsc{width:100%;height:100%;}
+
+#morning{position:fixed;inset:0;z-index:100;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+
+#morning.on{display:flex;}
+
+#morning h2{font-size:20px;letter-spacing:8px;text-shadow:0 0 30px #0f0;}
+
+#mmsg{color:#0f05;font-size:12px;letter-spacing:3px;}
+
+#mearn{color:#ff0;font-size:15px;letter-spacing:4px;}
+
+#mnext{color:#0f0;border:1px solid #0f0;padding:10px 28px;cursor:pointer;letter-spacing:3px;font-size:12px;background:transparent;font-family:inherit;}
+
+#mnext:hover{background:#0f02;}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<div id="lobby">
+
+  <h1>NIGHTWATCH</h1>
+
+  <div style="color:#0f04;font-size:10px;letter-spacing:5px;">survive the night</div>
+
+
+
+  <button class="lb" onclick="continueGame()" id="lobbycont" style="display:none;">CONTINUE (NIGHT <span id="lobbyday">1</span>)</button>
+
+  <button class="lb" onclick="startFresh()">NEW GAME</button>
+
+  <button onclick="openHelp()" style="border:2px solid #0af;color:#0af;padding:14px 36px;cursor:pointer;font-size:15px;letter-spacing:5px;background:rgba(0,10,20,.5);font-family:inherit;margin-top:4px;">? HOW TO PLAY</button>
+
+  <div id="lnl">N I G H T W A T C H</div>
+
+</div>
+
+
+
+<button id="settingsbtn" onclick="openSettings()" style="position:fixed;bottom:10px;left:10px;border:1px solid #0f05;color:#0f06;padding:6px 14px;cursor:pointer;font-size:10px;letter-spacing:3px;background:rgba(0,0,0,.7);font-family:inherit;z-index:320;">⚙ SETTINGS</button>
+
+
+
+
+    </div>
+
+    <button id="vblood" class="on" onclick="toggleBlood()">BLOOD: ON</button>
+
+  </div>
+
+  <div id="vwrap">
+
+    <canvas id="vc"></canvas>
+
+    <div id="vr">
+
+      <div id="vml"></div>
+
+      <div id="vpl"></div>
+
+      <div id="vinfo"><div id="vdesc"></div><div id="vlore" style="margin-top:5px;font-style:italic;color:#333;"></div></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<button id="helpbtn" onclick="openHelp()">? HOW TO PLAY</button>
+
+
+
+<div id="helpoverlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.97);overflow-y:auto;padding:20px;">
+
+  <div style="max-width:500px;margin:0 auto;font-family:monospace;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+
+      <div style="color:#0f0;font-size:16px;letter-spacing:6px;">HOW TO PLAY</div>
+
+      <button onclick="closeHelp()" style="border:1px solid #f004;color:#f00;padding:4px 12px;cursor:pointer;background:transparent;font-family:monospace;">X</button>
+
+    </div>
+
+    <div id="helpcontent" style="color:#0f0;font-size:10px;line-height:2.2;letter-spacing:1px;"></div>
+
+  </div>
+
+</div>
+
+
+
+<div id="settingsoverlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.97);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+
+  <div style="max-width:380px;width:90%;font-family:inherit;">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+
+      <div style="color:#0f0;font-size:16px;letter-spacing:6px;">SETTINGS</div>
+
+      <button onclick="closeSettings()" style="border:1px solid #f004;color:#f00;padding:4px 12px;cursor:pointer;background:transparent;font-family:inherit;">X</button>
+
+    </div>
+
+
+
+    <div style="display:flex;flex-direction:column;gap:18px;">
+
+      <div>
+
+        <div style="color:#ff0;font-size:11px;letter-spacing:3px;margin-bottom:8px;">FONT SIZE</div>
+
+        <div style="display:flex;align-items:center;gap:12px;">
+
+          <input type="range" id="fontSizeSlider" min="10" max="20" value="14" step="1"
+
+            style="flex:1;accent-color:#0f0;cursor:pointer;"
+
+            oninput="applyFontSize(this.value)">
+
+          <div id="fontSizeVal" style="color:#0f0;font-size:11px;width:30px;">14px</div>
+
+        </div>
+
+        <div id="fontPreview" style="color:#0f06;font-size:14px;margin-top:6px;letter-spacing:2px;">Game text preview</div>
+
+      </div>
+
+
+
+      <div>
+
+        <div style="color:#ff0;font-size:11px;letter-spacing:3px;margin-bottom:8px;">CAMERA SENSITIVITY (MOUSE)</div>
+
+        <div style="display:flex;align-items:center;gap:12px;">
+
+          <input type="range" id="mouseSensSlider" min="1" max="20" value="4" step="1"
+
+            style="flex:1;accent-color:#0f0;cursor:pointer;"
+
+            oninput="applySens(this.value,'mouse')">
+
+          <div id="mouseSensVal" style="color:#0f0;font-size:11px;width:30px;">4</div>
+
+        </div>
+
+      </div>
+
+
+
+      <div>
+
+        <div style="color:#ff0;font-size:11px;letter-spacing:3px;margin-bottom:8px;">CAMERA SENSITIVITY (TOUCH)</div>
+
+        <div style="display:flex;align-items:center;gap:12px;">
+
+          <input type="range" id="touchSensSlider" min="1" max="20" value="6" step="1"
+
+            style="flex:1;accent-color:#0f0;cursor:pointer;"
+
+            oninput="applySens(this.value,'touch')">
+
+          <div id="touchSensVal" style="color:#0f0;font-size:11px;width:30px;">6</div>
+
+        </div>
+
+      </div>
+
+
+
+      <div style="color:#0f03;font-size:9px;letter-spacing:2px;border-top:1px solid #0f02;padding-top:12px;">
+
+        Settings are saved automatically
+
+      </div>
+
+
+
+      <div>
+
+        <div style="color:#ff0;font-size:11px;letter-spacing:3px;margin-bottom:8px;">CONTROLS</div>
+
+        <button id="edgeScrollToggle" onclick="toggleEdgeScroll()"
+
+          style="border:1px solid #0f0;color:#0f0;padding:6px 14px;cursor:pointer;background:transparent;font-family:inherit;font-size:10px;letter-spacing:2px;width:100%;">
+
+          EDGE SCROLL: ON
+
+        </button>
+
+        <div style="color:#0f03;font-size:8px;letter-spacing:1px;margin-top:4px;">Move mouse to screen edge to snap camera</div>
+
+      </div>
+
+
+
+      <button onclick="resetSettings()"
+
+        style="border:1px solid #f804;color:#f80;padding:8px 0;cursor:pointer;background:transparent;font-family:inherit;font-size:10px;letter-spacing:3px;width:100%;margin-top:4px;">
+
+        RESET TO DEFAULTS
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<canvas id="gc"></canvas>
+
+<div id="day">NIGHT 1 00:00</div>
+
+<div id="batwrap"><div id="batcap"></div><div id="batout"><div id="batfill" style="height:100%"></div></div><div id="batlbl">BAT</div></div>
+
+<div id="ventui">
+
+  <div id="ventlbl">VENT</div>
+
+  <div class="vpip on" id="vp0"></div><div class="vpip" id="vp1"></div>
+
+  <div class="vpip" id="vp2"></div>
+
+</div>
+
+<button id="shopbtn" style="" onclick="openShop()">SHOP</button>
+
+
+
+<div id="chgwrap" style="display:none;"></div>
+
+<div id="shop">
+
+  <h2>SHOP</h2>
+
+  <div style="color:#0f0;font-size:12px;letter-spacing:3px;">CASH: $<span id="shopval">0</span></div>
+
+  <div id="shopitems"></div>
+
+  <div id="shopx" onclick="closeShop()">BACK</div>
+
+</div>
+
+<div id="warn"></div>
+
+<div id="morning">
+
+  <h2>DAWN</h2><div id="mmsg"></div>
+
+  <div id="mearn">+$<span id="earnval">0</span></div>
+
+  <button id="mnext" onclick="nextNight()">NEXT NIGHT</button>
+
+</div>
+
+<div id="js"><canvas id="jsc"></canvas></div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+
+// ============================================================
+
+// GLOBALS
+
+// ============================================================
+
+var gR, gSc, gCam;
+
+var G = {
+  running: false, day: 1, money: 0, camYaw: 0, targetYaw: 0,
+  battery: 100, maxBattery: 100,
+  flashOn: {left: false, front: false, right: false},
+  doorLeft: false, doorRight: false, doorFront: false,
+  nightTimer: 0, dead: false, morning: false, shopOpen: false,
+  upgrades: {battery: 0, recharge: 0, doorPower: 0},
+  holdingCharge: false, chargeProgress: 0
+};
+
+var MONS = {
+  left:  {id:'left',  pos:0, speed:0.000055, baseSpeed:0.000055, frozen:false, knockTimer:4500, defIdx:0, waiting:false, waitTimer:0, spawnDelay:0, rushing:false},
+  front: {id:'front', pos:0, speed:0.000040, baseSpeed:0.000040, frozen:false, knockTimer:5500, defIdx:1, waiting:false, waitTimer:0, spawnDelay:0, rushing:false},
+  right: {id:'right', pos:0, speed:0.000045, baseSpeed:0.000045, frozen:false, knockTimer:4200, defIdx:2, waiting:false, waitTimer:0, spawnDelay:0, rushing:false}
+};
+var VENT = {stage:0, timer:0, stageInterval:30000, frozen:false, freezeTimer:0, defIdx:3, active:false};
+
+var corrLights = {}, flashSpots = {}, ventGlow, leftDoor3D, rightDoor3D, frontDoor3D, ventMesh;
+var officeLamp, offFlickT = 0;
+var monMeshes = {}, panelMeshes = {}, roomLights = [];
+var gStarted = false;
+
+var doorAnim = {
+  left:  {cur:8, tgt:8},
+  right: {cur:8, tgt:8},
+  front: {cur:8, tgt:8}
+};
+
+var flickI = 1.0, flickT = 0;
+var G_mask = {on:false, hollowSide:null, rushDone:false, timer:0, MAX_TIME:15000};
+var G_lever = {off:false, hollowInside:false, locked:false};
+var hollowFlickerActive = false, hollowFlickerTimer = 0, hollowFlickerCount = 0;
+
+function gB(x, y, z, w, h, d, mat) {
+  var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+  m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  gSc.add(m); return m;
+}
+
+function mkG(geo, mat) { var m = new THREE.Mesh(geo, mat); m.castShadow = true; return m; }
+
+// ============================================================
+
+// MONSTER DEFINITIONS
+
+// ============================================================
+
+var MDEFS = [
+
+  {letter:'N',name:'NIGHTMARE',night:1,bodyCol:0xcc1515,accentCol:0x8a0a0a,eyeCol:0xffff44,teethCol:0xffeecc,bloodCol:0xcc0000,skinCol:0xaa1010,
+
+   desc:'Primordial evil. The oldest being.',lore:'They say it was here before the building.',
+
+   poses:[{n:'LURKING',tt:0.15,ls:0.08,ar:-0.3,ht:0.05},{n:'ATTACKING',tt:0.45,ls:0.25,ar:0.6,ht:0.2},{n:'WATCHING',tt:0,ls:0.05,ar:-0.8,ht:-0.1},{n:'STANDING',tt:0,ls:0,ar:-0.6,ht:0}],
+
+   speed:0.000032},
+
+  {letter:'I',name:'IMPALER',night:1,bodyCol:0xaa5a10,accentCol:0x6a3208,eyeCol:0xffcc00,teethCol:0xddccaa,bloodCol:0xaa2200,skinCol:0x883808,
+
+   desc:'Spikes grow from its arms like wires.',lore:'It used to be an employee of the building.',
+
+   poses:[{n:'REACHING',tt:0.2,ls:0.1,ar:0.8,ht:0.1},{n:'CROUCHING',tt:0.5,ls:0.4,ar:0.1,ht:0.3},{n:'RUNNING',tt:0.3,ls:0.3,ar:0.4,ht:0.15},{n:'GROWLING',tt:0.25,ls:0.08,ar:-0.2,ht:0.25}],
+
+   speed:0.000024},
+
+  {letter:'G',name:'GAUNT',night:1,bodyCol:0x1010cc,accentCol:0x08088a,eyeCol:0x88ccff,teethCol:0xaaccff,bloodCol:0x0000cc,skinCol:0x080888,
+
+   desc:'Bones visible through the skin.',lore:'It moves along walls when the lights go out.',
+
+   poses:[{n:'CRAWLING',tt:0.7,ls:0.35,ar:0.3,ht:0.4},{n:'LISTENING',tt:0.1,ls:0.05,ar:-0.9,ht:-0.3},{n:'LEAPING',tt:0.3,ls:0.5,ar:0.5,ht:0.2},{n:'SWAYING',tt:0.35,ls:0.1,ar:-0.1,ht:0.5}],
+
+   speed:0.000028},
+
+  {letter:'H',name:'HOLLOW',night:2,bodyCol:0x208020,accentCol:0x104010,eyeCol:0xff0000,teethCol:0xaaffaa,bloodCol:0x005500,skinCol:0x155015,
+
+   desc:'Empty inside. Red eyes visible in darkness.',lore:'If you shine light or close doors while it rushes - you die.',
+
+   poses:[{n:'STANDING',tt:0,ls:0.05,ar:-0.5,ht:0},{n:'HUNCHING',tt:0.4,ls:0.12,ar:0.2,ht:0.3},{n:'EMERGING',tt:0.55,ls:0.3,ar:0.7,ht:0.15},{n:'TREMBLING',tt:0.05,ls:0.04,ar:-0.4,ht:0.08}],
+
+   speed:0.000038, special:'hollow'},
+
+  {letter:'T',name:'TORMENT',night:2,bodyCol:0x901090,accentCol:0x600060,eyeCol:0xff88ff,teethCol:0xffaaff,bloodCol:0x660066,skinCol:0x6a0a6a,
+
+   desc:'Screams without end.',lore:'Silence means it is already behind you.',
+
+   poses:[{n:'SCREAMING',tt:0.1,ls:0.08,ar:0.9,ht:-0.2},{n:'RUNNING',tt:0.25,ls:0.35,ar:0.3,ht:0.1},{n:'RAGING',tt:0.35,ls:0.25,ar:0.7,ht:0.3},{n:'FLOATING',tt:-0.1,ls:0.05,ar:-0.2,ht:-0.15}],
+
+   speed:0.000040},
+
+  {letter:'W',name:'WRAITH',night:3,bodyCol:0x888888,accentCol:0x444444,eyeCol:0xffffff,teethCol:0xeeeeee,bloodCol:0x444444,skinCol:0x666660,
+
+   desc:'Casts no shadow. Makes no sound.',lore:'1987 documents mention something that should not walk.',
+
+   poses:[{n:'CEILING',tt:-0.8,ls:0.4,ar:-0.3,ht:-0.5},{n:'WALL',tt:0.3,ls:0.5,ar:0.4,ht:0.2},{n:'GLIDING',tt:0,ls:0.1,ar:-0.8,ht:0},{n:'STANDING',tt:0,ls:0,ar:-0.6,ht:0}],
+
+   speed:0.000030},
+
+  {letter:'A',name:'ABYSS',night:4,bodyCol:0x003060,accentCol:0x001830,eyeCol:0x00ccff,teethCol:0x88ddff,bloodCol:0x000066,skinCol:0x002050,
+
+   desc:'It came from the depths. The body is wet.',lore:'Workers spoke of the smell of water before they vanished.',
+
+   poses:[{n:'DRAGGING',tt:0.65,ls:0.4,ar:0.15,ht:0.45},{n:'FLOWING',tt:0.2,ls:0.15,ar:0,ht:0.1},{n:'ATTACKING',tt:0.3,ls:0.25,ar:0.8,ht:0.2},{n:'WAITING',tt:0.1,ls:0.05,ar:-0.5,ht:0.05}],
+
+   speed:0.000042},
+
+  {letter:'T',name:'TERROR',night:5,bodyCol:0xaa4000,accentCol:0x882000,eyeCol:0xff8800,teethCol:0xffaa66,bloodCol:0xaa0000,skinCol:0x883000,
+
+   desc:'It charges. Never stops.',lore:'Night 5. Nobody who survived described what it looked like.',
+
+   poses:[{n:'SPRINTING',tt:0.35,ls:0.45,ar:0.2,ht:0.2},{n:'LEAPING',tt:0.2,ls:0.55,ar:0.5,ht:0.1},{n:'CHARGING',tt:0.5,ls:0.3,ar:-0.1,ht:0.4},{n:'TEARING',tt:0.3,ls:0.2,ar:0.9,ht:0.25}],
+
+   speed:0.000055},
+
+  {letter:'C',name:'CREEP',night:6,bodyCol:0x206020,accentCol:0x104010,eyeCol:0xaaff44,teethCol:0xccff88,bloodCol:0x004400,skinCol:0x185018,
+
+   desc:'Small and fast. Walks on ceilings.',lore:'If you see one there are ten of them.',
+
+   poses:[{n:'HANGING',tt:-0.6,ls:0.35,ar:-0.2,ht:-0.4},{n:'LEAPING',tt:0.15,ls:0.5,ar:0.4,ht:0.1},{n:'SMALL',tt:0.8,ls:0.5,ar:0.1,ht:0.5},{n:'SNEAKING',tt:0.45,ls:0.25,ar:0.05,ht:0.35}],
+
+   speed:0.000048},
+
+  {letter:'H',name:'HUSK',night:7,bodyCol:0x606030,accentCol:0x404020,eyeCol:0xffff88,teethCol:0xffeeaa,bloodCol:0x333300,skinCol:0x505025,
+
+   desc:'A dead shell without a soul.',lore:'It remembers when the building was new.',
+
+   poses:[{n:'OLD GAIT',tt:0.3,ls:0.08,ar:-0.15,ht:0.2},{n:'FALLING',tt:0.8,ls:0.3,ar:-0.4,ht:0.6},{n:'GROWING',tt:-0.1,ls:0.05,ar:-0.7,ht:-0.05},{n:'DEADENS',tt:0.15,ls:0.06,ar:0.1,ht:0.15}],
+
+   speed:0.000026}
+
+];
+
+// ============================================================
+
+// VIEWER
+
+// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+function initGame() {
+
+  var gc = document.getElementById('gc');
+
+  gR = new THREE.WebGLRenderer({canvas: gc, antialias: true});
+
+  gR.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+
+  gR.setSize(innerWidth, innerHeight);
+
+  gR.shadowMap.enabled = true;
+
+  gR.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  gR.setClearColor(0x000000);
+
+  gSc = new THREE.Scene();
+
+  gSc.fog = new THREE.FogExp2(0x000000, 0.032);
+
+  gCam = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 60);
+
+  gCam.position.set(0, 1.6, 0);
+
+  window.addEventListener('resize', function() {
+
+    gR.setSize(innerWidth, innerHeight);
+
+    gCam.aspect = innerWidth / innerHeight;
+
+    gCam.updateProjectionMatrix();
+
+  });
+
+  buildRoom();
+
+  if (typeof buildLights === 'function') buildLights();
+
+  buildMonMeshes();
+
+  buildVent3D();
+
+  buildPanels();
+
+  setupInput();
+
+  if (!gStarted) { gStarted = true; requestAnimationFrame(gLoop); }
+
+}
+
+function buildRoom() {
+
+  var CH=3.2,TW=2.2,TH=2.4,RW=8,RL=10;
+
+  var mF  =new THREE.MeshPhongMaterial({color:0x2a1e10,specular:0x080402,shininess:8});
+
+  var mC  =new THREE.MeshLambertMaterial({color:0x1a1a14});
+
+  var mW  =new THREE.MeshPhongMaterial({color:0x2c261a,specular:0x060502,shininess:5});
+
+  var mWD =new THREE.MeshPhongMaterial({color:0x1e1a12,specular:0x040302,shininess:5});
+
+  var mDsk=new THREE.MeshPhongMaterial({color:0x4a3218,specular:0x101008,shininess:20});
+
+  var mMet=new THREE.MeshPhongMaterial({color:0x1a1a1a,specular:0x303030,shininess:60});
+
+  var mRust=new THREE.MeshPhongMaterial({color:0x3a1a08,specular:0x080402,shininess:10});
+
+  var lx=-4.0,rx=4.0,bz=-5.0;
+
+  // Floor
+
+  var fl=new THREE.Mesh(new THREE.PlaneGeometry(RW,RL),mF);fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;gSc.add(fl);
+
+  for(var pi=0;pi<9;pi++){var plk=new THREE.Mesh(new THREE.PlaneGeometry(RW,0.04),new THREE.MeshLambertMaterial({color:pi%2?0x1a1208:0x221a0e}));plk.rotation.x=-Math.PI/2;plk.position.set(0,0.002,-4.5+pi*1.1);gSc.add(plk);}
+
+  // Ceiling
+
+  var cl=new THREE.Mesh(new THREE.PlaneGeometry(RW,RL),mC);cl.rotation.x=Math.PI/2;cl.position.y=CH;gSc.add(cl);
+
+  for(var ci=0;ci<3;ci++){var crk=new THREE.Mesh(new THREE.PlaneGeometry(0.02,1.2+ci*0.4),new THREE.MeshBasicMaterial({color:0x0a0a0a}));crk.rotation.x=Math.PI/2;crk.rotation.z=ci*0.8;crk.position.set(-1+ci*1.2,CH-0.002,-1+ci*0.5);gSc.add(crk);}
+
+  // Walls
+
+  gB(lx,CH/2,(-5-TW/2)/2,0.15,CH,5-TW/2,mW);gB(lx,CH/2,(5+TW/2)/2,0.15,CH,5-TW/2,mW);gB(lx,(TH+CH)/2,0,0.15,CH-TH,TW,mW);
+
+  gB(lx,0.6,(-5-TW/2)/2,0.16,0.12,5-TW/2,new THREE.MeshLambertMaterial({color:0x1a1208}));gB(lx,0.6,(5+TW/2)/2,0.16,0.12,5-TW/2,new THREE.MeshLambertMaterial({color:0x1a1208}));
+
+  gB(rx,CH/2,(-5-TW/2)/2,0.15,CH,5-TW/2,mW);gB(rx,CH/2,(5+TW/2)/2,0.15,CH,5-TW/2,mW);gB(rx,(TH+CH)/2,0,0.15,CH-TH,TW,mW);
+
+  gB(rx,0.6,(-5-TW/2)/2,0.16,0.12,5-TW/2,new THREE.MeshLambertMaterial({color:0x1a1208}));gB(rx,0.6,(5+TW/2)/2,0.16,0.12,5-TW/2,new THREE.MeshLambertMaterial({color:0x1a1208}));
+
+  gB((-RW/2-TW/2)/2,CH/2,bz,(RW/2-TW/2),CH,0.15,mWD);gB((RW/2+TW/2)/2,CH/2,bz,(RW/2-TW/2),CH,0.15,mWD);gB(0,(TH+CH)/2,bz,TW,CH-TH,0.15,mWD);
+
+  gB(0,CH/2,5,RW,CH,0.15,mW);
+
+  // Wall trims
+
+  gB(0,CH-0.06,bz,RW-0.5,0.1,0.05,new THREE.MeshLambertMaterial({color:0x1e1810}));
+
+  gB(0,0.07,bz,RW-0.5,0.1,0.05,new THREE.MeshLambertMaterial({color:0x1a1208}));
+
+  // Pipes on ceiling
+
+  for(var wpi=0;wpi<3;wpi++){var pipe=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,RW-0.3,8),mRust);pipe.rotation.z=Math.PI/2;pipe.position.set(0,CH-0.25,-2+wpi*1.5);gSc.add(pipe);}
+
+  var vpipe=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,CH,8),mRust);vpipe.position.set(-3.85,CH/2,-2);gSc.add(vpipe);
+
+  // Corridors
+
+  var CL=16;
+
+  buildCorr(lx,CH,0,'left',CL,TW,TH);buildCorr(rx,CH,0,'right',CL,TW,TH);buildCorr(0,CH,bz,'front',CL,TW,TH);
+
+  // Vent
+
+  gB(0,CH-0.03,bz-0.5,0.9,0.06,0.9,mMet);
+
+  for(var vi=0;vi<5;vi++)gB(-0.35+vi*0.18,CH-0.02,bz-0.5,0.04,0.08,0.9,new THREE.MeshLambertMaterial({color:0x252520}));
+
+  // ── WORN WOODEN SHUTTER DOORS — old, damaged, detailed ──
+  // These slide DOWN from ceiling (y=8=hidden, y=TH/2=closed)
+
+      function buildWornDoor(variant) {
+    var isLR = (variant < 2);
+    var W = TW, H = TH, D = 0.10;
+    var grp = new THREE.Group();
+
+    var mSteel  = new THREE.MeshPhongMaterial({color:0x4a4a52, specular:0x888890, shininess:90});
+    var mSteelL = new THREE.MeshPhongMaterial({color:0x5a5a62, specular:0xaaaaaa, shininess:110});
+    var mSteelD = new THREE.MeshPhongMaterial({color:0x323238, specular:0x555560, shininess:70});
+    var mFrame  = new THREE.MeshPhongMaterial({color:0x282830, specular:0x444450, shininess:60});
+    var mBolt   = new THREE.MeshPhongMaterial({color:0x606068, specular:0xcccccc, shininess:140});
+
+    // Backing plate
+    if (isLR) {
+      grp.add(new THREE.Mesh(new THREE.BoxGeometry(D, H, W), mSteelD));
+    } else {
+      grp.add(new THREE.Mesh(new THREE.BoxGeometry(W, H, D), mSteelD));
+    }
+
+    // Horizontal slats — 12 clean metal strips
+    var numSlats = 12;
+    var slatH = H / numSlats;
+    for (var si = 0; si < numSlats; si++) {
+      var sy = -H/2 + slatH*(si+0.5);
+      var slat, ridge, gap;
+      if (isLR) {
+        slat  = new THREE.Mesh(new THREE.BoxGeometry(D+0.010, slatH*0.76, W-0.02), mSteel);
+        ridge = new THREE.Mesh(new THREE.BoxGeometry(D+0.018, slatH*0.16, W-0.02), mSteelL);
+        gap   = new THREE.Mesh(new THREE.BoxGeometry(D+0.006, slatH*0.08, W),      mSteelD);
+      } else {
+        slat  = new THREE.Mesh(new THREE.BoxGeometry(W-0.02, slatH*0.76, D+0.010), mSteel);
+        ridge = new THREE.Mesh(new THREE.BoxGeometry(W-0.02, slatH*0.16, D+0.018), mSteelL);
+        gap   = new THREE.Mesh(new THREE.BoxGeometry(W,      slatH*0.08, D+0.006), mSteelD);
+      }
+      slat.position.y  = sy;              grp.add(slat);
+      ridge.position.y = sy + slatH*0.3; grp.add(ridge);
+      gap.position.y   = sy - slatH*0.44; grp.add(gap);
+    }
+
+    // Side rails
+    [-W/2+0.022, W/2-0.022].forEach(function(rp) {
+      var rail = isLR
+        ? new THREE.Mesh(new THREE.BoxGeometry(D+0.04, H+0.04, 0.048), mFrame)
+        : new THREE.Mesh(new THREE.BoxGeometry(0.048, H+0.04, D+0.04), mFrame);
+      if (isLR) rail.position.set(0, 0, rp);
+      else      rail.position.set(rp, 0, 0);
+      grp.add(rail);
+    });
+
+    // Top & bottom frame bars
+    [H/2+0.022, -H/2-0.022].forEach(function(fy) {
+      var bar = isLR
+        ? new THREE.Mesh(new THREE.BoxGeometry(D+0.05, 0.05, W+0.06), mFrame)
+        : new THREE.Mesh(new THREE.BoxGeometry(W+0.06, 0.05, D+0.05), mFrame);
+      bar.position.y = fy; grp.add(bar);
+      // Bolts along bar
+      for (var bi2 = 0; bi2 < 4; bi2++) {
+        var bx = -W/2+0.15 + bi2*(W*0.22);
+        var bolt = new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.04,8), mBolt);
+        if (isLR) { bolt.rotation.x=Math.PI/2; bolt.position.set(0, fy, bx); }
+        else      { bolt.position.set(bx, fy, 0); }
+        grp.add(bolt);
+      }
+    });
+
+    // Bottom pull bar — chrome handle
+    var mChrome = new THREE.MeshPhongMaterial({color:0x9090a0, specular:0xffffff, shininess:200});
+    var pull = isLR
+      ? new THREE.Mesh(new THREE.BoxGeometry(D+0.08, 0.055, W*0.45), mChrome)
+      : new THREE.Mesh(new THREE.BoxGeometry(W*0.45, 0.055, D+0.08), mChrome);
+    pull.position.y = -H/2+0.05; grp.add(pull);
+
+    grp.traverse(function(obj) { if (obj.isMesh) obj.userData.isDoor = true; });
+    return grp;
+  }
+
+  leftDoor3D = buildWornDoor(0);
+  leftDoor3D.position.set(-3.94, 8, 0);
+  var llamp=new THREE.PointLight(0xffa040,0,2); llamp.position.set(0.15,TH*0.3,0);
+  leftDoor3D.add(llamp); leftDoor3D.userData.lamp=llamp; gSc.add(leftDoor3D);
+
+  rightDoor3D = buildWornDoor(1);
+  rightDoor3D.position.set(3.94, 8, 0);
+  var rlamp=new THREE.PointLight(0xffa040,0,2); rlamp.position.set(-0.15,TH*0.3,0);
+  rightDoor3D.add(rlamp); rightDoor3D.userData.lamp=rlamp; gSc.add(rightDoor3D);
+
+  frontDoor3D = buildWornDoor(2);
+  frontDoor3D.position.set(0, 8, bz);
+  var flamp=new THREE.PointLight(0xffa040,0,2); flamp.position.set(0,TH*0.3,0.15);
+  frontDoor3D.add(flamp); frontDoor3D.userData.lamp=flamp; gSc.add(frontDoor3D);
+
+  // Desk
+
+  gB(0,0.76,-0.9,2.6,0.07,0.85,mDsk);
+
+  [[1.1,-0.32],[-1.1,-0.32],[1.1,0.32],[-1.1,0.32]].forEach(function(p){gB(p[0],0.36,-0.9+p[1],0.07,0.72,0.07,mDsk);});
+
+  gB(0.8,0.38,-0.9,0.55,0.72,0.75,new THREE.MeshPhongMaterial({color:0x3a2810,specular:0x080402,shininess:12}));
+
+  for(var di=0;di<3;di++){var dh=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.025,0.025),mMet);dh.position.set(0.8,0.25+di*0.19,-0.56);gSc.add(dh);}
+
+  gB(0.1,0.8,-0.75,0.4,0.008,0.3,new THREE.MeshLambertMaterial({color:0xd4c8a0}));
+
+  gB(-0.15,0.8,-0.8,0.35,0.008,0.28,new THREE.MeshLambertMaterial({color:0xc8bca0}));
+
+  gB(-0.5,0.8,-0.72,0.18,0.06,0.08,mMet);
+
+  gB(0.1,0.8,-1.0,0.55,0.02,0.18,new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x202020,shininess:30}));
+
+  gB(0,0.8,-1.05,0.32,0.04,0.28,mMet);gB(0,0.95,-1.05,0.06,0.22,0.06,mMet);gB(0,1.2,-1.06,0.72,0.52,0.06,mMet);
+
+  // Monitor screen with red moon
+  var scrCanvas = document.createElement('canvas');
+  scrCanvas.width = 128; scrCanvas.height = 92;
+  var scrCtx = scrCanvas.getContext('2d');
+  scrCtx.fillStyle = '#080820';
+  scrCtx.fillRect(0,0,128,92);
+  // Red moon crescent
+  scrCtx.fillStyle = '#cc1100';
+  scrCtx.beginPath(); scrCtx.arc(64,46,28,0,Math.PI*2); scrCtx.fill();
+  scrCtx.fillStyle = '#080820';
+  scrCtx.beginPath(); scrCtx.arc(76,38,22,0,Math.PI*2); scrCtx.fill();
+  // Glow
+  var grd = scrCtx.createRadialGradient(52,50,4,52,50,32);
+  grd.addColorStop(0,'rgba(200,20,0,0.22)'); grd.addColorStop(1,'rgba(0,0,0,0)');
+  scrCtx.fillStyle=grd; scrCtx.fillRect(0,0,128,92);
+  var scrTex = new THREE.CanvasTexture(scrCanvas);
+  var scr=new THREE.Mesh(new THREE.BoxGeometry(0.64,0.46,0.01),new THREE.MeshBasicMaterial({map:scrTex}));scr.position.set(0,1.2,-1.02);gSc.add(scr);
+  gSc.userData.monitorScr = scr;
+  gSc.userData.monitorScrTex = scrTex;
+  gSc.userData.monitorScrOffTex = (function(){
+    var c2=document.createElement('canvas'); c2.width=128; c2.height=92;
+    var cx2=c2.getContext('2d'); cx2.fillStyle='#000'; cx2.fillRect(0,0,128,92);
+    return new THREE.CanvasTexture(c2);
+  })();
+
+  var sgl=new THREE.PointLight(0x002200,0.4,1.5);sgl.position.set(0,1.2,-0.98);gSc.add(sgl);
+  gSc.userData.monitorSgl = sgl;
+  roomLights.push({light: sgl, base: 0.4});
+
+  var mug=new THREE.Mesh(new THREE.CylinderGeometry(0.042,0.036,0.1,8),new THREE.MeshPhongMaterial({color:0x2a0808,specular:0x200808,shininess:40}));mug.position.set(0.6,0.83,-0.78);gSc.add(mug);
+
+  var ph=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.038,0.1,8),mMet);ph.position.set(-0.55,0.83,-0.75);gSc.add(ph);
+
+  for(var pni=0;pni<4;pni++){var pn=new THREE.Mesh(new THREE.CylinderGeometry(0.006,0.006,0.15,6),new THREE.MeshLambertMaterial({color:pni%2?0x0a0a8a:0x1a0a0a}));pn.position.set(-0.55+Math.cos(pni*1.57)*0.022,0.91,-0.75+Math.sin(pni*1.57)*0.022);gSc.add(pn);}
+
+  // Bookshelf
+
+  gB(-3.5,1.1,-3.5,0.12,2.2,0.8,mDsk);gB(-3.5,0.04,-3.5,0.12,0.08,0.8,mDsk);gB(-3.5,2.2,-3.5,0.12,0.08,0.8,mDsk);
+
+  [0.45,0.9,1.35,1.8].forEach(function(sy){gB(-3.5,sy,-3.5,0.12,0.05,0.8,mDsk);});
+
+  var bColors=[0x4a0808,0x084a08,0x08084a,0x3a2a08,0x3a083a,0x083a3a,0x1a0808,0x081a08];
+
+  for(var bi=0;bi<8;bi++){var bk=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.28+bi%3*0.06,0.055),new THREE.MeshLambertMaterial({color:bColors[bi]}));bk.position.set(-3.58,0.62+(0.28+bi%3*0.06)/2,-3.85+bi*0.09);gSc.add(bk);}
+
+  for(var bi2=0;bi2<7;bi2++){var bk2=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.25+bi2%3*0.05,0.055),new THREE.MeshLambertMaterial({color:bColors[(bi2+3)%8]}));bk2.position.set(-3.58,1.1+(0.25+bi2%3*0.05)/2,-3.85+bi2*0.09);gSc.add(bk2);}
+
+  // Filing cabinet
+
+  gB(3.5,0.7,-3.5,0.55,1.4,0.5,mMet);
+
+  for(var fi=0;fi<3;fi++){var fh=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.025,0.025),mMet);fh.position.set(3.5,0.3+fi*0.42,-3.27);gSc.add(fh);}
+
+  // Wall clock
+
+  var clk=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.18,0.04,16),mMet);clk.rotation.x=Math.PI/2;clk.position.set(3.88,2.5,1.5);gSc.add(clk);
+
+  var clkf=new THREE.Mesh(new THREE.CircleGeometry(0.16,16),new THREE.MeshBasicMaterial({color:0xf0e8d0}));clkf.rotation.y=-Math.PI/2;clkf.position.set(3.87,2.5,1.5);gSc.add(clkf);
+
+  // Security camera
+
+  var cam=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.06,0.15,8),mMet);cam.position.set(-3.5,CH-0.08,-4.5);gSc.add(cam);
+
+  var camL=new THREE.Mesh(new THREE.SphereGeometry(0.04,8,6),new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x404040,shininess:100}));camL.position.set(-3.5,CH-0.2,-4.5);gSc.add(camL);
+
+  // Backrooms-style fluorescent ceiling lamp — back wall, across room (along X)
+  var mFluor = new THREE.MeshPhongMaterial({color:0xddddcc, specular:0xffffff, shininess:60});
+  var mFluorH= new THREE.MeshPhongMaterial({color:0x888880, specular:0x555550, shininess:40});
+  var mGlow  = new THREE.MeshBasicMaterial({color:0xffffee});
+  // Housing box — long along X
+  var lampHousing = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.06, 0.18), mFluorH);
+  lampHousing.position.set(0, CH-0.04, 4.2); gSc.add(lampHousing);
+  // Tube (glowing) — along X
+  var lampTube = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.04, 0.06), mGlow);
+  lampTube.position.set(0, CH-0.06, 4.2); gSc.add(lampTube);
+  // End caps
+  [-0.68, 0.68].forEach(function(dx) {
+    var cap = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.05, 0.12), mFluorH);
+    cap.position.set(dx, CH-0.05, 4.2); gSc.add(cap);
+  });
+  // Chain
+  for (var ci=0; ci<3; ci++) {
+    var link = new THREE.Mesh(new THREE.TorusGeometry(0.022,0.007,4,8), mFluorH);
+    link.rotation.x = Math.PI/2;
+    link.position.set(0, CH-0.01-ci*0.055, 4.2); gSc.add(link);
+  }
+  var flampL = new THREE.PointLight(0xfff8e8, 1.6, 10.0);
+  flampL.position.set(0, CH-0.15, 4.0); gSc.add(flampL);
+
+  roomLights.push({light: flampL, base: 0.8});
+
+  // Trash bin
+
+  var bin=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.1,0.3,8),mMet);bin.position.set(-1.3,0.15,-0.5);gSc.add(bin);
+
+  // Notice board
+
+  gB(2.2,2.1,bz+0.08,1.4,0.9,0.05,new THREE.MeshLambertMaterial({color:0x2a1e0e}));
+
+  gB(2.2,2.1,bz+0.11,1.25,0.78,0.02,new THREE.MeshLambertMaterial({color:0x5a3818}));
+
+  [[0.1,0.1],[-.2,-0.05],[0.3,-0.15],[-0.1,0.2]].forEach(function(p){var np=new THREE.Mesh(new THREE.PlaneGeometry(0.32,0.24),new THREE.MeshBasicMaterial({color:0xd4c8a0}));np.position.set(2.2+p[0],2.1+p[1],bz+0.13);gSc.add(np);var pin2=new THREE.Mesh(new THREE.SphereGeometry(0.018,6,4),new THREE.MeshBasicMaterial({color:0xff2020}));pin2.position.set(2.2+p[0],2.22+p[1],bz+0.14);gSc.add(pin2);});
+
+  // Wall frames — only left side (center one was blocking tunnel view)
+
+  [[-2.2,2.0,0x1a2810]].forEach(function(p){gB(p[0],p[1],bz+0.08,0.9,0.65,0.05,new THREE.MeshLambertMaterial({color:0x3a2a1a}));var img2=new THREE.Mesh(new THREE.PlaneGeometry(0.82,0.58),new THREE.MeshBasicMaterial({color:p[2]}));img2.position.set(p[0],p[1],bz+0.11);gSc.add(img2);});
+
+  // Stain on floor
+
+  var stain=new THREE.Mesh(new THREE.CircleGeometry(0.35,12),new THREE.MeshBasicMaterial({color:0x180a04}));stain.rotation.x=-Math.PI/2;stain.position.set(1.5,0.003,-2.5);gSc.add(stain);
+
+  // ── POWER LEVER — right wall, eye level ──
+
+  // Wall at x=4 (rx). Lever on inner face pointing into room (-x).
+
+  // z=-2.5 so it's visible when player turns right.
+
+  var LX = 3.92,  LY = 1.5,  LZ = -2.5;
+
+  var mPlate  = new THREE.MeshPhongMaterial({color:0x111111, specular:0x1a1a1a, shininess:40});
+
+  var mFace   = new THREE.MeshPhongMaterial({color:0x1a1a1a, specular:0x222222, shininess:60});
+
+  var mBolt   = new THREE.MeshPhongMaterial({color:0x777700, specular:0xaaaa00, shininess:100});
+
+  var mArm    = new THREE.MeshPhongMaterial({color:0xcc1100, specular:0xff2200, shininess:120});
+
+  var mGrip   = new THREE.MeshPhongMaterial({color:0xffcc00, specular:0xffee44, shininess:160});
+
+  var mOn     = new THREE.MeshBasicMaterial({color:0x00ff44});
+
+  var mOff    = new THREE.MeshBasicMaterial({color:0x880000});
+
+  // Backplate (thick slab on wall)
+
+  var lPlate = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.7, 0.55), mPlate);
+
+  lPlate.position.set(LX, LY, LZ); gSc.add(lPlate);
+
+  // Face panel (slightly in front of plate)
+
+  var lFace2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.60, 0.44), mFace);
+
+  lFace2.position.set(LX - 0.05, LY, LZ); gSc.add(lFace2);
+
+  // Hazard stripes on face
+
+  for (var hs2=0; hs2<6; hs2++) {
+
+    var hsCol = hs2%2===0 ? 0xffcc00 : 0x111100;
+
+    var hsM2 = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.06, 0.44),
+
+      new THREE.MeshLambertMaterial({color:hsCol}));
+
+    hsM2.position.set(LX-0.05, LY+0.25-hs2*0.1, LZ); gSc.add(hsM2);
+
+  }
+
+  // Bolts
+
+  [[0.24,0.2],[0.24,-0.2],[-0.24,0.2],[-0.24,-0.2]].forEach(function(b){
+
+    var bolt2 = new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,0.05,8), mBolt);
+
+    bolt2.rotation.x = Math.PI/2; // flat against face
+
+    bolt2.position.set(LX-0.05, LY+b[0], LZ+b[1]); gSc.add(bolt2);
+
+  });
+
+  // Pivot disk on face
+
+  var lPiv2 = new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,0.05,12), mFace);
+
+  lPiv2.rotation.x = Math.PI/2;
+
+  lPiv2.position.set(LX-0.07, LY, LZ); gSc.add(lPiv2);
+
+  // GROUP: pivot point at (LX-0.07, LY, LZ), rotates around X axis (visible up/down from player's POV)
+
+  var lGrp = new THREE.Group();
+
+  lGrp.position.set(LX-0.07, LY, LZ);
+
+  gSc.add(lGrp);
+
+  gSc.userData.leverGroup = lGrp;
+
+  // Arm extends TOWARD player (along -X from wall), cylinder along X axis
+
+  // Length 0.5, offset so pivot is at wall end: x = -0.25
+
+  var lArm2 = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.036, 0.55, 10), mArm);
+
+  lArm2.rotation.z = Math.PI / 2; // lay cylinder along X axis
+
+  lArm2.position.set(-0.27, 0, 0); // extends into room
+
+  lGrp.add(lArm2);
+
+  gSc.userData.leverHandle = lArm2;
+
+  // Grip ball at the end toward player
+
+  var lGrip2 = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 10), mGrip);
+
+  lGrip2.position.set(-0.56, 0, 0);
+
+  lGrp.add(lGrip2);
+
+  gSc.userData.leverGrip = lGrip2;
+
+  // Rotate around Z axis: ON = arm angled up, OFF = arm angled down
+
+  var ROT_ON_X  =  0.9;  // tip up = power on
+
+  var ROT_OFF_X = -0.9;  // tip down = power off
+
+  // Initial rotation = ON (arm up)
+
+  lGrp.rotation.z = ROT_ON_X;
+
+  gSc.userData.leverRot = ROT_ON_X;
+
+  gSc.userData.leverRotTarget = ROT_ON_X;
+
+  gSc.userData.ROT_ON  = ROT_ON_X;
+
+  gSc.userData.ROT_OFF = ROT_OFF_X;
+
+  // ON dot (green, upper)
+
+  var lOnDot2 = new THREE.Mesh(new THREE.SphereGeometry(0.025,8,6), mOn);
+
+  lOnDot2.position.set(LX-0.10, LY+0.22, LZ-0.15); gSc.add(lOnDot2);
+
+  gSc.userData.leverOnDot = lOnDot2;
+
+  // OFF dot (red, lower)
+
+  var lOffDot2 = new THREE.Mesh(new THREE.SphereGeometry(0.025,8,6), mOff);
+
+  lOffDot2.position.set(LX-0.10, LY-0.22, LZ-0.15); gSc.add(lOffDot2);
+
+  gSc.userData.leverOffDot = lOffDot2;
+
+  // Big invisible click zone — STATIC position (not child of rotating group) so raycaster always hits
+
+  var lCZ = new THREE.Mesh(
+
+    new THREE.BoxGeometry(0.4, 1.0, 0.7),
+
+    new THREE.MeshBasicMaterial({visible:false, side: THREE.DoubleSide})
+
+  );
+
+  lCZ.position.set(LX - 0.08, LY, LZ);
+
+  gSc.add(lCZ);  // add to scene, NOT to group, so it doesn't rotate
+
+  gSc.userData.leverClickZone = lCZ;
+
+  // Glow — always on, independent of power, lights up the lever area
+
+  var levGl = new THREE.PointLight(0xff6600, 1.8, 2.2);
+
+  levGl.position.set(LX - 0.25, LY, LZ); gSc.add(levGl);
+
+  gSc.userData.leverGlow = levGl;
+
+  // Second small glow on the grip ball itself
+
+  var levGl2 = new THREE.PointLight(0xffaa00, 1.2, 0.9);
+
+  levGl2.position.set(LX - 0.55, LY, LZ);
+
+  lGrp.add(levGl2); // child of group so it moves with arm
+
+}
+
+function buildCorr(wallX, roomCH, wallZ, id, length, tw, th) {
+
+  var mCF  = new THREE.MeshLambertMaterial({color: 0x181410});
+
+  var mCW  = new THREE.MeshLambertMaterial({color: 0x141210});
+
+  var mCC  = new THREE.MeshLambertMaterial({color: 0x121010});
+
+  var mPipe= new THREE.MeshLambertMaterial({color: 0x0c0c0c});
+
+  var cx, cy = roomCH / 2, cz;
+
+  if (id === 'left') {
+
+    cx = wallX - length / 2; cz = wallZ;
+
+    var f = new THREE.Mesh(new THREE.PlaneGeometry(length, tw), mCF); f.rotation.x = -Math.PI/2; f.position.set(cx, 0.01, cz); gSc.add(f);
+
+    var c = new THREE.Mesh(new THREE.PlaneGeometry(length, tw), mCC); c.rotation.x = Math.PI/2; c.position.set(cx, th, cz); gSc.add(c);
+
+    if (th < roomCH) gB(cx, (th + roomCH)/2, cz, length, roomCH - th, tw, mCW);
+
+    gB(cx, cy, cz - tw/2, length, roomCH, 0.1, mCW);
+
+    gB(cx, cy, cz + tw/2, length, roomCH, 0.1, mCW);
+
+    gB(wallX - length, cy, cz, 0.12, roomCH, tw + 0.2, mCW);
+
+    for (var i = 0; i < 5; i++) gB(wallX - 2 - i * 2.5, cy, cz - tw * 0.4, 0.06, roomCH * 0.75, 0.06, mPipe);
+
+    var pl = new THREE.PointLight(0x1a1208, 0, 14); pl.position.set(wallX - length/2, th - 0.2, cz); gSc.add(pl); corrLights['left'] = pl;
+
+  } else if (id === 'right') {
+
+    cx = wallX + length / 2; cz = wallZ;
+
+    var f2 = new THREE.Mesh(new THREE.PlaneGeometry(length, tw), mCF); f2.rotation.x = -Math.PI/2; f2.position.set(cx, 0.01, cz); gSc.add(f2);
+
+    var c2 = new THREE.Mesh(new THREE.PlaneGeometry(length, tw), mCC); c2.rotation.x = Math.PI/2; c2.position.set(cx, th, cz); gSc.add(c2);
+
+    if (th < roomCH) gB(cx, (th + roomCH)/2, cz, length, roomCH - th, tw, mCW);
+
+    gB(cx, cy, cz - tw/2, length, roomCH, 0.1, mCW);
+
+    gB(cx, cy, cz + tw/2, length, roomCH, 0.1, mCW);
+
+    gB(wallX + length, cy, cz, 0.12, roomCH, tw + 0.2, mCW);
+
+    for (var j = 0; j < 5; j++) gB(wallX + 2 + j * 2.5, cy, cz - tw * 0.4, 0.06, roomCH * 0.75, 0.06, mPipe);
+
+    var pr = new THREE.PointLight(0x1a1208, 0, 14); pr.position.set(wallX + length/2, th - 0.2, cz); gSc.add(pr); corrLights['right'] = pr;
+
+  } else {
+
+    cx = 0; cz = wallZ - length / 2;
+
+    var f3 = new THREE.Mesh(new THREE.PlaneGeometry(tw, length), mCF); f3.rotation.x = -Math.PI/2; f3.position.set(cx, 0.01, cz); gSc.add(f3);
+
+    var c3 = new THREE.Mesh(new THREE.PlaneGeometry(tw, length), mCC); c3.rotation.x = Math.PI/2; c3.position.set(cx, th, cz); gSc.add(c3);
+
+    if (th < roomCH) gB(cx, (th + roomCH)/2, cz, tw, roomCH - th, length, mCW);
+
+    gB(cx - tw/2, cy, cz, 0.1, roomCH, length, mCW);
+
+    gB(cx + tw/2, cy, cz, 0.1, roomCH, length, mCW);
+
+    gB(cx, cy, wallZ - length, tw + 0.2, roomCH, 0.12, mCW);
+
+    for (var k = 0; k < 5; k++) gB(cx - tw * 0.4, cy, wallZ - 2 - k * 2.5, 0.06, roomCH * 0.75, 0.06, mPipe);
+
+    var pf = new THREE.PointLight(0x1a1208, 0, 14); pf.position.set(cx, th - 0.2, cz); gSc.add(pf); corrLights['front'] = pf;
+
+  }
+
+}
+
+var roomLights = []; // all non-corridor lights that go dark on power cut
+
+function buildLights() {
+
+  gSc.add(new THREE.AmbientLight(0x060604, 0.4));
+
+  officeLamp = new THREE.PointLight(0xfff0d0, 4.0, 6);
+
+  officeLamp.position.set(0, 3.0, -1); officeLamp.castShadow = false; gSc.add(officeLamp);
+
+  var lamp2 = new THREE.PointLight(0xffe8c0, 2.5, 5); lamp2.position.set(0, 3.0, -3.2); gSc.add(lamp2);
+
+  var desk2 = new THREE.PointLight(0xff9940, 1.5, 3.5); desk2.position.set(0.8, 1.5, -0.8); gSc.add(desk2);
+
+  var fill1 = new THREE.PointLight(0x282010, 1.0, 4.5); fill1.position.set(-2, 2, 0); gSc.add(fill1);
+
+  var fill2 = new THREE.PointLight(0x282010, 1.0, 4.5); fill2.position.set( 2, 2, 0); gSc.add(fill2);
+
+  roomLights.length = 0; // clear without losing reference
+
+  roomLights.push(
+
+    {light: officeLamp, base: 4.0},
+
+    {light: lamp2,      base: 2.5},
+
+    {light: desk2,      base: 1.5},
+
+    {light: fill1,      base: 1.0},
+
+    {light: fill2,      base: 1.0}
+
+  );
+
+  // Per-corridor spotlights - only on when flashlight active
+
+  ['left', 'front', 'right'].forEach(function(side) {
+
+    var sp = new THREE.SpotLight(0xfff5d0, 0, 22, Math.PI/5.5, 0.35, 1.5);
+
+    sp.castShadow = false; gSc.add(sp);
+
+    var tgt = new THREE.Object3D(); gSc.add(tgt); sp.target = tgt;
+
+    flashSpots[side] = {spot: sp, target: tgt};
+
+  });
+
+  ventGlow = new THREE.PointLight(0x002030, 0, 4); ventGlow.position.set(0, 3.0, -5.5); gSc.add(ventGlow);
+
+}
+
+
+function buildGameMonMesh(def) {
+  var g = new THREE.Group();
+  var isHollow = def.special === 'hollow';
+  // Metallic Phong materials
+  var mB = new THREE.MeshPhongMaterial({color: def.bodyCol,   specular: 0x888888, shininess: 80});
+  var mA = new THREE.MeshPhongMaterial({color: def.accentCol, specular: 0xaaaaaa, shininess: 120});
+  var mS = new THREE.MeshPhongMaterial({color: def.skinCol,   specular: 0x444444, shininess: 40});
+  var mE = isHollow
+    ? new THREE.MeshBasicMaterial({color: 0xff0000})
+    : new THREE.MeshBasicMaterial({color: def.eyeCol});
+  var mEg= new THREE.MeshBasicMaterial({color: def.eyeCol, transparent: true, opacity: 0.5});
+  var mT = new THREE.MeshPhongMaterial({color: def.teethCol,  specular: 0xffffff, shininess: 150});
+  var mD = new THREE.MeshPhongMaterial({color: 0x040404,      specular: 0x222222, shininess: 60});
+  var mBl= new THREE.MeshBasicMaterial({color: def.bloodCol});
+  // feet + claws
+  [-0.17, 0.17].forEach(function(sx) {
+    var ft = mkG(new THREE.BoxGeometry(0.15, 0.07, 0.28), mB); ft.position.set(sx, 0.04, 0.08); g.add(ft);
+    var ank= mkG(new THREE.SphereGeometry(0.08, 8, 6), mA); ank.position.set(sx, 0.09, 0.04); g.add(ank);
+    [-0.04, 0, 0.04].forEach(function(cx) { var cw = mkG(new THREE.BoxGeometry(0.024, 0.024, 0.07), mD); cw.position.set(sx + cx, 0.025, 0.25); g.add(cw); });
+  });
+  // legs
+  var ll = new THREE.Group(); ll.position.set(-0.17, 0.15, 0);
+  var lr = new THREE.Group(); lr.position.set(0.17,  0.15, 0);
+  [ll, lr].forEach(function(lg, i) {
+    var th = mkG(new THREE.CylinderGeometry(0.1, 0.09, 0.38, 8), mB); th.position.y = 0.19; lg.add(th);
+    var ms = mkG(new THREE.BoxGeometry(0.06, 0.22, 0.08), mS); ms.position.set(i ? 0.04 : -0.04, 0.19, 0.04); lg.add(ms);
+    var kn = mkG(new THREE.SphereGeometry(0.11, 8, 6), mA); kn.position.y = 0.41; lg.add(kn);
+    var ks = mkG(new THREE.ConeGeometry(0.04, 0.09, 6), mD); ks.rotation.x = -Math.PI/2; ks.position.set(0, 0.41, 0.12); lg.add(ks);
+    var sh = mkG(new THREE.CylinderGeometry(0.08, 0.07, 0.34, 8), mS); sh.position.y = 0.61; lg.add(sh);
+    g.add(lg);
+  });
+  g.userData.legL = ll; g.userData.legR = lr;
+  // torso
+  var to = mkG(new THREE.BoxGeometry(0.54, 0.6, 0.3), mB); to.position.y = 1.0; g.add(to);
+  // ribs
+  for (var r = 0; r < 3; r++) {
+    [-1, 1].forEach(function(sx) { var rb = mkG(new THREE.BoxGeometry(0.2, 0.03, 0.04), mA); rb.position.set(sx * 0.26, 0.75 + r * 0.1, 0.16); rb.rotation.z = sx * 0.2; g.add(rb); });
+  }
+  // blood drips on torso
+  var bd1 = mkG(new THREE.BoxGeometry(0.05, 0.2, 0.04), mBl); bd1.position.set(0.05, 0.78, 0.16); g.add(bd1);
+  var bd2 = mkG(new THREE.BoxGeometry(0.03, 0.14, 0.04), mBl); bd2.position.set(-0.08, 0.72, 0.16); g.add(bd2);
+  // chest muscles
+  [-1, 1].forEach(function(sx) { var pc = mkG(new THREE.BoxGeometry(0.18, 0.16, 0.06), mS); pc.position.set(sx * 0.15, 1.12, 0.17); g.add(pc); });
+  // arms
+  var al = new THREE.Group(); al.position.set(-0.38, 1.55, 0);
+  var ar2= new THREE.Group(); ar2.position.set( 0.38, 1.55, 0);
+  [al, ar2].forEach(function(ag, i) {
+    var sx = i ? 1 : -1;
+    var sh2= mkG(new THREE.SphereGeometry(0.12, 8, 6), mS); sh2.position.set(sx * 0.06, 0, 0); ag.add(sh2);
+    var ub = mkG(new THREE.CylinderGeometry(0.095, 0.08, 0.36, 8), mB); ub.position.set(sx * 0.04, -0.2, 0); ag.add(ub);
+    var vn = mkG(new THREE.BoxGeometry(0.02, 0.28, 0.02), mBl); vn.position.set(sx * 0.09, -0.2, 0.07); ag.add(vn);
+    var eb = mkG(new THREE.SphereGeometry(0.09, 8, 6), mA); eb.position.set(sx * 0.06, -0.41, 0); ag.add(eb);
+    var fo2= mkG(new THREE.CylinderGeometry(0.08, 0.065, 0.32, 8), mS); fo2.position.set(sx * 0.04, -0.63, 0); ag.add(fo2);
+    var wr = mkG(new THREE.BoxGeometry(0.12, 0.025, 0.04), mBl); wr.position.set(0, -0.55, 0.08); ag.add(wr);
+    var hd = mkG(new THREE.BoxGeometry(0.14, 0.12, 0.12), mB); hd.position.set(sx * 0.04, -0.84, 0); ag.add(hd);
+    for (var c2 = -1; c2 <= 1; c2++) {
+      var cw = mkG(new THREE.BoxGeometry(0.025, 0.1, 0.025), mD); cw.position.set(sx * 0.04 + c2 * 0.04, -0.97, 0); ag.add(cw);
+      var cn = mkG(new THREE.ConeGeometry(0.014, 0.06, 6), mD); cn.position.set(sx * 0.04 + c2 * 0.04, -1.07, 0); ag.add(cn);
+    }
+    var abd= mkG(new THREE.BoxGeometry(0.04, 0.16, 0.04), mBl); abd.position.set(sx * 0.04, -0.78, 0.09); ag.add(abd);
+    g.add(ag);
+  });
+  g.userData.armL = al; g.userData.armR = ar2;
+  // neck
+  var nk = mkG(new THREE.CylinderGeometry(0.1, 0.12, 0.13, 8), mS); nk.position.y = 1.33; g.add(nk);
+  var nvn= mkG(new THREE.BoxGeometry(0.025, 0.1, 0.025), mBl); nvn.position.set(0.06, 1.33, 0.08); g.add(nvn);
+  // head
+  var head = mkG(new THREE.BoxGeometry(0.46, 0.44, 0.42), mB); head.position.y = 1.58; g.add(head);
+  var brow = mkG(new THREE.BoxGeometry(0.46, 0.06, 0.1), mA); brow.position.set(0, 1.78, 0.17); g.add(brow);
+  [-1, 1].forEach(function(sx) {
+    var chk = mkG(new THREE.BoxGeometry(0.08, 0.07, 0.08), mA); chk.position.set(sx * 0.22, 1.6, 0.18); g.add(chk);
+    var ear = mkG(new THREE.BoxGeometry(0.04, 0.1, 0.08), mS); ear.position.set(sx * 0.25, 1.58, 0); g.add(ear);
+  });
+  // eyes
+  [-0.13, 0.13].forEach(function(ex) {
+    var sock= mkG(new THREE.BoxGeometry(0.12, 0.13, 0.04), mD); sock.position.set(ex, 1.6, 0.21); g.add(sock);
+    var iris= mkG(new THREE.BoxGeometry(0.1, 0.11, 0.04), mE); iris.position.set(ex, 1.6, 0.23); g.add(iris);
+    var pup = mkG(new THREE.BoxGeometry(0.05, 0.07, 0.04), mD); pup.position.set(ex, 1.6, 0.25); g.add(pup);
+    var gl  = mkG(new THREE.BoxGeometry(0.13, 0.14, 0.02), mEg); gl.position.set(ex, 1.6, 0.22); g.add(gl);
+  });
+  // nose
+  var nb = mkG(new THREE.BoxGeometry(0.06, 0.1, 0.05), mS); nb.position.set(0, 1.56, 0.22); g.add(nb);
+  [-0.03, 0.03].forEach(function(nx) { var ns = mkG(new THREE.SphereGeometry(0.028, 6, 4), mD); ns.position.set(nx, 1.51, 0.24); g.add(ns); });
+  // jaw
+  var jawG = new THREE.Group(); jawG.position.set(0, 1.4, 0);
+  var jb = mkG(new THREE.BoxGeometry(0.42, 0.12, 0.38), mB); jb.position.y = -0.06; jawG.add(jb);
+  for (var t3 = 0; t3 < 6; t3++) {
+    var tooth3 = mkG(new THREE.BoxGeometry(0.05, 0.09, 0.04), mT); tooth3.position.set(-0.1 + t3 * 0.044, -0.01, 0.19); jawG.add(tooth3);
+    var bdt = mkG(new THREE.BoxGeometry(0.018, 0.05, 0.02), mBl); bdt.position.set(-0.1 + t3 * 0.044, -0.07, 0.19); jawG.add(bdt);
+  }
+  // upper teeth
+  for (var t4 = 0; t4 < 5; t4++) { var tooth4 = mkG(new THREE.BoxGeometry(0.048, 0.08, 0.04), mT); tooth4.position.set(-0.09 + t4 * 0.046, 1.51, 0.21); g.add(tooth4); }
+  // blood from mouth
+  var mbld= mkG(new THREE.BoxGeometry(0.05, 0.18, 0.04), mBl); mbld.position.set(0.03, 1.36, 0.21); g.add(mbld);
+  var mbld2=mkG(new THREE.BoxGeometry(0.03, 0.1, 0.03), mBl); mbld2.position.set(-0.05, 1.33, 0.21); g.add(mbld2);
+  // face scar / blood
+  var fsc = mkG(new THREE.BoxGeometry(0.16, 0.03, 0.03), mBl); fsc.position.set(0.06, 1.66, 0.22); g.add(fsc);
+  g.add(jawG);
+  g.userData.head = head; g.userData.jawG = jawG;
+  // Eye glow — HOLLOW has very strong red glow visible in darkness
+  var eglIntensity = isHollow ? 6.0 : 0.6;
+  var eglRange     = isHollow ? 5.0 : 2.5;
+  var eglColor     = isHollow ? 0xff0000 : def.eyeCol;
+  var egl = new THREE.PointLight(eglColor, eglIntensity, eglRange);
+  egl.position.set(0, 1.58, 0.3); g.add(egl);
+  g.userData.eyeLight = egl;
+  // Make iris bigger for HOLLOW
+  if (isHollow) {
+    // Extra glow spheres on eyes
+    [-0.13, 0.13].forEach(function(ex2) {
+      var eglow = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6),
+        new THREE.MeshBasicMaterial({color:0xff0000, transparent:true, opacity:0.7}));
+      eglow.position.set(ex2, 1.6, 0.26); g.add(eglow);
+    });
+  }
+
+  // ── EXTRA DETAILS: blood splatters, cables, veins ──
+  var mBl2 = new THREE.MeshBasicMaterial({color: def.bloodCol});
+  var mWire2 = new THREE.MeshPhongMaterial({color: 0x080606, specular: 0x222222, shininess: 50});
+
+  // Blood splatter blobs — organic flat spheres
+  [[0.08,0.9,0.17,0.07,0.018,0.05],[-0.06,1.1,0.17,0.05,0.014,0.04],
+   [0.02,0.72,0.17,0.06,0.016,0.06],[-0.1,1.3,0.16,0.04,0.012,0.05]].forEach(function(b) {
+    var bl = mkG(new THREE.SphereGeometry(1, 6, 4), mBl2);
+    bl.scale.set(b[3], b[4], b[5]); bl.position.set(b[0], b[1], b[2]);
+    bl._blood = true; g.add(bl);
+  });
+  // Blood drip from mouth area
+  [0.03,-0.04,0.01].forEach(function(dx,di) {
+    var drip = mkG(new THREE.CylinderGeometry(0.012-di*0.003, 0.006, 0.09+di*0.03, 5), mBl2);
+    drip.position.set(dx, 1.28-di*0.04, 0.21); drip._blood = true; g.add(drip);
+  });
+
+  // Cables / wires coming out of torso
+  var mWL = [[-0.18,0.95,0.15,0.3,0.35],[0.20,0.85,0.15,0.25,-0.3],[0.0,1.15,-0.15,0.2,0.1]];
+  mWL.forEach(function(w) {
+    var wire = mkG(new THREE.CylinderGeometry(0.011, 0.008, w[3], 5), mWire2);
+    wire.rotation.z = w[4]; wire.rotation.x = 0.2;
+    wire.position.set(w[0], w[1] - w[3]*0.3, w[2]); g.add(wire);
+  });
+
+  // Arm veins
+  [-0.32, 0.32].forEach(function(ax) {
+    var vn = mkG(new THREE.CylinderGeometry(0.008, 0.005, 0.28, 4), mBl2);
+    vn.position.set(ax, 1.45, 0.08); vn._blood = true; g.add(vn);
+  });
+  return g;
+}
+
+function buildMonMeshes() {
+
+  ['left', 'front', 'right'].forEach(function(side) {
+
+    var mn = MONS[side];
+
+    var mesh = buildGameMonMesh(MDEFS[mn.defIdx]);
+
+    mesh.visible = false;
+
+    var p = monPos3D(side, 0); mesh.position.copy(p);
+
+    gSc.add(mesh); monMeshes[side] = mesh;
+
+  });
+
+}
+
+function buildVent3D() {
+
+  var g = new THREE.Group();
+
+  var mBody = new THREE.MeshPhongMaterial({color: 0x1a0a1a, specular: 0x330033, shininess: 40});
+
+  var mLimb = new THREE.MeshPhongMaterial({color: 0x0d050d, specular: 0x220022, shininess: 20});
+
+  var mEye  = new THREE.MeshBasicMaterial({color: 0xff0000});
+
+  var mClaw = new THREE.MeshPhongMaterial({color: 0x2a0a00, specular: 0x440000, shininess: 80});
+
+  // Tułów — wydłużony, chudy
+
+  var torso = mkG(new THREE.BoxGeometry(0.28, 0.55, 0.22), mBody);
+
+  torso.position.set(0, 0, 0);
+
+  g.add(torso);
+
+  // Głowa — większa, wisząca pod tułowiem (bo wisi do góry nogami)
+
+  var head = mkG(new THREE.BoxGeometry(0.34, 0.30, 0.28), mBody);
+
+  head.position.set(0, -0.44, 0);
+
+  g.add(head);
+
+  // Oczy — świecące czerwone
+
+  [-0.09, 0.09].forEach(function(ex) {
+
+    var sock = mkG(new THREE.BoxGeometry(0.08, 0.09, 0.04), new THREE.MeshBasicMaterial({color: 0x1a0000}));
+
+    sock.position.set(ex, -0.44, 0.15);
+
+    g.add(sock);
+
+    var iris = mkG(new THREE.BoxGeometry(0.06, 0.07, 0.04), mEye);
+
+    iris.position.set(ex, -0.44, 0.17);
+
+    g.add(iris);
+
+    // glow sphere
+
+    var eglow = mkG(new THREE.SphereGeometry(0.04, 6, 4), new THREE.MeshBasicMaterial({color: 0xff0000, transparent: true, opacity: 0.6}));
+
+    eglow.position.set(ex, -0.44, 0.18);
+
+    g.add(eglow);
+
+  });
+
+  // Szczęka lekko otwarta
+
+  var jaw = mkG(new THREE.BoxGeometry(0.26, 0.08, 0.24), mBody);
+
+  jaw.position.set(0, -0.60, 0.02);
+
+  g.add(jaw);
+
+  // Zęby — szpiczaste
+
+  for (var ti = 0; ti < 5; ti++) {
+
+    var tooth = mkG(new THREE.ConeGeometry(0.018, 0.07, 4), mClaw);
+
+    tooth.position.set(-0.10 + ti * 0.05, -0.58, 0.13);
+
+    g.add(tooth);
+
+  }
+
+  // Długie ramiona — wiszą w dół (bo postać jest odwrócona)
+
+  [-1, 1].forEach(function(sx) {
+
+    // ramię górne
+
+    var upper = mkG(new THREE.CylinderGeometry(0.025, 0.02, 0.45, 6), mLimb);
+
+    upper.position.set(sx * 0.26, 0.05, 0);
+
+    upper.rotation.z = sx * 0.3;
+
+    g.add(upper);
+
+    // łokieć
+
+    var elbow = mkG(new THREE.SphereGeometry(0.04, 6, 4), mBody);
+
+    elbow.position.set(sx * 0.33, 0.28, 0);
+
+    g.add(elbow);
+
+    // ramię dolne — długie, skierowane w dół
+
+    var lower = mkG(new THREE.CylinderGeometry(0.02, 0.015, 0.55, 6), mLimb);
+
+    lower.position.set(sx * 0.36, 0.58, 0);
+
+    lower.rotation.z = sx * 0.15;
+
+    g.add(lower);
+
+    // szpony na końcu
+
+    for (var ci = -1; ci <= 1; ci++) {
+
+      var claw = mkG(new THREE.ConeGeometry(0.012, 0.09, 4), mClaw);
+
+      claw.position.set(sx * 0.38 + ci * 0.04, 0.88, 0);
+
+      g.add(claw);
+
+    }
+
+  });
+
+  // Nogi — wiszą w górę (stopy przy suficie, bo jest odwrócony)
+
+  [-1, 1].forEach(function(sx) {
+
+    var leg = mkG(new THREE.CylinderGeometry(0.022, 0.018, 0.5, 6), mLimb);
+
+    leg.position.set(sx * 0.10, 0.38, 0);
+
+    leg.rotation.z = sx * 0.1;
+
+    g.add(leg);
+
+    // stopa z haczykiem
+
+    var foot = mkG(new THREE.BoxGeometry(0.06, 0.04, 0.14), mClaw);
+
+    foot.position.set(sx * 0.11, 0.66, 0.04);
+
+    g.add(foot);
+
+  });
+
+  // Czerwona poświata z oczu
+
+  var egl = new THREE.PointLight(0xff0000, 4.0, 3.5);
+
+  egl.position.set(0, -0.44, 0.2);
+
+  g.add(egl);
+
+  g.userData.eyeLight = egl;
+
+  // Pozycja: środkowy korytarz, przy suficie tunelu (odwrócony)
+
+  // TH = 2.4, sufit tunelu, bz = -5.0 (wejście), głębiej w tunelu
+
+  g.position.set(0, 2.2, -6.5); // wisi przy suficie środkowego korytarza
+
+  g.visible = false;
+
+  gSc.add(g);
+
+  ventMesh = g;
+
+}
+
+function addPanel(x, y, z, side, hasDoor) {
+  var mPan  = new THREE.MeshLambertMaterial({color: 0x0a1a0a});
+  var mFlash= new THREE.MeshLambertMaterial({color: 0x0f5a0f});
+  var mDoor2= new THREE.MeshLambertMaterial({color: 0x5a1a0a});
+  var mLedG = new THREE.MeshLambertMaterial({color: 0x003300});
+  var mLedR = new THREE.MeshLambertMaterial({color: 0x330000});
+  var isZ = (side === 'front' || side === 'front2');
+  var pw = isZ ? 0.4 : 0.06, pd = isZ ? 0.06 : 0.4, ph = hasDoor ? 0.72 : 0.44;
+  var panel = new THREE.Mesh(new THREE.BoxGeometry(pw, ph, pd), mPan);
+  panel.position.set(x, y, z); gSc.add(panel);
+  var fb = new THREE.Mesh(new THREE.BoxGeometry(pw + 0.02, 0.13, pd + 0.02), mFlash);
+  fb.position.set(x, y + (hasDoor ? 0.23 : 0.1), z); gSc.add(fb);
+  var fLed = new THREE.Mesh(new THREE.BoxGeometry(pw + 0.03, 0.03, pd + 0.03), mLedG);
+  fLed.position.set(x, y + (hasDoor ? 0.34 : 0.21), z); gSc.add(fLed);
+  var realSide = (side === 'front2') ? 'front' : side;
+  panelMeshes['fl-' + side] = {mesh: fb, side: realSide, action: 'flash'};
+  if (hasDoor) {
+    var db = new THREE.Mesh(new THREE.BoxGeometry(pw + 0.02, 0.13, pd + 0.02), mDoor2);
+    db.position.set(x, y - 0.05, z); gSc.add(db);
+    var dLed = new THREE.Mesh(new THREE.BoxGeometry(pw + 0.03, 0.03, pd + 0.03), mLedR);
+    dLed.position.set(x, y - 0.16, z); gSc.add(dLed);
+    panelMeshes['dr-' + side] = {mesh: db, side: realSide, action: 'door'};
+  }
+}
+
+function buildPanels() {
+
+  addPanel(-3.93, 1.4,  1.6,  'left',   true);
+
+  addPanel( 3.93, 1.4,  1.6,  'right',  true);
+
+  addPanel(-1.5,  1.4, -4.92, 'front',  true);
+
+  addPanel( 1.5,  1.4, -4.92, 'front2', true);
+
+  var mZap = new THREE.MeshLambertMaterial({color: 0x001830});
+
+  var mZapB= new THREE.MeshBasicMaterial({color: 0x00aaff});
+
+  var zp = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 0.04), mZap);
+
+  zp.position.set(0.65, 1.8, -0.98); gSc.add(zp);
+
+  var zl = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.04), mZapB);
+
+  zl.position.set(0.65, 1.94, -0.98); gSc.add(zl);
+
+  panelMeshes['zap'] = {mesh: zp, side: 'vent', action: 'zap'};
+
+}
+
+var raycaster = new THREE.Raycaster();
+
+function onCanvasClick(e) {
+  if (!G.running || G.dead || G.morning || G.shopOpen) return;
+  var gc = document.getElementById('gc');
+  var rect = gc.getBoundingClientRect();
+  var cx = e.clientX || (e.changedTouches && e.changedTouches[0].clientX) || 0;
+  var cy = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
+  raycaster.setFromCamera(
+    new THREE.Vector2(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1),
+    gCam
+  );
+  // Check lever (arm, grip ball, or big click zone)
+  var leverH = gSc && gSc.userData.leverHandle;
+  var leverGrip = gSc && gSc.userData.leverGrip;
+  var leverCZ = gSc && gSc.userData.leverClickZone;
+  if (leverH) {
+    var leverObjs = [leverH];
+    if (leverGrip) leverObjs.push(leverGrip);
+    if (leverCZ)   leverObjs.push(leverCZ);
+    var leverHits = raycaster.intersectObjects(leverObjs, true);
+    if (leverHits.length) { handleLever(); return; }
+  }
+  var meshList = Object.values(panelMeshes).map(function(p) { return p.mesh; });
+  var hits = raycaster.intersectObjects(meshList, false);
+  if (!hits.length) return;
+  var hitMesh = hits[0].object;
+  var vals = Object.values(panelMeshes);
+  for (var i = 0; i < vals.length; i++) {
+    if (vals[i].mesh === hitMesh) { handlePanel(vals[i].side, vals[i].action); return; }
+  }
+}
+
+// ─ LEVER / POWER CUT ─
+
+function handleLever() {
+
+  if (G_lever.locked) return; // battery dead — lever locked
+
+  var lv = gSc && gSc.userData.leverGlow;
+
+  var onDot  = gSc && gSc.userData.leverOnDot;
+
+  var offDot = gSc && gSc.userData.leverOffDot;
+
+  if (G_lever.off) {
+
+    // ── RESTORE POWER ──
+
+    G_lever.off = false;
+
+    // Snap lever to ON with spring overshoot
+
+    if (gSc && gSc.userData.leverGroup) {
+
+      var target = gSc.userData.ROT_ON || 0.9;
+
+      gSc.userData.leverRotTarget = target + 0.25; // overshoot up
+
+      setTimeout(function() {
+
+        if (gSc && gSc.userData.leverGroup) gSc.userData.leverRotTarget = target;
+
+      }, 120);
+
+    }
+
+    if (lv) { lv.color.setHex(0xaa7700); lv.intensity = 1.8; }
+
+    if (onDot  && onDot.material)  onDot.material.color.setHex(0x00ff44);
+
+    if (offDot && offDot.material) offDot.material.color.setHex(0x880000);
+
+    // Flicker lights back on
+
+    var restoreStart = Date.now();
+
+    var restoreInt = setInterval(function() {
+
+      var prog = Math.min(1, (Date.now() - restoreStart) / 800);
+
+      roomLights.forEach(function(rl) { rl.light.intensity = rl.base * prog; });
+
+      if (prog >= 1) {
+        clearInterval(restoreInt);
+        monitorTurnOn();
+      }
+
+    }, 30);
+
+    startLampBuzz();
+
+    showWarn('POWER RESTORED', '#0f0');
+
+    playDoorSlide();
+
+    return;
+
+  }
+
+  // ── CUT POWER ──
+
+  G_lever.off = true;
+
+  // Snappy lever drop with overshoot
+
+  if (gSc && gSc.userData.leverGroup) {
+
+    var target2 = gSc.userData.ROT_OFF || -0.9;
+
+    gSc.userData.leverRotTarget = target2 - 0.3; // overshoot down
+
+    setTimeout(function() {
+
+      if (gSc && gSc.userData.leverGroup) gSc.userData.leverRotTarget = target2;
+
+    }, 100);
+
+  }
+
+  if (lv) { lv.color.setHex(0xff2200); lv.intensity = 2.5; } // mocna czerwona poswiata = wylaczone
+
+  if (onDot  && onDot.material)  onDot.material.color.setHex(0x002200);
+
+  if (offDot && offDot.material) offDot.material.color.setHex(0xff0000);
+
+  playPowerCut();
+
+  if (lampBuzzGain) {
+
+    try { lampBuzzGain.gain.linearRampToValueAtTime(0, getAC().currentTime + 2.0); } catch(e) {}
+
+  }
+
+  // Rapid flicker then all lights die
+
+  var flickCount2 = 0;
+
+  var killLights = setInterval(function() {
+
+    flickCount2++;
+
+    var on = flickCount2 % 2 === 0;
+
+    // Faster, more erratic flicker
+
+    var intensity = on ? (Math.random() * 3.0 + 1.0) : 0;
+
+    roomLights.forEach(function(rl) { rl.light.intensity = on ? rl.base * (intensity / 4.0) : 0; });
+
+    if (flickCount2 >= 10) {
+
+      clearInterval(killLights);
+
+      // All lights fully dead
+
+      roomLights.forEach(function(rl) { rl.light.intensity = 0; });
+      // Kill monitor screen
+      if (gSc && gSc.userData.monitorScr && gSc.userData.monitorScrOffTex) { gSc.userData.monitorScr.material.map = gSc.userData.monitorScrOffTex; gSc.userData.monitorScrOffTex.needsUpdate = true; }
+
+      if (typeof corrLights !== 'undefined') Object.values(corrLights).forEach(function(l) { l.intensity = 0; });
+      // Kill monitor screen
+      if (gSc && gSc.userData.monitorScr) gSc.userData.monitorScr.material.map = gSc.userData.monitorScrOffTex;
+      if (gSc && gSc.userData.monitorScrTex) gSc.userData.monitorScrTex.needsUpdate = true;
+
+    }
+
+  }, 80);
+
+  G.flashOn = {left:false, front:false, right:false};
+
+  G.doorLeft=false; G.doorRight=false; G.doorFront=false;
+
+  doorAnim.left.tgt=8; doorAnim.right.tgt=8; doorAnim.front.tgt=8;
+
+  playDoorSlide();
+
+  if (isHollowApproaching()) {
+
+    showWarn('POWER CUT — HOLLOW ENTERS', '#f00');
+
+    hollowPassage();
+
+  } else {
+
+    showWarn('POWER CUT', '#f80');
+
+  }
+
+}
+
+function isHollowApproaching() {
+
+  // HOLLOW can approach only when all 3 corridors are otherwise empty
+
+  return ['left','front','right'].some(function(s) {
+
+    return MDEFS[MONS[s].defIdx].special === 'hollow' && MONS[s].pos > 0.1 && !MONS[s].waiting;
+
+  });
+
+}
+
+function hollowPassage(side, mn, def) {
+
+  if (G.dead) { G_lever.hollowInside = false; return; }
+
+  G.camLocked = true;
+
+  var hollowMesh = monMeshes[side];
+
+  var eyeLight = hollowMesh && hollowMesh.userData.eyeLight;
+
+  // Ustaw hollow przy drzwiach
+
+  if (hollowMesh) {
+
+    hollowMesh.visible = true;
+
+    hollowMesh.position.copy(monPos3D(side, 0.92));
+
+    if (side === 'left')       hollowMesh.rotation.y =  Math.PI/2;
+
+    else if (side === 'right') hollowMesh.rotation.y = -Math.PI/2;
+
+    else                       hollowMesh.rotation.y =  Math.PI;
+
+    if (eyeLight) { eyeLight.intensity = 10.0; eyeLight.color.setHex(0xff0000); }
+
+  }
+
+  var targetYaw = side === 'left' ? Math.PI/2 : side === 'right' ? -Math.PI/2 : 0;
+
+  var rotStart = G.camYaw;
+
+  var t0 = null;
+
+  showWarn('HOLLOW — POWER IS OFF', '#f00');
+
+  function blinkLoop(ts) {
+
+    if (!t0) t0 = ts;
+
+    var elapsed = ts - t0;
+
+    // Faza 1 (0-600ms): kamera obraca się do Hollowa
+
+    if (elapsed < 600) {
+
+      var prog = elapsed / 600;
+
+      G.camYaw = rotStart + (targetYaw - rotStart) * prog;
+
+      G.targetYaw = G.camYaw;
+
+      if (gCam) gCam.rotation.set(0, G.camYaw, 0);
+
+      if (eyeLight) eyeLight.intensity = 10.0;
+
+      requestAnimationFrame(blinkLoop);
+
+      return;
+
+    }
+
+    // Faza 2 (600-2200ms): oczy migają ON/OFF
+
+    if (elapsed < 2200) {
+
+      var blinkOn = Math.floor((elapsed - 600) / 180) % 2 === 0;
+
+      if (eyeLight) eyeLight.intensity = blinkOn ? 12.0 : 0;
+
+      if (hollowMesh) hollowMesh.visible = blinkOn;
+
+      requestAnimationFrame(blinkLoop);
+
+      return;
+
+    }
+
+    // Koniec — hollow znika
+
+    if (hollowMesh) { hollowMesh.visible = false; }
+
+    if (eyeLight) { eyeLight.intensity = 0; }
+
+    G.camLocked = false;
+
+    G_lever.hollowInside = false;
+
+    // Reset hollow — losowa przerwa 15-30s przed następnym pojawieniem
+
+    ['left','front','right'].forEach(function(s) {
+
+      if (MDEFS[MONS[s].defIdx].special === 'hollow') {
+
+        MONS[s].pos = 0;
+
+        MONS[s].waiting = true;
+
+        MONS[s].waitTimer = 15000 + Math.random() * 15000;
+
+        MONS[s].rushing = false;
+
+        MONS[s].frozen = false;
+
+      } else {
+
+        // Odblokuj pozostałych — krótka przerwa 3-5s
+
+        MONS[s].frozen = false;
+
+        if (!MONS[s].waiting) {
+
+          MONS[s].waiting = true;
+
+          MONS[s].waitTimer = 3000 + Math.random() * 2000;
+
+        }
+
+      }
+
+    });
+
+    showWarn('HOLLOW IS GONE', '#0f0');
+
+  }
+
+  requestAnimationFrame(blinkLoop);
+
+}
+
+function handlePanel(side, action) {
+
+  if (G_lever.off) { showWarn('NO POWER!', '#f00'); return; }
+
+  if (action === 'flash') {
+
+    G.flashOn[side] = !G.flashOn[side];
+
+    updateFlashlights();
+
+    showWarn(G.flashOn[side] ? 'FLASHLIGHT ON' : 'FLASHLIGHT OFF', G.flashOn[side] ? '#ff0' : '#888');
+
+    if (G.flashOn[side]) playFlashOn(); else playFlashOff();
+
+    saveGame();
+
+  } else if (action === 'door') {
+
+    toggleDoor(side);
+
+  } else if (action === 'zap') {
+
+    zapVent();
+
+  }
+
+}
+
+function toggleDoor(side) {
+  if (!G.running || G.dead || G.morning) return;
+  var TH = 2.4, OPEN_Y = 8, CLOSED_Y = TH / 2;
+  if (side === 'left') {
+    G.doorLeft = !G.doorLeft;
+    doorAnim.left.tgt = G.doorLeft ? CLOSED_Y : OPEN_Y;
+    showWarn(G.doorLeft ? 'LEFT — CLOSED' : 'LEFT — OPEN', G.doorLeft ? '#f00' : '#0f0');
+  } else if (side === 'right') {
+    G.doorRight = !G.doorRight;
+    doorAnim.right.tgt = G.doorRight ? CLOSED_Y : OPEN_Y;
+    showWarn(G.doorRight ? 'RIGHT — CLOSED' : 'RIGHT — OPEN', G.doorRight ? '#f00' : '#0f0');
+  } else if (side === 'front') {
+    G.doorFront = !G.doorFront;
+    doorAnim.front.tgt = G.doorFront ? CLOSED_Y : OPEN_Y;
+    showWarn(G.doorFront ? 'CENTER — CLOSED' : 'CENTER — OPEN', G.doorFront ? '#f00' : '#0f0');
+  }
+  playDoorSlide();
+  saveGame();
+}
+
+function monitorTurnOn() {
+  // 2 quick flickers then steady on — like a real CRT/fluorescent monitor waking up
+  var ms   = gSc && gSc.userData.monitorScr;
+  var mt   = gSc && gSc.userData.monitorScrTex;
+  var moff = gSc && gSc.userData.monitorScrOffTex;
+  var sg   = gSc && gSc.userData.monitorSgl;
+  if (!ms || !mt) return;
+  var seq = [1, 0, 1, 0, 1, 1, 0, 1]; // on/off pattern — flicker twice then on
+  var step = 0;
+  var iv = setInterval(function() {
+    var on2 = !!seq[step];
+    ms.material.map = on2 ? mt : moff;
+    mt.needsUpdate = true; if (moff) moff.needsUpdate = true;
+    if (sg) sg.intensity = on2 ? 0.4 : 0;
+    step++;
+    if (step >= seq.length) {
+      clearInterval(iv);
+      // Final state: on
+      ms.material.map = mt; mt.needsUpdate = true;
+      if (sg) sg.intensity = 0.4;
+    }
+  }, 80);
+}
+
+function updateDoorAnim(dt) {
+  var speed = Math.min(1, dt * 0.014);
+  var da = doorAnim.left, diff = da.tgt - da.cur;
+  da.cur = Math.abs(diff) > 0.02 ? da.cur + diff * speed : da.tgt;
+  if (leftDoor3D) leftDoor3D.position.y = da.cur;
+  var db = doorAnim.right, diff2 = db.tgt - db.cur;
+  db.cur = Math.abs(diff2) > 0.02 ? db.cur + diff2 * speed : db.tgt;
+  if (rightDoor3D) rightDoor3D.position.y = db.cur;
+  var dc = doorAnim.front, diff3 = dc.tgt - dc.cur;
+  dc.cur = Math.abs(diff3) > 0.02 ? dc.cur + diff3 * speed : dc.tgt;
+  if (frontDoor3D) frontDoor3D.position.y = dc.cur;
+}
+
+function ventGroundAttack() {
+  if (G.dead) return;
+  G.running = true;
+
+  // Hide all monsters and vent
+  Object.keys(MONS).forEach(function(s) {
+    MONS[s].frozen = true;
+    var m = monMeshes[s]; if (m) m.visible = false;
+  });
+  if (ventMesh) ventMesh.visible = false;
+  if (ventGlow) ventGlow.intensity = 0;
+
+  // Lock camera to face front corridor
+  G.camLocked = true;
+  G.targetYaw = 0;
+  G.camYaw = 0;
+
+  // Force front corridor light on regardless of battery
+  if (corrLights.front) corrLights.front.intensity = 1.8;
+
+  // Build ground version of vent monster (humanoid walking toward player)
+  var ventDef = MDEFS[VENT.defIdx];
+  var groundMesh = buildGameMonMesh(ventDef);
+  groundMesh.position.set(0, 0, -13); // far end of front corridor
+  groundMesh.rotation.y = Math.PI; // face player
+  groundMesh.scale.set(1.1, 1.1, 1.1);
+  gSc.add(groundMesh);
+
+  // Show warning
+  showWarn('IT IS COMING', '#f00');
+
+  // Animate walk toward player
+  var walkStart = Date.now();
+  var walkDuration = 4000; // 4 seconds to reach player
+  var walkAnim = setInterval(function() {
+    if (G.dead) { clearInterval(walkAnim); gSc.remove(groundMesh); return; }
+    var t = (Date.now() - walkStart) / walkDuration;
+    if (t >= 1) {
+      clearInterval(walkAnim);
+      gSc.remove(groundMesh);
+      triggerJS(ventDef, 'front');
+      return;
+    }
+    // Move from z=-13 toward player at z=0
+    var z = -13 + t * 12.5;
+    groundMesh.position.set(0, 0, z);
+    // Walking leg animation
+    var legSwing = Math.sin(Date.now() * 0.012) * 0.35;
+    if (groundMesh.userData.legL) groundMesh.userData.legL.rotation.x = legSwing;
+    if (groundMesh.userData.legR) groundMesh.userData.legR.rotation.x = -legSwing;
+    if (groundMesh.userData.armL) groundMesh.userData.armL.rotation.x = -legSwing * 0.5;
+    if (groundMesh.userData.armR) groundMesh.userData.armR.rotation.x = legSwing * 0.5;
+    // Force front corridor lit
+    if (corrLights.front) corrLights.front.intensity = 1.8 + Math.sin(Date.now()*0.008)*0.3;
+  }, 16);
+}
+
+function zapVent() {
+
+  if (!G.running || G.dead || G.morning) return;
+
+  G.battery = Math.max(0, G.battery - 8); updateBatUI();
+
+  if (VENT.stage === 0) {
+
+    // Fałszywy alarm — nie ma wenta, wszyscy przyspieszają
+
+    showWarn('FALSE ALARM! EVERYONE RUSHING!', '#ff0');
+
+    playZapFail();
+
+    var keys = Object.keys(MONS);
+
+    keys.forEach(function(s) { MONS[s].speed *= 4; MONS[s].frozen = false; });
+
+    setTimeout(function() { keys.forEach(function(s) { MONS[s].speed /= 4; }); }, 8000);
+
+  } else {
+
+    // Zap hits — vent retreats with animation, reset
+    playZapHit();
+    showWarn('HANGER REPELLED!', '#0af');
+    VENT.stage = 0; VENT.timer = 0;
+    VENT.stageInterval = Math.max(15000, 120000 - G.day * 12000);
+    updateVentUI();
+    if (ventMesh) {
+      // Retreat animation — scale down then hide
+      var retractStart = Date.now();
+      var retractAnim = setInterval(function() {
+        var t = (Date.now() - retractStart) / 600;
+        if (t >= 1 || !ventMesh) { clearInterval(retractAnim); if (ventMesh) { ventMesh.visible = false; ventMesh.scale.set(1,1,1); } if (ventGlow) ventGlow.intensity = 0; return; }
+        ventMesh.scale.set(1-t*0.8, 1-t*0.8, 1-t*0.8);
+        ventMesh.position.y = 2.1 + t * 2;
+      }, 16);
+    }
+
+  }
+
+}
+
+function startHollowFlicker(side) {
+
+  hollowFlickerActive = true;
+
+  hollowFlickerTimer = 0;
+
+  hollowFlickerCount = 0;
+
+  G_mask.hollowSide = side;
+
+  G_mask.rushDone = false;
+
+  // NO mask prompt — gracz musi wyłączyć wajchę, nie zakładać maskę
+
+}
+
+function showMaskPrompt() {
+
+  var el = document.getElementById('maskprompt');
+
+  if (el) el.remove();
+
+  var d = document.createElement('div');
+
+  d.id = 'maskprompt';
+
+  d.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;';
+
+  d.innerHTML =
+
+    '<div style="color:#f00;font-size:13px;letter-spacing:3px;text-shadow:0 0 20px #f00;animation:blink .4s infinite;">HOLLOW RUSHING!</div>' +
+
+    '<div style="color:#ff0;font-size:10px;letter-spacing:2px;">NACISNIJ SPACJE / PRZYCISK = ZALOZ MASKE</div>' +
+
+    '<button id="maskbtn" style="border:2px solid #ff0;background:#ff01;color:#ff0;padding:10px 28px;font-family:monospace;font-size:12px;letter-spacing:3px;cursor:pointer;pointer-events:all;" onclick="toggleMask()">ZALOZ MASKE [SPACJA]</button>';
+
+  // Add blink keyframes if not present
+
+  if (!document.getElementById('blinkstyle')) {
+
+    var s = document.createElement('style');
+
+    s.id = 'blinkstyle';
+
+    s.textContent = '@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}';
+
+    document.head.appendChild(s);
+
+  }
+
+  document.body.appendChild(d);
+
+}
+
+function isHollowActive() {
+
+  return ['left','front','right'].some(function(s) {
+
+    return MDEFS[MONS[s].defIdx].special === 'hollow' && MONS[s].pos > 0.05 && !MONS[s].waiting;
+
+  });
+
+}
+
+function toggleMask() {
+
+  if (!G.running || G.dead || G.morning) return;
+
+  if (!G_mask.on && !isHollowActive()) {
+
+    showWarn('MASK ONLY WHEN HOLLOW IS VISIBLE!', '#f80');
+
+    return;
+
+  }
+
+  if (G_mask.on) {
+
+    G_mask.on = false; G_mask.timer = 0;
+
+    hideMaskOverlay();
+
+    var hb = document.getElementById('maskhudbtn');
+
+    if (hb) { hb.textContent = 'MASKA [SPACJA]'; hb.style.borderColor = '#aaa5'; hb.style.color = '#aaa'; }
+
+  } else {
+
+    G_mask.on = true; G_mask.timer = 0; G_mask.rushDone = false;
+
+    showMaskOverlay();
+
+    var hb2 = document.getElementById('maskhudbtn');
+
+    if (hb2) { hb2.textContent = 'ZDEJM MASKE [SPACJA]'; hb2.style.borderColor = '#ff0'; hb2.style.color = '#ff0'; }
+
+  }
+
+}
+
+function showMaskOverlay() {
+
+  var el = document.getElementById('maskoverlay'); if (el) el.remove();
+
+  var d = document.createElement('div');
+
+  d.id = 'maskoverlay';
+
+  d.style.cssText = 'position:fixed;inset:0;z-index:35;pointer-events:none;';
+
+  var cvs = document.createElement('canvas');
+
+  cvs.id = 'maskcanvas';
+
+  cvs.style.cssText = 'position:absolute;inset:0;';
+
+  d.appendChild(cvs);
+
+  var timer = document.createElement('div');
+
+  timer.id = 'masktimer';
+
+  timer.style.cssText = 'position:absolute;bottom:10%;left:50%;transform:translateX(-50%);width:100px;height:3px;background:rgba(255,60,60,0.9);';
+
+  d.appendChild(timer);
+
+  document.body.appendChild(d);
+
+  function drawMask() {
+
+    var W = window.innerWidth, H = window.innerHeight;
+
+    cvs.width = W; cvs.height = H;
+
+    var ctx = cvs.getContext('2d');
+
+    var cx = W/2, cy = H/2;
+
+    var ew = W * 0.10, eh = H * 0.09, gap = W * 0.085;
+
+    ctx.fillStyle = '#000';
+
+    ctx.fillRect(0, 0, W, H);
+
+    // Cut out eye holes using destination-out
+
+    ctx.globalCompositeOperation = 'destination-out';
+
+    ctx.fillStyle = 'rgba(255,255,255,1)';
+
+    ctx.beginPath(); ctx.ellipse(cx - gap, cy, ew, eh, 0, 0, Math.PI*2); ctx.fill();
+
+    ctx.beginPath(); ctx.ellipse(cx + gap, cy, ew, eh, 0, 0, Math.PI*2); ctx.fill();
+
+    ctx.globalCompositeOperation = 'source-over';
+
+  }
+
+  drawMask();
+
+  d._resize = function() { drawMask(); };
+
+  window.addEventListener('resize', d._resize);
+
+}
+
+function hideMaskOverlay() {
+
+  var el = document.getElementById('maskoverlay');
+
+  if (el) { if (el._resize) window.removeEventListener('resize', el._resize); el.remove(); }
+
+}
+
+function hideMaskPrompt() {
+
+  var el = document.getElementById('maskprompt'); if (el) el.remove();
+
+}
+
+function updateHollowFlicker(dt) {
+
+  if (!hollowFlickerActive) return;
+
+  if (G_lever.off) { hollowFlickerActive = false; return; } // power cut, stop flickering
+
+  hollowFlickerTimer -= dt;
+
+  if (hollowFlickerTimer <= 0) {
+
+    hollowFlickerCount++;
+
+    if (hollowFlickerCount <= 6) {
+
+      var on = hollowFlickerCount % 2 === 0;
+
+      roomLights.forEach(function(rl) { rl.light.intensity = on ? rl.base : 0.02; });
+      // Monitor flickers too
+      (function(on2) {
+        var ms = gSc && gSc.userData.monitorScr;
+        var mt = gSc && gSc.userData.monitorScrTex;
+        var moff = gSc && gSc.userData.monitorScrOffTex;
+        var sg = gSc && gSc.userData.monitorSgl;
+        if (ms) { ms.material.map = on2 ? mt : moff; if (mt) mt.needsUpdate = true; }
+        if (sg) sg.intensity = on2 ? 0.4 : 0;
+      })(on);
+
+      hollowFlickerTimer = 120 + Math.random() * 80;
+
+    } else {
+
+      hollowFlickerActive = false;
+
+      roomLights.forEach(function(rl) { rl.light.intensity = rl.base; });
+      monitorTurnOn();
+
+      showWarn('HOLLOW RUSHING — CUT THE POWER!', '#f00');
+
+    }
+
+  }
+
+}
+
+function checkHollowAttack() {
+
+  if (G_lever.hollowInside) return;
+
+  var sides = ['left', 'front', 'right'];
+
+  for (var i = 0; i < sides.length; i++) {
+
+    var side = sides[i];
+
+    var mn = MONS[side];
+
+    var def = MDEFS[mn.defIdx];
+
+    if (def.special !== 'hollow' || !mn.rushing) continue;
+
+    // Hollow opens closed doors — doors don't block it
+    if (mn.pos > 0.5) {
+      if (side === 'left'  && G.doorLeft)  { G.doorLeft  = false; doorAnim.left.tgt  = 8; playDoorSlide(); }
+      if (side === 'right' && G.doorRight) { G.doorRight = false; doorAnim.right.tgt = 8; playDoorSlide(); }
+      if (side === 'front' && G.doorFront) { G.doorFront = false; doorAnim.front.tgt = 8; playDoorSlide(); }
+    }
+
+    if (mn.pos >= 0.98) {
+
+      if (G_lever.off) {
+
+        // Lever off — hollow passes through
+
+        G_lever.hollowInside = true;
+
+        mn.pos = 0.98;
+
+        mn.rushing = false;
+
+        hollowPassage(side, mn, def);
+
+      } else if (!G.dead) {
+
+        // Lever on — jumpscare
+
+        triggerJS(def, side);
+
+      }
+
+      return;
+
+    }
+
+  }
+
+}
+
+function setupInput() {
+
+  var gc = document.getElementById('gc');
+
+  // Click only fires if mouse didn't drag
+
+  gc.addEventListener('mouseup', function(e) { if (!mdragged) onCanvasClick(e); });
+
+  gc.addEventListener('touchend', function(e) { e.preventDefault(); if (!tdragged) onCanvasClick(e); }, {passive: false});
+
+  // Charge bar removed from game - charging only in day room
+
+  // Spacebar = mask toggle
+
+  document.addEventListener('keydown', function(e) {
+
+    if (!G.running || G.dead || G.morning || G.camLocked) return;
+
+    if (e.code === 'Space' || e.key === ' ') {
+
+      e.preventDefault();
+
+      toggleMask();
+
+    }
+
+    // Szybkie sterowanie kamerą
+
+    if (e.key === 'a' || e.key === 'A') {
+
+      e.preventDefault();
+
+      G.targetYaw = Math.PI / 2; // lewy korytarz
+
+    }
+
+    if (e.key === 'd' || e.key === 'D') {
+
+      e.preventDefault();
+
+      G.targetYaw = -Math.PI / 2; // prawy korytarz
+
+    }
+
+    if (e.key === 'w' || e.key === 'W') {
+
+      e.preventDefault();
+
+      G.targetYaw = 0; // środkowy korytarz
+
+    }
+
+  });
+
+  var mdown = false, mlx = 0, mly = 0, mdragged = false, ttouch = false, tstart = 0, tstartY = 0, tdragged = false;
+
+  var edgeZone = 90;
+
+  var edgeOverlayActive = null;
+  var edgeSnapped = false; // reset when mouse leaves zone
+
+  var edgeOverlayEl = null;
+
+  var edgeOverlayFadeTimer = null;
+
+  function getEdgeTarget(dir) {
+
+    var cur = G.camYaw;
+
+    if (dir === 'left') {
+
+      if (cur <= -Math.PI / 4) return 0;          // right → center
+
+      if (cur < Math.PI / 4)  return Math.PI / 2; // center → left
+
+      return null; // already left
+
+    } else {
+
+      if (cur >= Math.PI / 4)  return 0;           // left → center
+
+      if (cur > -Math.PI / 4)  return -Math.PI / 2;// center → right
+
+      return null; // already right
+
+    }
+
+  }
+
+  function showEdgeOverlay(dir) {
+
+    if (edgeOverlayActive === dir && edgeOverlayEl) return; // already showing
+
+    hideEdgeOverlay();
+
+    if (getEdgeTarget(dir) === null) return; // nowhere to go
+
+    edgeOverlayActive = dir;
+
+    var el = document.createElement('div');
+
+    edgeOverlayEl = el;
+
+    el.style.cssText = [
+
+      'position:fixed;top:0;bottom:0;width:120px;z-index:30;pointer-events:all;',
+
+      'cursor:pointer;',
+
+      dir === 'left' ? 'left:0;' : 'right:0;',
+
+      dir === 'left'
+
+        ? 'background:linear-gradient(to right, rgba(0,255,80,0.18), transparent);'
+
+        : 'background:linear-gradient(to left, rgba(0,255,80,0.18), transparent);',
+
+      'border-' + (dir === 'left' ? 'right' : 'left') + ':none;',
+
+      'transition:opacity 0.15s;',
+
+    ].join('');
+
+    // Arrow indicator
+
+    var arrow = document.createElement('div');
+
+    arrow.style.cssText = [
+
+      'position:absolute;top:50%;transform:translateY(-50%);',
+
+      'color:rgba(0,255,80,0.7);font-size:28px;',
+
+      dir === 'left' ? 'left:12px;' : 'right:12px;',
+
+    ].join('');
+
+    arrow.textContent = dir === 'left' ? '◀' : '▶';
+
+    el.appendChild(arrow);
+
+    el.addEventListener('click', function() {
+
+      var target = getEdgeTarget(dir);
+
+      if (target !== null) G.targetYaw = target;
+
+      hideEdgeOverlay();
+
+    });
+
+    document.body.appendChild(el);
+
+    // Animate in
+
+    el.style.opacity = '0';
+
+    requestAnimationFrame(function() { if (edgeOverlayEl) edgeOverlayEl.style.opacity = '1'; });
+
+  }
+
+  function hideEdgeOverlay() {
+
+    if (edgeOverlayFadeTimer) { clearTimeout(edgeOverlayFadeTimer); edgeOverlayFadeTimer = null; }
+
+    if (edgeOverlayEl) { edgeOverlayEl.remove(); edgeOverlayEl = null; }
+
+    edgeOverlayActive = null;
+
+  }
+
+  gc.addEventListener('mousedown', function(e) {
+
+    mdown = true; mlx = e.clientX; mly = e.clientY; mdragged = false;
+
+  });
+
+  document.addEventListener('mousemove', function(e) {
+
+    if (G.camLocked) return;
+
+    if (!G.running || G.dead || G.morning) { hideEdgeOverlay(); return; }
+
+    if (!mdown && SETTINGS.edgeScroll) {
+
+      var W = window.innerWidth;
+
+      var ex = e.clientX;
+
+      var atLeft  = ex <= edgeZone;
+
+      var atRight = ex >= W - edgeZone;
+
+      if (atLeft) {
+        // Instant snap on entering left edge — only once per entry
+        var tgt = getEdgeTarget('left');
+        if (tgt !== null && Math.abs(G.targetYaw - tgt) > 0.1 && !edgeSnapped) { G.targetYaw = tgt; edgeSnapped = true; }
+        showEdgeOverlay('left');
+      } else if (atRight) {
+        // Instant snap on entering right edge — only once per entry
+        var tgt2 = getEdgeTarget('right');
+        if (tgt2 !== null && Math.abs(G.targetYaw - tgt2) > 0.1 && !edgeSnapped) { G.targetYaw = tgt2; edgeSnapped = true; }
+        showEdgeOverlay('right');
+      } else              { edgeSnapped = false; if (edgeOverlayActive && !edgeOverlayFadeTimer) {
+
+        edgeOverlayFadeTimer = setTimeout(function() {
+
+          edgeOverlayFadeTimer = null;
+
+          hideEdgeOverlay();
+
+        }, 120);
+
+      }}
+
+    } else if (mdown) {
+
+      hideEdgeOverlay();
+
+      var dx = e.clientX - mlx;
+
+      var totalDx = e.clientX - mlx, totalDy = e.clientY - mly;
+
+      if (Math.abs(totalDx) > 4 || Math.abs(totalDy) > 4) mdragged = true;
+
+      G.targetYaw -= dx * (SETTINGS.mouseSens * 0.001);
+
+      // full 360 rotation — no clamp
+
+      mlx = e.clientX;
+
+    }
+
+  });
+
+  document.addEventListener('mouseup', function() { mdown = false; });
+
+  gc.addEventListener('touchstart', function(e) { if (e.touches.length !== 1) return; ttouch = true; tstart = e.touches[0].clientX; tstartY = e.touches[0].clientY; tdragged = false; }, {passive: true});
+
+  document.addEventListener('touchmove', function(e) {
+
+    if (!ttouch) return;
+
+    if (G.camLocked) return; // zablokowane podczas przejścia hollow
+
+    var dx = e.touches[0].clientX - tstart;
+
+    var dy = e.touches[0].clientY - tstartY;
+
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) tdragged = true;
+
+    G.targetYaw -= dx * (SETTINGS.touchSens * 0.001);
+
+    // full 360 rotation — no clamp
+
+    tstart = e.touches[0].clientX;
+
+  }, {passive: true});
+
+  document.addEventListener('touchend', function() { ttouch = false; });
+
+}
+
+function startCharge() {
+
+  // Charging only available in day room, not during night
+
+  return;
+
+}
+
+function stopCharge() {}
+
+// ─ CHARGE MINI-GAME ─
+
+var chargeGame = {active: false, task: 0, progress: 0, clicks: 0, needed: 0, type: ''};
+
+var CHARGE_TASKS = [
+
+  {label: 'CLICK FAST: ', type: 'click', needed: 12},
+
+  {label: 'HOLD AND RELEASE: ', type: 'hold', needed: 5},
+
+  {label: 'CLICK PRECISELY: ', type: 'rhythm', needed: 8},
+
+];
+
+var miniOverlay = null;
+
+function startChargeMiniGame() {
+
+  if (chargeGame.active) return;
+
+  chargeGame.active = true;
+
+  chargeGame.task = 0;
+
+  chargeGame.progress = 0;
+
+  chargeGame.clicks = 0;
+
+  // Zoom camera to monitor
+
+  G.savedYaw = G.targetYaw;
+
+  G.targetYaw = 0;
+
+  G.zoomingToMonitor = true;
+
+  G.monitorZoom = 0;
+
+  // Show overlay
+
+  showMiniOverlay();
+
+}
+
+function showMiniOverlay() {
+
+  var existing = document.getElementById('chargemini');
+
+  if (existing) existing.remove();
+
+  var div = document.createElement('div');
+
+  div.id = 'chargemini';
+
+  div.style.cssText = 'position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(0,0,0,.7);';
+
+  var task = CHARGE_TASKS[chargeGame.task % CHARGE_TASKS.length];
+
+  var pct = Math.round((G.battery / G.maxBattery) * 100);
+
+  div.innerHTML =
+
+    '<div style="color:#0f0;font-size:11px;letter-spacing:4px;">BATTERY: ' + pct + '%</div>' +
+
+    '<div style="color:#ff0;font-size:13px;letter-spacing:3px;">CHARGING GENERATOR</div>' +
+
+    '<div id="cmtask" style="color:#0f0;font-size:10px;letter-spacing:2px;">' + task.label + '<span id="cmcnt">0</span>/' + task.needed + '</div>' +
+
+    '<div id="cmbtn" style="border:2px solid #0f0;padding:16px 32px;cursor:pointer;color:#0f0;font-size:14px;letter-spacing:3px;background:#0f01;min-width:200px;text-align:center;">CLICK</div>' +
+
+    '<div id="cmbar" style="width:240px;height:10px;border:1px solid #0f04;border-radius:4px;overflow:hidden;"><div id="cmfill" style="height:100%;width:0;background:#0f0;transition:width .1s;"></div></div>' +
+
+    '<div style="color:#0f03;font-size:9px;letter-spacing:2px;cursor:pointer;" id="cmexit">WYJDZ (ESC)</div>';
+
+  document.body.appendChild(div);
+
+  miniOverlay = div;
+
+  var btn = document.getElementById('cmbtn');
+
+  var held = false, holdStart = 0;
+
+  btn.onmousedown = btn.ontouchstart = function(e) { e.preventDefault(); held = true; holdStart = Date.now(); handleMiniClick(true); };
+
+  btn.onmouseup = btn.ontouchend = function() { if (held) { held = false; handleMiniRelease(Date.now() - holdStart); } };
+
+  document.getElementById('cmexit').onclick = exitChargeMini;
+
+  document.addEventListener('keydown', miniKeyHandler);
+
+  updateMiniBar();
+
+}
+
+function miniKeyHandler(e) { if (e.key === 'Escape') exitChargeMini(); }
+
+function handleMiniClick(down) {
+
+  if (!chargeGame.active) return;
+
+  var task = CHARGE_TASKS[chargeGame.task % CHARGE_TASKS.length];
+
+  if (task.type === 'click' && down) {
+
+    chargeGame.clicks++;
+
+    document.getElementById('cmcnt').textContent = chargeGame.clicks;
+
+    if (chargeGame.clicks >= task.needed) nextMiniTask();
+
+  } else if (task.type === 'rhythm' && down) {
+
+    chargeGame.clicks++;
+
+    document.getElementById('cmcnt').textContent = chargeGame.clicks;
+
+    if (chargeGame.clicks >= task.needed) nextMiniTask();
+
+  }
+
+  updateMiniBar();
+
+}
+
+function handleMiniRelease(duration) {
+
+  if (!chargeGame.active) return;
+
+  var task = CHARGE_TASKS[chargeGame.task % CHARGE_TASKS.length];
+
+  if (task.type === 'hold') {
+
+    if (duration >= 600 && duration <= 2000) {
+
+      chargeGame.clicks++;
+
+      document.getElementById('cmcnt').textContent = chargeGame.clicks;
+
+      if (chargeGame.clicks >= task.needed) nextMiniTask();
+
+    }
+
+  }
+
+  updateMiniBar();
+
+}
+
+function updateMiniBar() {
+
+  var task = CHARGE_TASKS[chargeGame.task % CHARGE_TASKS.length];
+
+  var p = Math.min(1, chargeGame.clicks / task.needed);
+
+  var fill = document.getElementById('cmfill');
+
+  if (fill) fill.style.width = (p * 100) + '%';
+
+}
+
+function nextMiniTask() {
+
+  // Award charge
+
+  var amount = G.maxBattery * 0.28;
+
+  G.battery = Math.min(G.maxBattery, G.battery + amount);
+
+  updateBatUI();
+
+  chargeGame.task++;
+
+  chargeGame.clicks = 0;
+
+  // If battery full, exit
+
+  if (G.battery >= G.maxBattery) { exitChargeMini(); return; }
+
+  // Show next task
+
+  showMiniOverlay();
+
+  playBeep();
+
+}
+
+function exitChargeMini() {
+
+  chargeGame.active = false;
+
+  G.chargeMini = false;
+
+  G.zoomingToMonitor = false;
+
+  var el = document.getElementById('chargemini');
+
+  if (el) el.remove();
+
+  miniOverlay = null;
+
+  G.targetYaw = G.savedYaw || 0;
+
+  document.removeEventListener('keydown', miniKeyHandler);
+
+}
+
+function monPos3D(id, t) {
+
+  // t=0 -> far end of corridor (spawn point), t=1 -> at the door (attack)
+
+  if (id === 'left')  return new THREE.Vector3(-4.0 - (1.0 - t) * 14, 0, 0);
+
+  if (id === 'right') return new THREE.Vector3( 4.0 + (1.0 - t) * 14, 0, 0);
+
+  return new THREE.Vector3(0, 0, -5.0 - (1.0 - t) * 14);
+
+}
+
+function updateFlashlights() {
+
+  var pct = G.battery / G.maxBattery;
+
+  ['left', 'front', 'right'].forEach(function(side) {
+
+    var on = G.flashOn[side] && G.battery > 0;
+
+    var fl = flashSpots[side]; if (!fl) return;
+
+    var ef = on ? flickI * (0.3 + pct * 0.7) : 0;
+
+    fl.spot.intensity = ef * 9;
+
+    fl.spot.position.set(0, 1.6, 0);
+
+    if (side === 'left')       fl.target.position.set(-15, 1.0, 0);
+
+    else if (side === 'right') fl.target.position.set(15, 1.0, 0);
+
+    else                       fl.target.position.set(0, 1.0, -18);
+
+    if (corrLights[side]) corrLights[side].intensity = on ? ef * 6 : 0;
+
+    // Door lamp follows flashlight
+
+    var doorMesh = side==='left'?leftDoor3D:side==='right'?rightDoor3D:frontDoor3D;
+
+    if (doorMesh && doorMesh.userData.lamp) doorMesh.userData.lamp.intensity = on ? ef * 1.8 : 0;
+
+    var mn = MONS[side];
+
+    if (mn) {
+
+      var def = MDEFS[mn.defIdx];
+
+      if (def.special === 'hollow' && mn.rushing && on && ef > 0.3) {
+
+        if (!G_mask.on) {
+
+          (function(d,s){setTimeout(function(){triggerJS(d,s);},100);})(def,side);
+
+        }
+
+        return;
+
+      }
+
+      mn.frozen = on && ef > 0.3 && (!def.special || def.special !== 'hollow');
+
+      // Sprawdź czy hollow jest aktywny — jeśli tak, inni są niewidoczni
+
+      var hollowActive2 = ['left','front','right'].some(function(s) {
+
+        return MDEFS[MONS[s].defIdx].special === 'hollow' && MONS[s].pos > 0.05 && !MONS[s].waiting;
+
+      });
+
+      var mesh = monMeshes[side];
+
+      if (mesh) {
+
+        if (def.special === 'hollow' && mn.pos > 0.05 && !mn.waiting) {
+
+          mesh.visible = true; // HOLLOW zawsze widoczny
+
+        } else if (hollowActive2) {
+
+          mesh.visible = false; // hollow aktywny — inni niewidoczni
+
+        } else if (mn.pos > 0.05 && !mn.waiting && mn.spawnDelay <= 0) {
+
+          mesh.visible = on && ef > 0.15;
+
+        }
+
+      }
+
+    }
+
+  });
+
+  // Flashlight does NOT stop vent — nothing does
+
+}
+
+function updateFlicker(dt) {
+
+  flickT -= dt;
+
+  if (flickT < 0) {
+
+    var p = G.battery / G.maxBattery;
+
+    if (p > 0.3)      { flickI = 0.85 + Math.random() * 0.15; flickT = 120 + Math.random() * 350; }
+
+    else if (p > 0.1) { flickI = Math.random() > 0.15 ? 0.5 + Math.random() * 0.5 : 0.05; flickT = 40 + Math.random() * 120; }
+
+    else              { flickI = Math.random() > 0.35 ? Math.random() * 0.35 : 0; flickT = 25 + Math.random() * 70; }
+
+  }
+
+}
+
+function animateMon(mn, dt) {
+
+  var mesh = monMeshes[mn.id]; if (!mesh || !mesh.visible) return;
+
+  // Don't animate if waiting or spawn delay still active
+
+  if (mn.waiting || mn.spawnDelay > 0) { mesh.visible = false; return; }
+
+  var now = Date.now() / 1000, t = mn.pos;
+
+  // Only walk-animate when actually moving (not frozen), legs still when stopped
+
+  var isMoving = !mn.frozen && mn.pos > 0 && mn.pos < 1;
+
+  var wf = isMoving ? 4.0 : 0, wa = isMoving ? 0.28 : 0;
+
+  var wc = Math.sin(now * wf + mn.id.charCodeAt(0));
+
+  var p3 = monPos3D(mn.id, t);
+
+  mesh.position.set(p3.x, isMoving ? Math.sin(now * wf * 2) * 0.04 : 0, p3.z);
+
+  if (mn.id === 'left')       mesh.rotation.y = -Math.PI / 2;
+
+  else if (mn.id === 'right') mesh.rotation.y =  Math.PI / 2;
+
+  else                        mesh.rotation.y =  Math.PI;
+
+  if (mesh.userData.legL) mesh.userData.legL.rotation.x =  wc * wa;
+
+  if (mesh.userData.legR) mesh.userData.legR.rotation.x = -wc * wa;
+
+  if (mesh.userData.armL) {
+
+    mesh.userData.armL.rotation.x = -wc * wa * 0.6 + (mn.frozen ? 0.5 : 0);
+
+    mesh.userData.armL.rotation.z = mn.frozen ?  0.35 : 0;
+
+  }
+
+  if (mesh.userData.armR) {
+
+    mesh.userData.armR.rotation.x =  wc * wa * 0.6 + (mn.frozen ? 0.5 : 0);
+
+    mesh.userData.armR.rotation.z = mn.frozen ? -0.35 : 0;
+
+  }
+
+  if (mesh.userData.head) mesh.userData.head.rotation.x = mn.frozen ? 0 : Math.sin(now * 1.4) * 0.04;
+
+}
+
+function checkKnock(dt) {
+
+  ['left', 'front', 'right'].forEach(function(side) {
+
+    var mn = MONS[side];
+
+    if (mn.waiting || mn.spawnDelay > 0 || mn.pos < 0.5) return;
+
+    var def = MDEFS[mn.defIdx];
+
+    // HOLLOW special rush check
+
+    if (def.special === 'hollow' && mn.rushing) {
+
+      var doorUsed = (side==='left'&&G.doorLeft)||(side==='right'&&G.doorRight)||(side==='front'&&G.doorFront);
+
+      if (doorUsed && !G_mask.on) { triggerJS(def, side); return; }
+
+      if (mn.pos >= 0.98) { triggerJS(def, side); return; }
+
+      return;
+
+    }
+
+    var isDoorOpen = (side==='left' && !G.doorLeft) ||
+
+                     (side==='right' && !G.doorRight) ||
+
+                     (side==='front' && !G.doorFront);
+
+    // If door is open and monster close enough — walk straight in
+
+    if (isDoorOpen && mn.pos >= 0.82) {
+
+      (function(d, s) { setTimeout(function() { triggerJS(d, s); }, 200); })(def, side);
+
+      mn.pos = 1; // stop advancing
+
+      return;
+
+    }
+
+    // Door is closed — knock at threshold
+
+    if (mn.pos < 0.82) return;
+
+    mn.knockTimer -= dt;
+
+    if (mn.knockTimer <= 0) {
+
+      playKnock(side);
+
+      mn.knockTimer = Math.max(800, 4000 - mn.pos * 3000);
+
+      var blocked = (side==='left'&&G.doorLeft)||(side==='right'&&G.doorRight)||(side==='front'&&G.doorFront);
+
+      if (blocked) {
+
+        // Knock opens door and monster retreats
+
+        mn.waiting = true;
+
+        mn.waitTimer = 12000 + Math.random() * 8000;
+
+        mn.pos = 0; mn.rushing = false; mn.frozen = false;
+
+        var mesh = monMeshes[side]; if (mesh) mesh.visible = false;
+
+        setTimeout(function() {
+
+          if (side==='left')  { G.doorLeft=false;  doorAnim.left.tgt=8; }
+
+          if (side==='right') { G.doorRight=false; doorAnim.right.tgt=8; }
+
+          if (side==='front') { G.doorFront=false; doorAnim.front.tgt=8; }
+
+          playDoorSlide();
+
+        }, 600);
+
+      } else if (mn.pos >= 0.98) {
+
+        (function(d, s) { setTimeout(function() { triggerJS(d, s); }, 350); })(def, side);
+
+      }
+
+    }
+
+  });
+
+}
+
+function updateBatUI() {
+
+  var p = G.battery / G.maxBattery;
+
+  var f = document.getElementById('batfill');
+
+  f.style.height = (p * 100) + '%';
+
+  var r = Math.round((1 - p) * 255), gv = Math.round(p * 255);
+
+  f.style.background = 'linear-gradient(to top,rgb(' + r + ',' + gv + ',0),rgb(' + Math.round(r * 0.5) + ',255,' + Math.round(gv * 0.5) + '))';
+
+  document.getElementById('batout').style.borderColor = p < 0.2 ? 'rgba(255,' + Math.round(p * 400) + ',0,.9)' : '#0f0';
+
+}
+
+function updateVentUI() {
+
+  // 1 pipka — świeci gdy went jest aktywny
+
+  var vp0 = document.getElementById('vp0');
+
+  var vp1 = document.getElementById('vp1');
+
+  var vp2 = document.getElementById('vp2');
+
+  if (vp0) vp0.classList.toggle('on', VENT.stage > 0);
+
+  if (vp1) vp1.style.display = 'none';
+
+  if (vp2) vp2.style.display = 'none';
+
+}
+
+function showWarn(msg, col) {
+
+  var w = document.getElementById('warn');
+
+  w.textContent = msg; w.style.color = col || '#ff0'; w.style.textShadow = '0 0 20px ' + (col || '#ff0');
+
+  w.classList.add('show'); clearTimeout(w._t); w._t = setTimeout(function() { w.classList.remove('show'); }, 2500);
+
+}
+
+function checkMorning() {
+
+  G.nightTimer += 16;
+
+  // Auto-save every ~10 seconds
+
+  if (G.nightTimer % 10000 < 16) saveGame();
+
+  var dur = Math.max(90000, 180000 - G.day * 5000);
+
+  if (G.nightTimer >= dur) { survivedNight(); return; }
+
+  var pct = G.nightTimer / dur;
+
+  var hr = Math.floor(12 + 12 * pct) % 24, mn = Math.floor((12 * 60 * pct) % 60);
+
+  var hrStr = hr === 0 ? '00' : String(hr).padStart(2,'0');
+
+  document.getElementById('day').textContent = 'NIGHT ' + G.day + ' ' + hrStr + ':' + String(mn).padStart(2,'0');
+
+}
+
+function survivedNight() {
+
+  if (G.morning || G.dead) return;
+
+  G.morning = true; G.running = false;
+
+  var e = 50 + G.day * 25; G.money += e;
+
+  playMornS();
+
+  saveGame();
+
+  // Hide game canvas, show day room
+
+  document.getElementById('gc').classList.remove('show');
+
+  ['day','batwrap','ventui'].forEach(function(id) {
+
+    document.getElementById(id).classList.remove('show');
+
+  });
+
+  showDayRoom(e);
+
+}
+
+function showDayRoom(earned) {
+
+  var el = document.getElementById('dayroom');
+
+  if (el) el.remove();
+
+  var d = document.createElement('div');
+
+  d.id = 'dayroom';
+
+  d.style.cssText = 'position:fixed;inset:0;background:#111008;z-index:310;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;';
+
+  var pct = Math.round((G.battery / G.maxBattery) * 100);
+
+  d.innerHTML =
+
+    '<div style="color:#ff0;font-size:14px;letter-spacing:6px;text-shadow:0 0 20px #ff0">DAWN — NIGHT ' + G.day + ' SURVIVED</div>' +
+
+    '<div style="color:#0f0;font-size:11px;letter-spacing:3px;">EARNED: +$' + earned + ' | CASH: $' + G.money + '</div>' +
+
+    '<div style="color:#0f05;font-size:10px;letter-spacing:2px;">BATTERY: ' + pct + '% (does not reset)</div>' +
+
+    '<div style="display:flex;gap:24px;margin-top:8px;">' +
+
+      '<div id="daymonitor" style="width:200px;height:140px;background:#001a00;border:3px solid #0f0;border-radius:4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;" onclick="openDayMonitor()">' +
+
+        '<div style="font-size:28px;">N</div>' +
+
+        '<div style="color:#0f07;font-size:8px;letter-spacing:3px;">NIGHTWATCH</div>' +
+
+        '<div style="color:#0f04;font-size:8px;">click to charge</div>' +
+
+      '</div>' +
+
+      '<div style="display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;">' +
+
+        '<div style="color:#0f04;font-size:9px;letter-spacing:2px;">BATTERY:</div>' +
+
+        '<div style="width:20px;height:80px;border:2px solid #0f0;border-radius:3px;position:relative;">' +
+
+          '<div id="daybat" style="position:absolute;bottom:0;left:0;right:0;background:#0f0;height:' + pct + '%;transition:height .3s;border-radius:1px;"></div>' +
+
+        '</div>' +
+
+        '<div style="color:#0f0;font-size:9px;" id="daybatpct">' + pct + '%</div>' +
+
+      '</div>' +
+
+    '</div>' +
+
+    '<div id="dayexitdoor" style="border:2px solid #0f08;padding:14px 32px;cursor:pointer;color:#0f0;font-size:12px;letter-spacing:4px;background:#0f01;" onclick="startNextNight()">DOOR: NEXT NIGHT  ></div>' +
+
+    '<button style="border:1px solid #ff06;color:#ff0;padding:8px 22px;cursor:pointer;font-family:monospace;font-size:10px;letter-spacing:3px;background:transparent;" onclick="openShop()">SHOP — DECORATE OFFICE</button>' +
+
+    '<div style="color:#0f03;font-size:9px;letter-spacing:2px;">or go to the monitor to charge your battery</div>';
+
+  document.body.appendChild(d);
+
+}
+
+function openDayMonitor() {
+
+  // Fullscreen monitor with NIGHTWATCH logo and charge mini-game
+
+  var el = document.getElementById('daymonitorfs');
+
+  if (el) el.remove();
+
+  var pct = Math.round((G.battery / G.maxBattery) * 100);
+
+  var d = document.createElement('div');
+
+  d.id = 'daymonitorfs';
+
+  d.style.cssText = 'position:fixed;inset:0;background:#000;z-index:350;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;';
+
+  d.innerHTML =
+
+    '<div style="font-size:clamp(48px,12vw,120px);font-family:monospace;color:#0f0;text-shadow:0 0 60px #0f0,0 0 120px #0f04;letter-spacing:16px;font-weight:bold;">N</div>' +
+
+    '<div style="color:#0f06;font-size:14px;letter-spacing:12px;">NIGHTWATCH</div>' +
+
+    '<div style="color:#0f03;font-size:9px;letter-spacing:4px;margin-top:-8px;">SYSTEM v1.0</div>' +
+
+    '<div style="width:300px;height:2px;background:#0f02;margin:8px 0;"></div>' +
+
+    '<div style="color:#ff0;font-size:10px;letter-spacing:3px;">BATTERY: <span id="mfspct">' + pct + '</span>%</div>' +
+
+    '<div style="width:260px;height:12px;border:1px solid #0f04;border-radius:6px;overflow:hidden;"><div id="mfsfill" style="height:100%;width:' + pct + '%;background:linear-gradient(to right,#0f0,#8f8);transition:width .2s;"></div></div>' +
+
+    '<div id="mfstask" style="color:#0f0;font-size:11px;letter-spacing:2px;text-align:center;"></div>' +
+
+    '<div id="mfsbtn" style="border:2px solid #0f0;padding:16px 48px;cursor:pointer;color:#0f0;font-size:13px;letter-spacing:4px;background:#0f01;min-width:220px;text-align:center;">CLICK</div>' +
+
+    '<div id="mfsprog" style="width:260px;height:8px;border:1px solid #0f03;border-radius:4px;overflow:hidden;"><div id="mfsprogfill" style="height:100%;width:0;background:#0f0;transition:width .1s;"></div></div>' +
+
+    '<div id="mfscnt" style="color:#0f04;font-size:9px;letter-spacing:2px;"></div>' +
+
+    '<div style="color:#f004;font-size:9px;letter-spacing:3px;cursor:pointer;border:1px solid #f003;padding:6px 18px;" onclick="closeDayMonitor()">X EXIT</div>';
+
+  document.body.appendChild(d);
+
+  startDayChargeTask(0, 0);
+
+}
+
+var DAY_TASKS = [
+
+  {label:'CLICK 15 TIMES', type:'click', needed:15},
+
+  {label:'CLICK 20 TIMES', type:'click', needed:20},
+
+  {label:'CLICK 10 TIMES', type:'click', needed:10},
+
+  {label:'CLICK 18 TIMES', type:'click', needed:18},
+
+  {label:'CLICK 12 TIMES', type:'click', needed:12},
+
+  {label:'CLICK 25 TIMES', type:'click', needed:25},
+
+  {label:'CLICK 8 TIMES',  type:'click', needed:8},
+
+  {label:'CLICK 22 TIMES', type:'click', needed:22},
+
+  {label:'CLICK 16 TIMES', type:'click', needed:16},
+
+  {label:'CLICK 30 TIMES', type:'click', needed:30},
+
+];
+
+var dayTaskIdx = 0, dayTaskClicks = 0;
+
+function startDayChargeTask(taskIdx, clicks) {
+
+  dayTaskIdx = taskIdx; dayTaskClicks = clicks;
+
+  if (taskIdx >= DAY_TASKS.length) {
+
+    // All done
+
+    var t = document.getElementById('mfstask');
+
+    if (t) t.textContent = 'BATTERY CHARGED!';
+
+    var b = document.getElementById('mfsbtn');
+
+    if (b) { b.textContent = 'DONE'; b.onclick = closeDayMonitor; }
+
+    return;
+
+  }
+
+  var task = DAY_TASKS[taskIdx];
+
+  var t = document.getElementById('mfstask');
+
+  if (t) t.textContent = 'TASK ' + (taskIdx+1) + '/10: ' + task.label;
+
+  var c = document.getElementById('mfscnt');
+
+  if (c) c.textContent = clicks + ' / ' + task.needed;
+
+  var p = document.getElementById('mfsprogfill');
+
+  if (p) p.style.width = Math.min(100, (clicks/task.needed)*100) + '%';
+
+  var btn = document.getElementById('mfsbtn');
+
+  if (btn) {
+
+    btn.textContent = 'CLICK';
+
+    btn.onclick = function() {
+
+      dayTaskClicks++;
+
+      osc(300 + dayTaskClicks * 20, 'sine', 0.05, 0.1, 0);
+
+      var c2 = document.getElementById('mfscnt');
+
+      if (c2) c2.textContent = dayTaskClicks + ' / ' + task.needed;
+
+      var p2 = document.getElementById('mfsprogfill');
+
+      if (p2) p2.style.width = Math.min(100, (dayTaskClicks/task.needed)*100) + '%';
+
+      if (dayTaskClicks >= task.needed) {
+
+        // Award charge: 10% per task
+
+        G.battery = Math.min(G.maxBattery, G.battery + G.maxBattery * 0.10);
+
+        updateBatUI();
+
+        var pct = Math.round((G.battery/G.maxBattery)*100);
+
+        var fp = document.getElementById('mfspct'); if (fp) fp.textContent = pct;
+
+        var ff = document.getElementById('mfsfill'); if (ff) ff.style.width = pct + '%';
+
+        // Update day room battery display
+
+        var db = document.getElementById('daybat'); if (db) db.style.height = pct + '%';
+
+        var dp = document.getElementById('daybatpct'); if (dp) dp.textContent = pct + '%';
+
+        playBeep();
+
+        startDayChargeTask(dayTaskIdx + 1, 0);
+
+      }
+
+    };
+
+  }
+
+}
+
+function closeDayMonitor() {
+
+  var el = document.getElementById('daymonitorfs'); if (el) el.remove();
+
+}
+
+function startNextNight() {
+
+  var el = document.getElementById('dayroom'); if (el) el.remove();
+
+  closeDayMonitor();
+
+  document.getElementById('lobby').style.display = 'none';
+
+  document.getElementById('morning').classList.remove('on');
+
+  G.dead = false; G.morning = false; G.day++;
+
+  saveGame();
+
+  reapplyUpgrades();
+
+  document.getElementById('gc').classList.add('show');
+
+  ['day','batwrap','ventui'].forEach(function(id) {
+
+    var e = document.getElementById(id); if (e) e.classList.add('show');
+
+  });
+
+  resetNight(); G.running = true;
+
+}
+
+function nextNight() {
+
+  var el = document.getElementById('dayroom'); if (el) el.remove();
+
+  closeDayMonitor();
+
+  document.getElementById('lobby').style.display = 'none';
+
+  document.getElementById('morning').classList.remove('on');
+
+  if (!G.dead) G.day++;
+
+  G.dead = false; G.morning = false;
+
+  document.getElementById('gc').classList.add('show');
+
+  ['day','batwrap','ventui'].forEach(function(id) {
+
+    var e = document.getElementById(id); if (e) e.classList.add('show');
+
+  });
+
+  resetNight(); G.running = true;
+
+}
+
+function resetNight() {
+
+  G.nightTimer = 0; G.camYaw = 0; G.targetYaw = 0; G.powerCutTriggered = false;
+
+  G.flashOn = {left: false, front: false, right: false};
+
+  G.doorLeft = false; G.doorRight = false; G.doorFront = false;
+
+  doorAnim.left.cur  = 8; doorAnim.left.tgt  = 8;
+  doorAnim.right.cur = 8; doorAnim.right.tgt = 8;
+  doorAnim.front.cur = 8; doorAnim.front.tgt = 8;
+      
+  Object.values(flashSpots).forEach(function(f) { f.spot.intensity = 0; });
+
+  Object.values(corrLights).forEach(function(l) { l.intensity = 0; });
+
+  if (!G.upgrades) G.upgrades = {};
+
+  if (!G.upgrades.doorPower) G.upgrades.doorPower = 0;
+
+  if (!G.upgrades.lamp) G.upgrades.lamp = 0;
+
+  if (!G.upgrades.carpet) G.upgrades.carpet = 0;
+
+  if (!G.upgrades.sofa) G.upgrades.sofa = 0;
+
+  if (!G.upgrades.posters) G.upgrades.posters = 0;
+
+  if (!G.upgrades.mask) G.upgrades.mask = 0;
+
+  updateBatUI();
+
+  var spd = Math.max(0.3, 1 + (G.day - 1) * 0.10);
+
+  var d = G.day - 1;
+
+  // Indeksy potworów bez HOLLOW (defIdx 3)
+
+  var normalPool = [];
+
+  for (var ni = 0; ni < MDEFS.length; ni++) {
+
+    if (MDEFS[ni].special !== 'hollow') normalPool.push(ni);
+
+  }
+
+  // Night 1: 1 monster, Night 2: 2 monsters, Night 3+: 3 monsters
+
+  var numActive = G.day >= 3 ? 3 : G.day === 2 ? 2 : 1;
+
+  var allSides = ['left', 'front', 'right'];
+
+  // Znajdź który slot to HOLLOW
+
+  var hollowSideSlot = null;
+
+  ['left','front','right'].forEach(function(side) {
+
+    if (MDEFS[MONS[side].defIdx] && MDEFS[MONS[side].defIdx].special === 'hollow') hollowSideSlot = side;
+
+  });
+
+  // Losuj korytarze dla normalnych potworów
+
+  var shuffled = allSides.slice();
+
+  for (var si2 = shuffled.length - 1; si2 > 0; si2--) {
+
+    var rj = Math.floor(Math.random() * (si2 + 1));
+
+    var tmp = shuffled[si2]; shuffled[si2] = shuffled[rj]; shuffled[rj] = tmp;
+
+  }
+
+  var activeSides = shuffled.slice(0, numActive);
+
+  // Pula normalnych potworów (rotacja bez HOLLOW)
+
+  var monsterPool = [];
+
+  for (var mi2 = 0; mi2 < numActive; mi2++) {
+
+    monsterPool.push(normalPool[(d + mi2) % normalPool.length]);
+
+  }
+
+  // Losuj który korytarz dostanie HOLLOW (od nocy 2)
+
+  var hollowActive = G.day >= 3;
+
+  var hollowSide = allSides[Math.floor(Math.random() * allSides.length)]; // hollow w losowym korytarzu
+
+  allSides.forEach(function(side) {
+
+    var mn = MONS[side];
+
+    mn.pos = 0;
+
+    mn.frozen = false;
+
+    mn.waiting = false;
+
+    mn.waitTimer = 0;
+
+    mn.rushing = false;
+
+    mn.knockTimer = (side==='left'?4500:side==='right'?4200:5500) + Math.random()*3000;
+
+    var mesh = monMeshes[side];
+
+    if (mesh) { mesh.visible = false; mesh.position.copy(monPos3D(side, 0)); }
+
+    if (hollowActive && side === hollowSide) {
+
+      // Ten korytarz to HOLLOW
+
+      var hollowDefIdx = MDEFS.findIndex(function(m){ return m.special === 'hollow'; });
+
+      mn.defIdx = hollowDefIdx;
+
+      mn.baseSpeed = MDEFS[hollowDefIdx].speed * spd;
+
+      mn.speed = mn.baseSpeed;
+
+      mn.spawnDelay = 0;
+
+      mn.waiting = true;
+
+      // Pierwsze pojawienie się losowo 30-48s
+
+      mn.waitTimer = 15000 + Math.random() * 15000;
+
+    } else {
+
+      // Normalny potwór
+
+      var isActive = activeSides.indexOf(side) >= 0;
+
+      mn.defIdx = isActive ? monsterPool[activeSides.indexOf(side)] : normalPool[d % normalPool.length];
+
+      mn.baseSpeed = MDEFS[mn.defIdx].speed * spd;
+
+      mn.speed = mn.baseSpeed;
+
+      mn.spawnDelay = isActive ? (activeSides.indexOf(side) * 7000 + Math.random() * 5000) : 999999;
+
+    }
+
+  });
+
+  // Przebuduj meshes potworów żeby kolory pasowały do aktualnych defIdx
+
+  ['left','front','right'].forEach(function(side) {
+
+    var old = monMeshes[side];
+
+    if (old) gSc.remove(old);
+
+    var mn = MONS[side];
+
+    var mesh = buildGameMonMesh(MDEFS[mn.defIdx]);
+
+    mesh.visible = false;
+
+    mesh.position.copy(monPos3D(side, 0));
+
+    gSc.add(mesh);
+
+    monMeshes[side] = mesh;
+
+  });
+
+  VENT.stage = 0; VENT.frozen = false; VENT.timer = 0;
+
+  VENT.active = G.day >= 1;
+
+  VENT.stageInterval = Math.max(15000, 120000 - G.day * 12000);
+
+  VENT.attackDelay = 5000 + Math.random() * 13000;
+
+  if (ventMesh) { ventMesh.visible = false; }
+
+  if (ventGlow) ventGlow.intensity = 0;
+
+  updateVentUI(); document.getElementById('warn').classList.remove('show');
+
+  flickI = 1.0; flickT = 0;
+
+  if (officeLamp) officeLamp.intensity = 3.6;
+
+  roomLights.forEach(function(rl) { rl.light.intensity = rl.base; });
+
+  monitorTurnOn();
+
+  G_mask.on = false; G_mask.hollowSide = null; G_mask.rushDone = false; G_mask.timer = 0;
+
+  hollowFlickerActive = false; hollowFlickerCount = 0;
+
+  G_lever.off = false; G_lever.hollowInside = false; G_lever.locked = false;
+
+  var lh3 = gSc && gSc.userData.leverGroup;
+
+  if (lh3) {
+
+    lh3.rotation.z = gSc.userData.ROT_ON || 0.9;
+
+    gSc.userData.leverRot = gSc.userData.ROT_ON || 0.9;
+
+    gSc.userData.leverRotTarget = gSc.userData.ROT_ON || 0.9;
+
+    gSc.userData.leverVel = 0;
+
+  }
+
+  document.getElementById('lnl').innerHTML = 'NIGHTWATCH'.split('').map(function(l, i) {
+
+    if (i === (G.day - 1) % 10) return '<span style="color:#0f0;text-shadow:0 0 10px #0f0">' + l + '</span>';
+
+    if (i < (G.day - 1) % 10)  return '<span style="color:#0f03">' + l + '</span>';
+
+    return '<span style="color:#0f01">' + l + '</span>';
+
+  }).join(' ');
+
+}
+
+// ─ 3D ATTACK SEQUENCE ─
+
+var attackActive = false;
+
+function triggerJS(def, attackSide) {
+
+  if (G.dead) return;
+
+  G.dead = true; G.running = false;
+
+  G.camLocked = false; // unlock camera
+
+  attackActive = true;
+
+  updateLampBuzz(0);
+
+  playJSSnd();
+
+  hideMaskOverlay(); hideMaskPrompt();
+
+  var side = attackSide || 'front';
+
+  // Camera target yaw to face the attacking corridor
+
+  var targetYaw = side === 'left' ? Math.PI/2 : side === 'right' ? -Math.PI/2 : 0;
+
+  var rotStart = G.camYaw, rotEnd = targetYaw;
+
+  var t0 = null, phase = 'rotate';
+
+  var monMesh = monMeshes[side];
+
+  if (monMesh) {
+
+    monMesh.visible = true;
+
+    var p3 = monPos3D(side, 0.85);
+
+    monMesh.position.copy(p3);
+
+    // Face toward player (into the room)
+
+    if (side === 'left')       monMesh.rotation.y =  Math.PI / 2;
+
+    else if (side === 'right') monMesh.rotation.y = -Math.PI / 2;
+
+    else                       monMesh.rotation.y =  0;
+
+  }
+
+  function attackLoop(ts) {
+
+    if (!t0) t0 = ts;
+
+    var elapsed = ts - t0;
+
+    if (phase === 'rotate') {
+
+      var prog = Math.min(1, elapsed / 800);
+
+      G.camYaw = rotStart + (rotEnd - rotStart) * prog;
+
+      gCam.rotation.set(0, G.camYaw, 0);
+
+      if (gR) gR.render(gSc, gCam);
+
+      if (prog >= 1) { phase = 'approach'; t0 = ts; }
+
+      requestAnimationFrame(attackLoop);
+
+    } else if (phase === 'approach') {
+
+      var prog = Math.min(1, elapsed / 1500);
+
+      var ease = 1 - Math.pow(1 - prog, 3);
+
+      if (monMesh) {
+
+        var pFar = monPos3D(side, 0.85);
+
+        var pNear = monPos3D(side, 0.99);
+
+        monMesh.position.lerpVectors(pFar, pNear, ease);
+
+        monMesh.visible = true;
+
+        if (side === 'left')       monMesh.rotation.y =  Math.PI / 2;
+
+        else if (side === 'right') monMesh.rotation.y = -Math.PI / 2;
+
+        else                       monMesh.rotation.y =  0;
+
+        var now2 = ts / 1000;
+
+        if (monMesh.userData.legL) monMesh.userData.legL.rotation.x = Math.sin(now2 * 8) * 0.4;
+
+        if (monMesh.userData.legR) monMesh.userData.legR.rotation.x = -Math.sin(now2 * 8) * 0.4;
+
+        if (monMesh.userData.armL) monMesh.userData.armL.rotation.x = -Math.sin(now2 * 8) * 0.3;
+
+        if (monMesh.userData.armR) monMesh.userData.armR.rotation.x = Math.sin(now2 * 8) * 0.3;
+
+      }
+
+      gCam.rotation.set(ease * 0.3, G.camYaw, 0);
+
+      if (gR) gR.render(gSc, gCam);
+
+      if (prog >= 1) { phase = 'eat'; t0 = ts; }
+
+      requestAnimationFrame(attackLoop);
+
+    } else if (phase === 'eat') {
+
+      var prog = Math.min(1, elapsed / 600);
+
+      var shake = (1 - prog) * 0.08;
+
+      gCam.rotation.set(0.3 + shake * (Math.random() - 0.5), G.camYaw + shake * (Math.random() - 0.5), 0);
+
+      var ov = document.getElementById('attackoverlay');
+
+      if (!ov) { ov = document.createElement('div'); ov.id = 'attackoverlay'; ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0);z-index:150;pointer-events:none;'; document.body.appendChild(ov); }
+
+      ov.style.background = 'rgba(0,0,0,' + (prog * 0.95) + ')';
+
+      if (gR) gR.render(gSc, gCam);
+
+      if (prog >= 1) {
+
+        var ov2 = document.getElementById('attackoverlay'); if (ov2) ov2.remove();
+
+        attackActive = false;
+
+        showGameOver(def);
+
+        return;
+
+      }
+
+      requestAnimationFrame(attackLoop);
+
+    }
+
+  }
+
+  requestAnimationFrame(attackLoop);
+
+}
+
+function showGameOver(def) {
+
+  document.getElementById('js').classList.remove('on');
+
+  document.getElementById('morning').classList.add('on');
+
+  document.getElementById('mmsg').textContent = def.name ? ('CAUGHT BY ' + def.name + '! Night ' + G.day) : ('NIGHT ' + G.day + ' — defeated');
+
+  document.getElementById('earnval').textContent = '0';
+
+  document.getElementById('mnext').textContent = 'TRY AGAIN';
+
+  G.battery = G.maxBattery;
+
+  saveGame();
+
+}
+
+// ═══ SHOP ITEMS ═══
+
+var SITEMS = [
+
+  {id:'off1', name:'Desk lamp',   desc:'An extra warm desk lamp to better illuminate your workspace', cost:80,  icon:'💡',
+
+   preview:'Office: warm desk lamp on the left side',
+
+   apply:function(){G.upgrades.lamp=1;upgradeLamp(1);}},
+
+  {id:'off2', name:'Red carpet', desc:'Elegant red carpet on the floor', cost:120, icon:'🟥',
+
+   preview:'Office: red carpet under the desk',
+
+   apply:function(){G.upgrades.carpet=1;upgradeCarpet(1);}},
+
+  {id:'off3', name:'Leather sofa',  desc:'Black leather sofa against the back wall', cost:200, icon:'🛋',
+
+   preview:'Office: sofa against the wall',
+
+   apply:function(){G.upgrades.sofa=1;upgradeSofa(1);}},
+
+  {id:'off4', name:'Posters',        desc:'Dark NIGHTWATCH posters on the walls', cost:70,  icon:'🖼',
+
+   preview:'Office: posters on the walls',
+
+   apply:function(){G.upgrades.posters=1;upgradePosters(1);}},
+
+  {id:'off5', name:'Potted plant', desc:'Large black plant in the corner of the room', cost:60,  icon:'🌿',
+
+   preview:'Office: black plant in the corner',
+
+   apply:function(){G.upgrades.plant=1;upgradePlant(1);}},
+
+  {id:'off6', name:'Board',        desc:'Old board with notes and photos', cost:90,  icon:'📋',
+
+   preview:'Office: board with strings and photos',
+
+   apply:function(){G.upgrades.board=1;upgradeBoard(1);}},
+
+  {id:'off7', name:'Purple light', desc:'Mysterious purple wall lighting', cost:150, icon:'🟣',
+
+   preview:'Office: purple glow on the wall',
+
+   apply:function(){G.upgrades.purple=1;upgradePurple(1);}},
+
+];
+
+var bought = {};
+
+// ═══ OFFICE UPGRADES ═══
+
+var offExtras = []; // extra 3D meshes from upgrades
+
+function upgradeLamp(lvl) {
+  if (!gSc) return;
+  // Extra desk lamp on left side of desk (x=-0.9, z=-1.2)
+  var mMet2 = new THREE.MeshPhongMaterial({color:0x555544, specular:0x999988, shininess:80});
+  var mShd2 = new THREE.MeshPhongMaterial({color:0xcc9922, specular:0x886611, shininess:40, side:THREE.DoubleSide});
+  var dBase = new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.10,0.04,8), mMet2);
+  dBase.position.set(-0.9, 0.78, -1.22); gSc.add(dBase); offExtras.push(dBase);
+  var dPole = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.014,0.38,6), mMet2);
+  dPole.position.set(-0.9, 0.98, -1.22); gSc.add(dPole); offExtras.push(dPole);
+  var dNeck = new THREE.Mesh(new THREE.SphereGeometry(0.022,6,5), mMet2);
+  dNeck.position.set(-0.9, 1.19, -1.22); gSc.add(dNeck); offExtras.push(dNeck);
+  var dShade = new THREE.Mesh(new THREE.ConeGeometry(0.11,0.16,10,1,true), mShd2);
+  dShade.position.set(-0.9, 1.28, -1.22); gSc.add(dShade); offExtras.push(dShade);
+  var dRim = new THREE.Mesh(new THREE.TorusGeometry(0.11,0.008,5,10), mMet2);
+  dRim.position.set(-0.9, 1.20, -1.22); gSc.add(dRim); offExtras.push(dRim);
+  var dLight = new THREE.PointLight(0xffdd66, 1.2, 3.0);
+  dLight.position.set(-0.9, 1.15, -1.0); gSc.add(dLight); offExtras.push(dLight);
+}
+
+function upgradeCarpet(lvl) {
+  if (!gSc) return;
+  // Carpet under desk area only — does not reach corridors or walls
+  // Safe zone: x∈[-2.8,2.8], z∈[-4.2,-0.2], y=0.003
+  var mat = new THREE.MeshLambertMaterial({color: 0x7a0e0e});
+  var mesh = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 4.0), mat);
+  mesh.rotation.x = -Math.PI/2;
+  mesh.position.set(0, 0.003, -2.2); gSc.add(mesh);
+  offExtras.push(mesh);
+}
+
+function upgradeSofa(lvl) {
+  if (!gSc) return;
+  // Sofa along the RIGHT side wall, between cabinet and corridor
+  // Cabinet at (3.5,-3.5), corridor opening at x=4,z∈[-1.1,1.1]
+  // Safe: x∈[1.8,3.1], z∈[-3.0,-1.8] — does not block corridor
+  var mS = new THREE.MeshPhongMaterial({color:0x2a1a0e, specular:0x221100, shininess:30});
+  var mSc= new THREE.MeshPhongMaterial({color:0x3a2510, specular:0x332200, shininess:20});
+  // Seat
+  var base = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.42, 0.65), mS);
+  base.position.set(2.2, 0.21, -2.3); gSc.add(base);
+  // Back
+  var back = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.52, 0.12), mS);
+  back.position.set(2.2, 0.56, -2.67); gSc.add(back);
+  // Armrests
+  [-0.7, 0.7].forEach(function(ox) {
+    var arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 0.65), mSc);
+    arm.position.set(2.2+ox, 0.51, -2.3); gSc.add(arm); offExtras.push(arm);
+  });
+  // Cushions
+  [-0.32, 0.32].forEach(function(ox) {
+    var cush = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.12, 0.55), mSc);
+    cush.position.set(2.2+ox, 0.48, -2.28); gSc.add(cush); offExtras.push(cush);
+  });
+  offExtras.push(base); offExtras.push(back);
+}
+
+function upgradePosters(lvl) {
+  if (!gSc) return;
+  // Two posters on the BACK wall (z=-4.95), spaced away from front corridor (x∈[-1.1,1.1])
+  // Left poster at x=-2.8 (clear of bookshelf at x=-3.5 + safe gap)
+  // Right poster at x=2.8 (clear of board if bought, board at x=0.5)
+  [[-2.5, 1.9], [2.5, 1.9]].forEach(function(p) {
+    var mf = new THREE.MeshLambertMaterial({color:0x0e0e0e});
+    var mp = new THREE.MeshBasicMaterial({color:0x001500});
+    var frame = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.05, 0.05), mf);
+    frame.position.set(p[0], p[1], -4.96); gSc.add(frame);
+    var poster = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.94), mp);
+    poster.position.set(p[0], p[1], -4.93); gSc.add(poster);
+    // Red moon on poster
+    var moonCanvas = document.createElement('canvas');
+    moonCanvas.width = 64; moonCanvas.height = 94;
+    var mc = moonCanvas.getContext('2d');
+    mc.fillStyle = '#001500'; mc.fillRect(0,0,64,94);
+    mc.fillStyle = '#cc1100'; mc.beginPath(); mc.arc(32,47,22,0,Math.PI*2); mc.fill();
+    mc.fillStyle = '#001500'; mc.beginPath(); mc.arc(40,39,17,0,Math.PI*2); mc.fill();
+    var moonTex = new THREE.CanvasTexture(moonCanvas);
+    poster.material = new THREE.MeshBasicMaterial({map:moonTex});
+    offExtras.push(frame); offExtras.push(poster);
+  });
+}
+
+function upgradePlant(lvl) {
+  if (!gSc) return;
+  // Plant in FRONT-LEFT corner of room — x=-2.5, z=-0.5
+  // Clear of left corridor (x=-4,z∈[-1.1,1.1]) and desk (x∈[-1.3,1.3])
+  var mSt = new THREE.MeshPhongMaterial({color:0x181818, specular:0x333333, shininess:40});
+  var mLf = new THREE.MeshPhongMaterial({color:0x091409, specular:0x112211, shininess:20});
+  var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.20,0.14,0.38,8), mSt);
+  pot.position.set(-2.5, 0.19, -0.5); gSc.add(pot);
+  var stem= new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.032,0.65,6), mLf);
+  stem.position.set(-2.5, 0.70, -0.5); gSc.add(stem);
+  [-0.28,0.28,0,-0.18,0.18].forEach(function(ox,i) {
+    var leaf = new THREE.Mesh(new THREE.BoxGeometry(0.38,0.042,0.20), mLf);
+    leaf.position.set(-2.5+ox, 0.60+i*0.09, -0.5);
+    leaf.rotation.y = i*0.72; gSc.add(leaf); offExtras.push(leaf);
+  });
+  offExtras.push(pot); offExtras.push(stem);
+}
+
+function upgradeBoard(lvl) {
+  if (!gSc) return;
+  // Board on BACK wall, centered — x=0.5, z=-4.94
+  // Between the two posters (if bought at x=±2.5), no conflict
+  var mB2 = new THREE.MeshLambertMaterial({color:0x251a0a});
+  var mS2 = new THREE.MeshBasicMaterial({color:0x2e2600});
+  var board = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 0.06), mB2);
+  board.position.set(0, 2.05, -4.95); gSc.add(board);
+  var surf = new THREE.Mesh(new THREE.PlaneGeometry(1.48, 0.98), mS2);
+  surf.position.set(0, 2.05, -4.91); gSc.add(surf);
+  // Strings
+  [[0.18,0.28],[-0.25,-0.18],[0.38,-0.12],[-0.08,0.22],[0.1,-0.28]].forEach(function(p) {
+    var pin = new THREE.Mesh(new THREE.SphereGeometry(0.024,6,4), new THREE.MeshBasicMaterial({color:0xff2222}));
+    pin.position.set(p[0], 2.05+p[1], -4.89); gSc.add(pin); offExtras.push(pin);
+    var str = new THREE.Mesh(new THREE.BoxGeometry(0.002, 0.002, 0.22), new THREE.MeshBasicMaterial({color:0xcc4400}));
+    str.position.set(p[0]+0.08, 2.05+p[1]-0.06, -4.89); str.rotation.z=0.3; gSc.add(str); offExtras.push(str);
+  });
+  offExtras.push(board); offExtras.push(surf);
+}
+
+function upgradePurple(lvl) {
+  if (!gSc) return;
+  // Purple light on the LEFT wall, mid-height — does not overlap with other lights
+  var pl = new THREE.PointLight(0x6600cc, 1.6, 6);
+  pl.position.set(-3.6, 2.2, -2.5); gSc.add(pl);
+  // Small wall sconce mesh
+  var sconce = new THREE.Mesh(new THREE.BoxGeometry(0.08,0.22,0.14), new THREE.MeshPhongMaterial({color:0x220044,specular:0x9900ff,shininess:100}));
+  sconce.position.set(-3.88, 2.2, -2.5); gSc.add(sconce);
+  offExtras.push(pl); offExtras.push(sconce);
+}
+
+function reapplyUpgrades() {
+
+  // Remove previously added extras first to avoid duplicates
+
+  offExtras.forEach(function(m) { if (gSc) gSc.remove(m); });
+
+  offExtras = [];
+
+  if (!G.upgrades) return;
+
+  if (G.upgrades.lamp    >= 1) upgradeLamp(1);
+
+  if (G.upgrades.carpet  >= 1) upgradeCarpet(1);
+
+  if (G.upgrades.sofa    >= 1) upgradeSofa(1);
+
+  if (G.upgrades.posters >= 1) upgradePosters(1);
+
+  if (G.upgrades.plant   >= 1) upgradePlant(1);
+
+  if (G.upgrades.board   >= 1) upgradeBoard(1);
+
+  if (G.upgrades.purple  >= 1) upgradePurple(1);
+
+}
+
+// ═══ VISUAL SHOP ═══
+
+function openShop() {
+
+  G.shopOpen = true;
+
+  buildShopUI();
+
+  document.getElementById('shop').classList.add('open');
+
+}
+
+function buildShopUI() {
+
+  document.getElementById('shopval').textContent = G.money;
+
+  var c = document.getElementById('shopitems'); c.innerHTML = '';
+
+  SITEMS.forEach(function(it) {
+
+    var isBought = !!bought[it.id];
+
+    var canAfford = G.money >= it.cost;
+
+    var div = document.createElement('div');
+
+    div.className = 'sitem' + (isBought ? ' bgt' : '');
+
+    div.style.cssText += 'min-width:130px;max-width:170px;cursor:' + (isBought?'default':'pointer') + ';';
+
+    div.innerHTML =
+
+      '<div style="font-size:28px;margin-bottom:6px;">' + it.icon + '</div>' +
+
+      '<div style="font-size:11px;font-weight:bold;letter-spacing:1px;">' + it.name + '</div>' +
+
+      '<div style="font-size:8px;color:#ccc8;margin:4px 0;line-height:1.5;">' + it.desc + '</div>' +
+
+      '<div style="font-size:8px;color:#0f0;border:1px solid #0f03;padding:2px 6px;margin:4px 0;letter-spacing:1px;">' + it.preview + '</div>' +
+
+      (isBought
+
+        ? '<div style="color:#0f0;font-size:9px;margin-top:6px;">&#10003; KUPIONO</div>'
+
+        : '<div style="margin-top:6px;font-size:11px;color:' + (canAfford?'#ff0':'#f004') + ';">$' + it.cost + '</div>');
+
+    if (!isBought) {
+
+      div.onclick = (function(item) { return function() {
+
+        if (G.money < item.cost) { return; }
+
+        G.money -= item.cost;
+
+        bought[item.id] = true;
+
+        item.apply();
+
+        saveGame();
+
+        buildShopUI();
+
+      }; })(it);
+
+    }
+
+    c.appendChild(div);
+
+  });
+
+}
+
+function closeShop() { G.shopOpen = false; document.getElementById('shop').classList.remove('open'); }
+
+// ═══ LOCALSTORAGE SAVE / LOAD ═══
+
+function saveGame() {
+
+  try {
+
+    var now = new Date();
+
+    var dd = String(now.getDate()).padStart(2,'0');
+
+    var mm = String(now.getMonth()+1).padStart(2,'0');
+
+    var yy = now.getFullYear();
+
+    var hh = String(now.getHours()).padStart(2,'0');
+
+    var mi = String(now.getMinutes()).padStart(2,'0');
+
+    var timeStr = dd + '.' + mm + '.' + yy + ' ' + hh + ':' + mi;
+
+    var data = {
+
+      day: G.day,
+
+      money: G.money,
+
+      battery: G.battery,
+
+      maxBattery: G.maxBattery,
+
+      upgrades: G.upgrades,
+
+      bought: bought,
+
+      doorLeft: G.doorLeft,
+
+      doorRight: G.doorRight,
+
+      doorFront: G.doorFront,
+
+      flashOn: G.flashOn,
+
+      nightTimer: G.nightTimer,
+
+      dead: G.dead,
+
+      morning: G.morning,
+
+      camYaw: G.camYaw,
+
+      targetYaw: G.targetYaw,
+
+      savedAt: timeStr,
+
+      mons: {
+
+        left:  {pos: MONS.left.pos,  defIdx: MONS.left.defIdx,  waiting: MONS.left.waiting,  waitTimer: MONS.left.waitTimer,  spawnDelay: MONS.left.spawnDelay,  rushing: MONS.left.rushing},
+
+        front: {pos: MONS.front.pos, defIdx: MONS.front.defIdx, waiting: MONS.front.waiting, waitTimer: MONS.front.waitTimer, spawnDelay: MONS.front.spawnDelay, rushing: MONS.front.rushing},
+
+        right: {pos: MONS.right.pos, defIdx: MONS.right.defIdx, waiting: MONS.right.waiting, waitTimer: MONS.right.waitTimer, spawnDelay: MONS.right.spawnDelay, rushing: MONS.right.rushing}
+
+      },
+
+      vent: {stage: VENT.stage, timer: VENT.timer, active: VENT.active, frozen: VENT.frozen, freezeTimer: VENT.freezeTimer, defIdx: VENT.defIdx, stageInterval: VENT.stageInterval}
+
+    };
+
+    localStorage.setItem('nightwatch_save', JSON.stringify(data));
+
+  } catch(e) {}
+
+}
+
+function loadGame() {
+
+  try {
+
+    var raw = localStorage.getItem('nightwatch_save');
+
+    if (!raw) return false;
+
+    var data = JSON.parse(raw);
+
+    G.day         = data.day         || 1;
+
+    G.money       = data.money       || 0;
+
+    G.battery     = data.battery     != null ? data.battery : 100;
+
+    G.maxBattery  = data.maxBattery  || 100;
+
+    G.upgrades    = data.upgrades    || {battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,mask:0};
+
+    G.nightTimer  = data.nightTimer  || 0;
+
+    G.dead        = data.dead        || false;
+
+    G.morning     = data.morning     || false;
+
+    G.camYaw      = data.camYaw      || 0;
+
+    G.targetYaw   = data.targetYaw   || 0;
+
+    G.doorLeft    = data.doorLeft    || false;
+
+    G.doorRight   = data.doorRight   || false;
+
+    G.doorFront   = data.doorFront   || false;
+
+    G.flashOn     = data.flashOn     || {left:false,front:false,right:false};
+
+    bought = data.bought || {};
+
+    if (data.mons) {
+
+      ['left','front','right'].forEach(function(s) {
+
+        if (data.mons[s]) {
+
+          MONS[s].pos        = data.mons[s].pos        || 0;
+
+          MONS[s].defIdx     = data.mons[s].defIdx     || 0;
+
+          MONS[s].waiting    = data.mons[s].waiting    || false;
+
+          MONS[s].waitTimer  = data.mons[s].waitTimer  || 0;
+
+          MONS[s].spawnDelay = data.mons[s].spawnDelay || 0;
+
+          MONS[s].rushing    = data.mons[s].rushing    || false;
+
+        }
+
+      });
+
+    }
+
+    if (data.vent) {
+
+      VENT.stage         = data.vent.stage         || 0;
+
+      VENT.timer         = data.vent.timer         || 0;
+
+      VENT.active        = data.vent.active        || false;
+
+      VENT.frozen        = data.vent.frozen        || false;
+
+      VENT.freezeTimer   = data.vent.freezeTimer   || 0;
+
+      VENT.defIdx        = data.vent.defIdx        || 3;
+
+      VENT.stageInterval = data.vent.stageInterval || 30000;
+
+    }
+
+    return data;
+
+  } catch(e) { return false; }
+
+}
+
+function clearSave() {
+
+  try { localStorage.removeItem('nightwatch_save'); } catch(e) {}
+
+}
+
+var AC = null;
+
+function getAC() { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); return AC; }
+
+function osc(f, t, dur, gain, pan) {
+
+  try {
+
+    var a = getAC(), o = a.createOscillator(), g = a.createGain(), p = a.createStereoPanner();
+
+    p.pan.value = pan || 0; o.type = t || 'sine'; o.frequency.value = f;
+
+    g.gain.setValueAtTime(gain, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + dur);
+
+    o.connect(p); p.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + dur);
+
+  } catch(e) {}
+
+}
+
+function playKnock(side) {
+
+  var pan = side==='left'?-0.7:side==='right'?0.7:0;
+
+  try {
+
+    var a = getAC();
+
+    function kick(t, gain) {
+
+      var o=a.createOscillator(),g=a.createGain(),p=a.createStereoPanner();
+
+      p.pan.value=pan; o.type='sine'; o.frequency.value=110;
+
+      o.frequency.exponentialRampToValueAtTime(35, t+0.22);
+
+      g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.38);
+
+      o.connect(p);p.connect(g);g.connect(a.destination);o.start(t);o.stop(t+0.4);
+
+      var o2=a.createOscillator(),g2=a.createGain();
+
+      o2.type='square';o2.frequency.value=60;
+
+      g2.gain.setValueAtTime(gain*0.35,t);g2.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+
+      o2.connect(g2);g2.connect(a.destination);o2.start(t);o2.stop(t+0.14);
+
+    }
+
+    var now=a.currentTime; kick(now,0.95); kick(now+0.5,0.8);
+
+  } catch(e) {}
+
+}
+
+function playFlashOn()  { osc(700,'square',0.05,0.10,0); setTimeout(function(){osc(1200,'square',0.03,0.06,0);},40); }
+
+function playFlashOff() { osc(350,'square',0.04,0.07,0); }
+
+function playClick()    { osc(500,'square',0.04,0.10,0); }
+
+function playBeep()     { osc(880,'sine',0.07,0.08,0); }
+
+function playDoorSlide() {
+
+  try {
+
+    var a=getAC(),now=a.currentTime;
+
+    var o=a.createOscillator(),g=a.createGain(),flt=a.createBiquadFilter();
+
+    o.type='sawtooth';o.frequency.value=90;o.frequency.linearRampToValueAtTime(50,now+0.5);
+
+    flt.type='lowpass';flt.frequency.value=280;
+
+    g.gain.setValueAtTime(0.22,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.55);
+
+    o.connect(flt);flt.connect(g);g.connect(a.destination);o.start(now);o.stop(now+0.58);
+
+    osc(200,'square',0.07,0.25,0);
+
+  } catch(e) {}
+
+}
+
+function playZapHit()   { osc(220,'square',0.12,0.7,0); setTimeout(function(){osc(880,'sine',0.1,0.4,0);},50); }
+
+function playZapFail()  { osc(80,'sawtooth',0.5,0.8,0); setTimeout(function(){osc(60,'sawtooth',0.4,0.6,0);},100); setTimeout(function(){osc(40,'sawtooth',0.3,0.5,0);},200); }
+
+function playJSSnd()    {
+
+  osc(120,'square',1.2,0.9,0);
+
+  setTimeout(function(){osc(900,'square',0.5,0.7,0);},60);
+
+  setTimeout(function(){osc(200,'square',0.8,0.5,0);},300);
+
+  try {
+
+    var a=getAC(),buf=a.createBuffer(1,a.sampleRate*0.3,a.sampleRate),d=buf.getChannelData(0);
+
+    for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+
+    var s=a.createBufferSource(),g=a.createGain();s.buffer=buf;
+
+    g.gain.setValueAtTime(0.8,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);
+
+    s.connect(g);g.connect(a.destination);s.start();
+
+  } catch(e) {}
+
+}
+
+function playMornS() {
+
+  try {
+
+    var a = getAC(), now = a.currentTime;
+
+    for (var bi = 0; bi < 4; bi++) {
+
+      var o = a.createOscillator(), g = a.createGain(), flt = a.createBiquadFilter();
+
+      flt.type = 'bandpass'; flt.frequency.value = 300 + bi*50; flt.Q.value = 0.8;
+
+      o.type = 'sawtooth'; o.frequency.value = 120 + bi*10;
+
+      g.gain.setValueAtTime(0, now + bi*0.7);
+
+      g.gain.linearRampToValueAtTime(0.18, now + bi*0.7 + 0.3);
+
+      g.gain.linearRampToValueAtTime(0, now + bi*0.7 + 0.65);
+
+      o.connect(flt); flt.connect(g); g.connect(a.destination);
+
+      o.start(now + bi*0.7); o.stop(now + bi*0.7 + 0.7);
+
+    }
+
+  } catch(e) {}
+
+}
+
+function playMornS() { [523,659,784,1047].forEach(function(f,i){setTimeout(function(){osc(f,'sine',0.5,0.25,0);},i*140);}); }
+
+function playPowerCut() {
+
+  // Generator winding down — deep motor rumble slowing to silence
+
+  try {
+
+    var a = getAC(), now = a.currentTime;
+
+    // Main generator hum — pitch drops as it spins down
+
+    var o1 = a.createOscillator(), g1 = a.createGain(), flt1 = a.createBiquadFilter();
+
+    o1.type = 'sawtooth';
+
+    o1.frequency.setValueAtTime(120, now);
+
+    o1.frequency.exponentialRampToValueAtTime(18, now + 2.5);
+
+    flt1.type = 'lowpass'; flt1.frequency.value = 400;
+
+    g1.gain.setValueAtTime(0.55, now);
+
+    g1.gain.setValueAtTime(0.55, now + 1.0);
+
+    g1.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+
+    o1.connect(flt1); flt1.connect(g1); g1.connect(a.destination);
+
+    o1.start(now); o1.stop(now + 2.9);
+
+    // Sub bass thud at start
+
+    var o2 = a.createOscillator(), g2 = a.createGain();
+
+    o2.type = 'sine'; o2.frequency.value = 55;
+
+    o2.frequency.exponentialRampToValueAtTime(8, now + 1.5);
+
+    g2.gain.setValueAtTime(0.8, now);
+
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+
+    o2.connect(g2); g2.connect(a.destination);
+
+    o2.start(now); o2.stop(now + 2.0);
+
+    // Mechanical clunk at end
+
+    var buf = a.createBuffer(1, Math.floor(a.sampleRate * 0.15), a.sampleRate);
+
+    var bd = buf.getChannelData(0);
+
+    for (var i2 = 0; i2 < bd.length; i2++) bd[i2] = (Math.random()*2-1) * Math.pow(1 - i2/bd.length, 2);
+
+    var bs = a.createBufferSource(), bg = a.createGain();
+
+    bg.gain.setValueAtTime(0.5, now + 2.4);
+
+    bs.buffer = buf; bs.connect(bg); bg.connect(a.destination); bs.start(now + 2.4);
+
+  } catch(e) {}
+
+}
+
+// Lamp buzz node
+
+var lampBuzzGain = null;
+
+function startLampBuzz() {
+
+  try {
+
+    var a=getAC();
+
+    var o=a.createOscillator(),g=a.createGain(),flt=a.createBiquadFilter();
+
+    o.type='sawtooth';o.frequency.value=120;
+
+    flt.type='bandpass';flt.frequency.value=120;flt.Q.value=3;
+
+    g.gain.value=0.18;
+
+    o.connect(flt);flt.connect(g);g.connect(a.destination);o.start();
+
+    lampBuzzGain=g;
+
+  } catch(e) {}
+
+}
+
+function updateLampBuzz(batPct) {
+
+  if (!lampBuzzGain) return;
+
+  try {
+
+    var vol = batPct > 0 ? 0.10 + (1-batPct)*0.35 : 0;
+
+    lampBuzzGain.gain.setTargetAtTime(vol, getAC().currentTime, 0.15);
+
+  } catch(e) {}
+
+}
+
+function startAmbient() {
+
+  try {
+
+    var a=getAC(),buf=a.createBuffer(1,a.sampleRate*4,a.sampleRate),d=buf.getChannelData(0);
+
+    for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.008;
+
+    var s=a.createBufferSource(),flt=a.createBiquadFilter(),g=a.createGain();
+
+    flt.type='lowpass';flt.frequency.value=300;g.gain.value=0.18;
+
+    s.buffer=buf;s.loop=true;s.connect(flt);flt.connect(g);g.connect(a.destination);s.start();
+
+  } catch(e) {}
+
+  startLampBuzz();
+
+}
+
+var lastTs = 0;
+
+function gLoop(ts) {
+
+  requestAnimationFrame(gLoop);
+
+  var dt = Math.min(50, ts - (lastTs || ts)); lastTs = ts;
+
+  if (!document.getElementById('gc').classList.contains('show')) return;
+
+  update(dt);
+
+  if (gR) gR.render(gSc, gCam);
+
+}
+
+function update(dt) {
+
+  if (!G.running || G.dead || G.morning || G.shopOpen) return;
+
+  if (!G_lever.hollowInside && !G.camLocked) {
+
+    G.camYaw += (G.targetYaw - G.camYaw) * Math.min(1, 6 * dt / 1000);
+  // Wrap to avoid drift over many rotations
+  if (G.camYaw > Math.PI)  { G.camYaw -= Math.PI*2; G.targetYaw -= Math.PI*2; }
+  if (G.camYaw < -Math.PI) { G.camYaw += Math.PI*2; G.targetYaw += Math.PI*2; }
+
+    gCam.rotation.set(0, G.camYaw, 0);
+
+  }
+
+  offFlickT -= dt;
+
+  if (G.battery > 0 && !G_lever.off) {
+
+    var batPct = G.battery / G.maxBattery;
+
+    var flickInterval = batPct > 0.6 ? 400 + Math.random()*400 :
+
+                        batPct > 0.3 ? 150 + Math.random()*200 :
+
+                                        40  + Math.random()*80;
+
+    var flickBase = batPct > 0.6 ? 3.4 + Math.random()*0.6 :
+
+                    batPct > 0.3 ? 2.0 + Math.random()*1.8 :
+
+                                   0.5 + Math.random()*2.5;
+
+    if (offFlickT < 0 && officeLamp) {
+
+      officeLamp.intensity = flickBase;
+
+      offFlickT = flickInterval;
+
+    }
+
+    updateLampBuzz(batPct);
+
+  } else if (G_lever.off) {
+
+    roomLights.forEach(function(rl) { rl.light.intensity = 0; });
+
+    // Pulse lever glow red
+
+    var lv2 = gSc && gSc.userData.leverGlow;
+
+    if (lv2) { lv2.intensity = 1.8 + Math.sin(Date.now() / 400) * 0.7; }
+
+  }
+
+  var drain = 0;
+
+  if (G.flashOn.left  && G.battery > 0) drain += 0.00060;
+
+  if (G.flashOn.front && G.battery > 0) drain += 0.00060;
+
+  if (G.flashOn.right && G.battery > 0) drain += 0.00060;
+
+  if (G.doorLeft)  drain += 0.00070 * (1 - G.upgrades.doorPower * 0.28);
+
+  if (G.doorRight) drain += 0.00070 * (1 - G.upgrades.doorPower * 0.28);
+
+  if (G.doorFront) drain += 0.00070 * (1 - G.upgrades.doorPower * 0.28);
+
+  drain += 0.00010; // passive
+
+  G.battery = Math.max(0, G.battery - drain * dt);
+
+  if (G.battery <= 0 && !G.powerCutTriggered && !G.dead) {
+
+    G.powerCutTriggered = true;
+
+    G.flashOn = {left: false, front: false, right: false};
+
+    // Power cut sound
+
+    playPowerCut();
+
+    // Lamp buzz stops immediately
+
+    updateLampBuzz(0);
+
+    // All doors slam open
+
+    if (G.doorLeft)  { G.doorLeft=false;  doorAnim.left.tgt=8; }
+
+    if (G.doorRight) { G.doorRight=false; doorAnim.right.tgt=8; }
+
+    if (G.doorFront) { G.doorFront=false; doorAnim.front.tgt=8; }
+
+    // Lights flicker then die — lever auto-goes to ON and locks
+    G_lever.locked = true;
+
+    // Auto move lever to ON position
+    if (gSc && gSc.userData.leverGroup) {
+      var rotOn = gSc.userData.ROT_ON || 0.9;
+      gSc.userData.leverRotTarget = rotOn + 0.2;
+      setTimeout(function() {
+        if (gSc && gSc.userData.leverGroup) gSc.userData.leverRotTarget = rotOn;
+      }, 150);
+    }
+    if (gSc && gSc.userData.leverGlow) gSc.userData.leverGlow.intensity = 0;
+
+    // Monitor flickers 4x then dies, then room lights flicker off
+    var monFlickCount = 0;
+    var monFlickInt = setInterval(function() {
+      monFlickCount++;
+      var monOn = monFlickCount % 2 === 0;
+      var ms = gSc && gSc.userData.monitorScr;
+      var mt = gSc && gSc.userData.monitorScrTex;
+      var moff = gSc && gSc.userData.monitorScrOffTex;
+      var sg = gSc && gSc.userData.monitorSgl;
+      if (ms) { ms.material.map = monOn ? mt : moff; if (mt) mt.needsUpdate = true; }
+      if (sg) sg.intensity = monOn ? 0.4 : 0;
+      if (monFlickCount >= 8) { // 4 full flickers
+        clearInterval(monFlickInt);
+        // Monitor permanently off
+        if (ms && moff) { ms.material.map = moff; moff.needsUpdate = true; }
+        if (sg) sg.intensity = 0;
+        // Now flicker room lights off
+        var flickCount = 0, flickInt = setInterval(function() {
+          flickCount++;
+          if (officeLamp) officeLamp.intensity = flickCount % 2 === 0 ? 3.0 : 0;
+          if (flickCount >= 8) {
+            clearInterval(flickInt);
+            if (officeLamp) officeLamp.intensity = 0;
+            roomLights.forEach(function(rl) { rl.light.intensity = 0; });
+          }
+        }, 100);
+      }
+    }, 120);
+
+    // 5 seconds then closest monster attacks
+
+    setTimeout(function() {
+
+      if (G.dead) return;
+
+      // Find closest active monster
+
+      var best = null, bestPos = -1;
+
+      ['left','front','right'].forEach(function(side) {
+
+        var mn = MONS[side];
+
+        if (!mn.waiting && mn.spawnDelay <= 0 && mn.pos > bestPos) {
+
+          bestPos = mn.pos; best = {def: MDEFS[mn.defIdx], side: side};
+
+        }
+
+      });
+
+      if (best) triggerJS(best.def, best.side);
+
+      else triggerJS({name:'CIEMNOSC', bodyCol:0x050505, accentCol:0, eyeCol:0xff0000, teethCol:0xffffff, bloodCol:0x220000, skinCol:0x0a0a0a}, 'front');
+
+    }, 5000);
+
+  }
+
+  updateBatUI();
+
+  updateFlicker(dt);
+
+  updateFlashlights();
+
+  updateDoorAnim(dt);
+
+  // Lever animation — spring physics with overshoot
+
+  if (gSc && gSc.userData.leverGroup) {
+
+    var lRot = gSc.userData.leverRot !== undefined ? gSc.userData.leverRot : 0.9;
+
+    var lVel = gSc.userData.leverVel !== undefined ? gSc.userData.leverVel : 0;
+
+    var lTgt = gSc.userData.leverRotTarget !== undefined ? gSc.userData.leverRotTarget : 0.9;
+
+    var stiffness = 0.018, damping = 0.72;
+
+    var force = (lTgt - lRot) * stiffness * dt;
+
+    lVel = lVel * damping + force;
+
+    lRot += lVel;
+
+    gSc.userData.leverRot = lRot;
+
+    gSc.userData.leverVel = lVel;
+
+    gSc.userData.leverGroup.rotation.z = lRot;
+
+  }
+
+  updateHollowFlicker(dt);
+
+  checkHollowAttack();
+
+  // Mask timer - auto-remove after 15s, darken screen gradually
+
+  if (G_mask.on) {
+
+    G_mask.timer += dt;
+
+    var pct = 1 - Math.min(1, G_mask.timer / G_mask.MAX_TIME);
+
+    var tb = document.getElementById('masktimer');
+
+    if (tb) tb.style.width = Math.round(pct * 100) + 'px';
+
+    if (G_mask.timer >= G_mask.MAX_TIME) {
+
+      G_mask.on = false; G_mask.timer = 0;
+
+      hideMaskOverlay();
+
+      // Find hollow for correct animation
+
+      var hollowSide = 'front', hollowDef = {name:'UDUSZENIE',bodyCol:0x111111,accentCol:0,eyeCol:0xff0000,teethCol:0xffffff,bloodCol:0x440000,skinCol:0x0a0a0a};
+
+      ['left','front','right'].forEach(function(s) {
+
+        if (MDEFS[MONS[s].defIdx].special === 'hollow') { hollowSide = s; hollowDef = MDEFS[MONS[s].defIdx]; }
+
+      });
+
+      triggerJS(hollowDef, hollowSide);
+
+    }
+
+  }
+
+  // Sprawdź czy hollow aktywnie idzie — przed pętlą
+
+  var hollowRunning = ['left','front','right'].some(function(s) {
+
+    return MDEFS[MONS[s].defIdx].special === 'hollow' && MONS[s].pos > 0.05 && !MONS[s].waiting && (MONS[s].rushing || MONS[s].pos > 0.55);
+
+  });
+
+  Object.values(MONS).forEach(function(mn) {
+
+    var def3 = MDEFS[mn.defIdx];
+
+    // Spawn delay at start of night
+
+    if (mn.spawnDelay > 0) {
+
+      mn.spawnDelay -= dt;
+
+      var mesh = monMeshes[mn.id]; if (mesh) mesh.visible = false;
+
+      return;
+
+    }
+
+    // Waiting
+
+    if (mn.waiting) {
+
+      mn.waitTimer -= dt;
+
+      if (mn.waitTimer <= 0) { mn.waiting = false; mn.pos = 0; }
+
+      var mesh2 = monMeshes[mn.id];
+
+      if (mesh2) mesh2.visible = false;
+
+      return;
+
+    }
+
+    if (!mn.frozen && !mn.waiting && mn.spawnDelay <= 0) mn.pos = Math.min(1, mn.pos + mn.speed * dt);
+
+    var mesh3 = monMeshes[mn.id];
+
+    if (mesh3) {
+
+      if (def3.special === 'hollow' && mn.pos > 0.05 && !mn.waiting) {
+
+        mesh3.visible = true;
+
+        // Zamroź i ukryj innych — reset pozycji żeby nie stali w drzwiach
+
+        ['left', 'front', 'right'].forEach(function(otherSide) {
+
+          if (otherSide !== mn.id) {
+
+            var om = monMeshes[otherSide]; if (om) om.visible = false;
+
+            MONS[otherSide].frozen = true;
+            // Push them back so they don't appear in doorway when hollow opens door
+            if (MONS[otherSide].pos > 0.7) MONS[otherSide].pos = 0.5;
+
+          }
+
+        });
+
+        if (mn.pos > 0.55 && !mn.rushing) {
+
+          mn.rushing = true;
+
+          mn.speed = mn.baseSpeed * 4.5;
+
+          startHollowFlicker(mn.id);
+
+        }
+
+      } else if (def3.special === 'hollow') {
+
+        // Hollow czeka — odblokuj innych
+
+        mesh3.visible = false;
+
+        ['left', 'front', 'right'].forEach(function(otherSide) {
+
+          if (otherSide !== mn.id) MONS[otherSide].frozen = false;
+
+        });
+
+      } else {
+
+        // Normalny potwór — niewidoczny gdy hollow biegnie
+
+        if (hollowRunning) {
+
+          mesh3.visible = false;
+
+        } else {
+
+          var lit = G.flashOn[mn.id] && G.battery > 0 && flickI > 0.15;
+
+          mesh3.visible = lit;
+
+          if (!lit && mn.pos > 0) {
+
+            var p3sync = monPos3D(mn.id, mn.pos);
+
+            mesh3.position.set(p3sync.x, 0, p3sync.z);
+
+            if (mn.id === 'left')       mesh3.rotation.y = -Math.PI / 2;
+
+            else if (mn.id === 'right') mesh3.rotation.y =  Math.PI / 2;
+
+            else                        mesh3.rotation.y =  Math.PI;
+
+          }
+
+        }
+
+      }
+
+    }
+
+    animateMon(mn, dt);
+
+  });
+
+  if (VENT.active) {
+
+    if (!VENT.frozen) {
+
+      VENT.timer += dt;
+
+      if (VENT.stage === 0) {
+
+        // Czeka losowy czas między pojawieniami
+
+        if (VENT.timer >= VENT.stageInterval) {
+
+          VENT.timer = 0;
+
+          VENT.stage = 1; // pojawia się w stacji 1
+
+          VENT.attackDelay = 5000 + Math.random() * 13000; // 5–18s, nothing stops it
+
+          updateVentUI();
+
+          showWarn('HANGER IN THE VENT!', '#f80');
+
+        }
+
+      } else if (VENT.stage === 1) {
+
+        // Gracz ma 5-8s żeby kliknąć niebieski — inaczej jumpscare
+
+        if (VENT.timer >= VENT.attackDelay) {
+
+          VENT.stage = 0; VENT.timer = 0; updateVentUI();
+          if (ventMesh) ventMesh.visible = false;
+          if (!G.dead) ventGroundAttack();
+          return;
+
+        }
+
+      }
+
+    }
+
+    if (ventMesh) {
+
+      ventMesh.visible = VENT.stage > 0;
+
+      ventMesh.position.set(0, 2.1, -6.5);
+
+      ventMesh.rotation.z = Math.sin(Date.now() * 0.003) * 0.10;
+
+    }
+
+    if (ventGlow) ventGlow.intensity = VENT.stage > 0 ? 1.2 : 0;
+
+  }
+
+  checkKnock(dt);
+
+  checkMorning();
+
+}
+
+// ─ SETTINGS ─
+
+var SETTINGS = {
+
+  fontSize: 14,
+
+  mouseSens: 4,
+
+  touchSens: 6,
+
+  edgeScroll: true
+
+};
+
+var SETTINGS_DEFAULTS = { fontSize: 14, mouseSens: 4, touchSens: 6, edgeScroll: true };
+
+function loadSettings() {
+
+  try {
+
+    var s = localStorage.getItem('nightwatch_settings');
+
+    if (s) {
+
+      var d = JSON.parse(s);
+
+      SETTINGS.fontSize   = d.fontSize   || 14;
+
+      SETTINGS.mouseSens  = d.mouseSens  || 4;
+
+      SETTINGS.touchSens  = d.touchSens  || 6;
+
+      SETTINGS.edgeScroll = d.edgeScroll !== undefined ? d.edgeScroll : true;
+
+    }
+
+  } catch(e) {}
+
+  applyFontSize(SETTINGS.fontSize);
+
+}
+
+function saveSettings() {
+
+  try { localStorage.setItem('nightwatch_settings', JSON.stringify(SETTINGS)); } catch(e) {}
+
+}
+
+function resetSettings() {
+
+  SETTINGS.fontSize   = SETTINGS_DEFAULTS.fontSize;
+
+  SETTINGS.mouseSens  = SETTINGS_DEFAULTS.mouseSens;
+
+  SETTINGS.touchSens  = SETTINGS_DEFAULTS.touchSens;
+
+  SETTINGS.edgeScroll = SETTINGS_DEFAULTS.edgeScroll;
+
+  saveSettings();
+
+  applyFontSize(SETTINGS.fontSize);
+
+  // Sync UI
+
+  var fs = document.getElementById('fontSizeSlider'); if (fs) fs.value = SETTINGS.fontSize;
+
+  var fv = document.getElementById('fontSizeVal');    if (fv) fv.textContent = SETTINGS.fontSize + 'px';
+
+  var ms = document.getElementById('mouseSensSlider');if (ms) ms.value = SETTINGS.mouseSens;
+
+  var mv = document.getElementById('mouseSensVal');   if (mv) mv.textContent = SETTINGS.mouseSens;
+
+  var ts = document.getElementById('touchSensSlider');if (ts) ts.value = SETTINGS.touchSens;
+
+  var tv = document.getElementById('touchSensVal');   if (tv) tv.textContent = SETTINGS.touchSens;
+
+  var ec = document.getElementById('edgeScrollToggle');
+
+  if (ec) { ec.textContent = 'EDGE SCROLL: ON'; ec.style.borderColor = '#0f0'; ec.style.color = '#0f0'; }
+
+}
+
+function applyFontSize(val) {
+
+  SETTINGS.fontSize = parseInt(val);
+
+  // Apply to entire document - override all elements
+
+  document.documentElement.style.setProperty('--fs', val + 'px');
+
+  document.body.style.fontSize = val + 'px';
+
+  // Force all elements to inherit
+
+  var style = document.getElementById('fontSizeStyle');
+
+  if (!style) { style = document.createElement('style'); style.id = 'fontSizeStyle'; document.head.appendChild(style); }
+
+  style.textContent = '*, *::before, *::after { font-size: ' + val + 'px !important; }' +
+
+    'h1 { font-size: clamp(24px,' + (val*3.5) + 'px,52px) !important; }' +
+
+    '.lb { font-size: ' + val + 'px !important; }';
+
+  var el = document.getElementById('fontSizeVal'); if (el) el.textContent = val + 'px';
+
+  var pr = document.getElementById('fontPreview'); if (pr) pr.style.fontSize = val + 'px';
+
+  var sl = document.getElementById('fontSizeSlider'); if (sl) sl.value = val;
+
+  saveSettings();
+
+}
+
+function applySens(val, type) {
+
+  val = parseInt(val);
+
+  if (type === 'mouse') {
+
+    SETTINGS.mouseSens = val;
+
+    var el = document.getElementById('mouseSensVal'); if (el) el.textContent = val;
+
+  } else {
+
+    SETTINGS.touchSens = val;
+
+    var el2 = document.getElementById('touchSensVal'); if (el2) el2.textContent = val;
+
+  }
+
+  saveSettings();
+
+}
+
+var settingsWasRunning = false;
+
+function openSettings() {
+
+  if (G.running && !G.dead && !G.morning) {
+
+    settingsWasRunning = true;
+
+    G.running = false;
+
+  } else {
+
+    settingsWasRunning = false;
+
+  }
+
+  var ov = document.getElementById('settingsoverlay');
+
+  ov.style.display = 'flex';
+
+  var fs = document.getElementById('fontSizeSlider'); if (fs) fs.value = SETTINGS.fontSize;
+
+  var fv = document.getElementById('fontSizeVal'); if (fv) fv.textContent = SETTINGS.fontSize + 'px';
+
+  var ms = document.getElementById('mouseSensSlider'); if (ms) ms.value = SETTINGS.mouseSens;
+
+  var mv = document.getElementById('mouseSensVal'); if (mv) mv.textContent = SETTINGS.mouseSens;
+
+  var ts = document.getElementById('touchSensSlider'); if (ts) ts.value = SETTINGS.touchSens;
+
+  var tv = document.getElementById('touchSensVal'); if (tv) tv.textContent = SETTINGS.touchSens;
+
+  var ec = document.getElementById('edgeScrollToggle');
+
+  if (ec) {
+
+    ec.textContent = SETTINGS.edgeScroll ? 'EDGE SCROLL: ON' : 'EDGE SCROLL: OFF';
+
+    ec.style.borderColor = SETTINGS.edgeScroll ? '#0f0' : '#555';
+
+    ec.style.color = SETTINGS.edgeScroll ? '#0f0' : '#555';
+
+  }
+
+}
+
+function toggleEdgeScroll() {
+
+  SETTINGS.edgeScroll = !SETTINGS.edgeScroll;
+
+  saveSettings();
+
+  var ec = document.getElementById('edgeScrollToggle');
+
+  if (ec) {
+
+    ec.textContent = SETTINGS.edgeScroll ? 'EDGE SCROLL: ON' : 'EDGE SCROLL: OFF';
+
+    ec.style.borderColor = SETTINGS.edgeScroll ? '#0f0' : '#555';
+
+    ec.style.color = SETTINGS.edgeScroll ? '#0f0' : '#555';
+
+  }
+
+}
+
+function closeSettings() {
+
+  document.getElementById('settingsoverlay').style.display = 'none';
+
+  if (settingsWasRunning) { G.running = true; settingsWasRunning = false; }
+
+}
+
+// ─ LOBBY ─
+
+function initLobby() {
+
+  var save = null;
+
+  try { var r = localStorage.getItem('nightwatch_save'); if (r) save = JSON.parse(r); } catch(e) {}
+
+  if (save && save.day) {
+
+    document.getElementById('lobbycont').style.display = 'inline-block';
+
+    document.getElementById('lobbyday').textContent = save.day;
+
+  }
+
+}
+
+window.addEventListener('load', function() { loadSettings(); initLobby(); });
+
+function continueGame() {
+
+  startGame(true);
+
+}
+
+function startFresh() {
+
+  if (localStorage.getItem('nightwatch_save')) {
+
+    if (!confirm('Delete save and start over?')) return;
+
+    clearSave();
+
+  }
+
+  startGame(false);
+
+}
+
+function startGame(loadSave) {
+
+  document.getElementById('lobby').style.display = 'none';
+
+  document.getElementById('gc').classList.add('show');
+
+  ['day','batwrap','ventui'].forEach(function(id) {
+
+    var el = document.getElementById(id); if(el) el.classList.add('show');
+
+  });
+
+  if (!gR) initGame();
+
+  if (loadSave) {
+
+    var loaded = loadGame();
+
+    if (!loaded) {
+
+      G.day=1;G.money=0;G.dead=false;G.morning=false;
+
+      G.upgrades={battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,mask:0};
+
+      G.maxBattery=100;G.battery=G.maxBattery;bought={};
+
+    } else {
+
+      reapplyUpgrades();
+
+      restoreGameState();
+
+    }
+
+  } else {
+
+    G.day=1;G.money=0;G.dead=false;G.morning=false;
+
+    G.upgrades={battery:0,recharge:0,doorPower:0,lamp:0,carpet:0,sofa:0,posters:0,mask:0};
+
+    G.maxBattery=100;G.battery=G.maxBattery;bought={};
+
+  }
+
+  G.dead=false;G.morning=false;G.powerCutTriggered=false;
+
+  if (!loadSave) resetNight();
+
+  G.running=true;
+
+  try{getAC();setTimeout(startAmbient,500);}catch(e){}
+
+}
+
+function restoreGameState() {
+
+  // Camera
+
+  G.camYaw = G.camYaw || 0;
+
+  G.targetYaw = G.targetYaw || 0;
+
+  if (gCam) gCam.rotation.set(0, G.camYaw, 0);
+
+  // Doors - restore animated positions
+
+  var TH = 2.4, OPEN_Y = 8, CLOSED_Y = TH / 2;
+
+  doorAnim.left.cur  = G.doorLeft  ? 1.2 : 8;
+  doorAnim.left.tgt  = G.doorLeft  ? 1.2 : 8;
+  doorAnim.right.cur = G.doorRight ? 1.2 : 8;
+  doorAnim.right.tgt = G.doorRight ? 1.2 : 8;
+  doorAnim.front.cur = G.doorFront ? 1.2 : 8;
+  doorAnim.front.tgt = G.doorFront ? 1.2 : 8;
+  if (leftDoor3D)  leftDoor3D.position.y =  doorAnim.left.cur;
+  if (rightDoor3D) rightDoor3D.position.y =  doorAnim.right.cur;
+  if (frontDoor3D) frontDoor3D.position.y =  doorAnim.front.cur;
+
+  // Flashlights
+
+  updateFlashlights();
+
+  updateBatUI();
+
+  // Monsters - restore positions
+
+  ['left','front','right'].forEach(function(side) {
+
+    var mn = MONS[side];
+
+    mn.baseSpeed = MDEFS[mn.defIdx].speed * Math.max(0.3, 1 + (G.day-1)*0.18);
+
+    mn.speed = mn.baseSpeed;
+
+    var mesh = monMeshes[side];
+
+    if (mesh) {
+
+      var p = monPos3D(side, mn.pos);
+
+      mesh.position.copy(p);
+
+      mesh.visible = mn.pos > 0.05 && !mn.waiting && mn.spawnDelay <= 0;
+
+    }
+
+  });
+
+  // Vent
+
+  updateVentUI();
+
+  if (ventMesh) { ventMesh.visible = VENT.stage > 0; ventMesh.position.set(0, 2.1, -14 + VENT.stage * 3.0); }
+
+  if (ventGlow)  ventGlow.intensity = VENT.stage > 0 ? VENT.stage * 0.4 : 0;
+
+  // Office lamp
+
+  if (officeLamp) officeLamp.intensity = 3.6;
+
+}
+
+var helpWasRunning = false;
+
+function buildHelpContent() {
+
+  return [
+
+    {h:'BASICS', t:'Survive the night from 12:00 to 00:00. You sit in an office with three corridors — left, center and right. Monsters can come through any of them. Watch the corridors, use flashlights and doors to survive until dawn.'},
+
+    {h:'CAMERA CONTROLS', t:'Drag the screen left/right with mouse or finger to rotate your view.\n\n⚡ QUICK CONTROLS (keyboard):\n[A] — snap left corridor\n[W] — snap center corridor\n[D] — snap right corridor\n\n⚡ EDGE SCROLL:\nMouse to far left/right screen edge → camera snaps to that corridor'},
+
+    {h:'CORRIDOR PANELS', t:'At each corridor opening there are two buttons:\n\n🟢 GREEN — flashlight on/off in THAT corridor\n🔴 RED — closes or opens the shutter in THAT corridor\n\nAt the desk:\n🔵 BLUE — zap the Hanger in the vent'},
+
+    {h:'FLASHLIGHT', t:'Flashlight illuminates corridor and FREEZES monsters — they cannot move while lit. Without flashlight you see nothing in the tunnel.\n\nFLASHLIGHT DRAINS BATTERY. Use only when needed.'},
+
+    {h:'DOORS (SHUTTERS)', t:'Closed doors block monsters. Monster will knock a few times then leave — shutter opens automatically.\n\nDOORS DRAIN BATTERY while closed.'},
+
+    {h:'BATTERY', t:'Right-side bar shows battery level. Drained by:\n— each active flashlight\n— each closed door\n— passive drain\n\nBattery DIES: lights go out, doors open, after 5s nearest monster attacks.\n\nCharge only in the day room after surviving a night.'},
+
+    {h:'HOLLOW — RED EYES', t:'From night 3, HOLLOW appears — red eyes visible in darkness. Shows up every 15-30 seconds in a random corridor.\n\nAll other monsters VANISH while HOLLOW is active.\n\nONLY protection: the LEVER on the right wall. Cut power before HOLLOW reaches the end. Flashlight and doors will NOT help.'},
+
+    {h:'LEVER (POWER)', t:'On the right wall (press [D]) is a yellow lever — main power switch.\n\nWhen HOLLOW rushes:\n1. Press [D] to face right\n2. Click lever — power cuts\n3. HOLLOW blinks red eyes and vanishes\n4. Click lever again — power returns\n\nNO lever = death. Power off = no flashlights or doors.'},
+
+    {h:'HANGER (VENT)', t:'From night 4, the Hanger appears in the center corridor. VENT indicator (top left) lights up.\n\nYou have 5-8 seconds to click the BLUE desk button to zap it.\n\n⚠ Zapping when Hanger is NOT there — all monsters speed 4x for 8s!'},
+
+    {h:'DAY ROOM', t:'After surviving: click MONITOR to charge battery, click DOOR for next night, open SHOP to decorate.\n\nBattery does NOT reset between nights!'},
+
+    {h:'SHOP', t:'Buy office decorations with earned dollars: carpet, sofa, posters, plant, board, purple lighting. Cosmetic only.'},
+
+    {h:'MONSTERS', t:'Each night brings different monsters from NIGHTWATCH collection (10 total). Higher nights = faster.\n\nNight 1: 1 monster / Night 2: 2 / Night 3+: 3 + HOLLOW / Night 4+: + HANGER\n\nBrowse monsters in Monster Viewer from main menu.'},
+
+  ];
+
+}
+
+function openHelp() {
+
+  // Pause only if game is actively running
+
+  if (G.running && !G.dead && !G.morning) {
+
+    helpWasRunning = true;
+
+    G.running = false;
+
+  } else {
+
+    helpWasRunning = false;
+
+  }
+
+  var content = buildHelpContent();
+
+  var html = '';
+
+  content.forEach(function(s) {
+
+    html += '<div style="margin-bottom:16px;">' +
+
+      '<div style="color:#ff0;letter-spacing:3px;margin-bottom:4px;font-size:11px;">— ' + s.h + ' —</div>' +
+
+      '<div style="color:#0f0;opacity:.85;">' + s.t.replace(/\n/g,'<br>') + '</div>' +
+
+      '</div>';
+
+  });
+
+  document.getElementById('helpcontent').innerHTML = html;
+
+  document.getElementById('helpoverlay').style.display = 'block';
+
+}
+
+function closeHelp() {
+
+  document.getElementById('helpoverlay').style.display = 'none';
+
+  if (helpWasRunning) { G.running = true; helpWasRunning = false; }
+
+}
+
+</script>
+
+</body>
+
+</html>`
