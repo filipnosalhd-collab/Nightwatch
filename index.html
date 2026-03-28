@@ -23,7 +23,7 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 @keyframes glow{0%,100%{opacity:1}50%{opacity:.45}}
 
-.lb{color:#0f0;border:2px solid #0f07;padding:11px 30px;cursor:pointer;letter-spacing:4px;font-size:12px;background:transparent;font-family:inherit;transition:all .18s;}
+.lb{color:#0f0;border:2px solid #0f07;padding:14px 36px;cursor:pointer;letter-spacing:4px;font-size:clamp(12px,3.5vw,16px);background:transparent;font-family:inherit;transition:all .18s;min-width:200px;}
 
 .lb:hover{background:#0f02;border-color:#0f0;}
 
@@ -77,11 +77,11 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 #gc.show{display:block;}
 
-#day{position:fixed;top:10px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:3px;pointer-events:none;z-index:20;display:none;}
+#day{position:fixed;top:10px;left:50%;transform:translateX(-50%);font-size:clamp(11px,3.5vw,16px);letter-spacing:3px;pointer-events:none;z-index:20;display:none;}
 
 #day.show{display:block;}
 
-#batwrap{position:fixed;right:10px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;align-items:center;gap:3px;pointer-events:none;z-index:20;}
+#batwrap{position:fixed;right:8px;top:50%;transform:translateY(-50%);display:none;flex-direction:column;align-items:center;gap:3px;pointer-events:none;z-index:20;}
 
 #batwrap.show{display:flex;}
 
@@ -103,11 +103,11 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 .vpip.on{background:#f80;box-shadow:0 0 8px #f80;}
 
-#shopbtn{position:fixed;top:10px;right:44px;font-size:9px;letter-spacing:2px;border:1px solid #ff04;color:#ff0;padding:4px 9px;cursor:pointer;background:#1100;z-index:20;display:none;}
+#shopbtn{position:fixed;top:10px;right:50px;font-size:clamp(9px,2.5vw,12px);letter-spacing:2px;border:1px solid #ff04;color:#ff0;padding:8px 12px;cursor:pointer;background:#1100;z-index:20;display:none;}
 
 #shopbtn.show{display:block;}
 
-#helpbtn{position:fixed;top:10px;right:10px;border:1px solid #0af6;color:#0af;padding:5px 12px;cursor:pointer;font-size:9px;letter-spacing:2px;background:rgba(0,10,20,.85);font-family:inherit;z-index:310;display:block;}
+#helpbtn{position:fixed;top:10px;right:10px;border:1px solid #0af6;color:#0af;padding:8px 14px;cursor:pointer;font-size:clamp(9px,2.5vw,12px);letter-spacing:2px;background:rgba(0,10,20,.85);font-family:inherit;z-index:310;display:block;}
 
 #chgwrap{position:fixed;bottom:0;left:0;right:0;height:34px;display:none;align-items:center;justify-content:center;gap:12px;background:rgba(0,8,0,.85);border-top:1px solid #0f03;z-index:20;}
 
@@ -131,7 +131,7 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 #shopitems{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:460px;}
 
-.sitem{border:1px solid #ff04;background:#110;border-radius:6px;padding:10px 12px;color:#ff0;font-size:10px;cursor:pointer;min-width:100px;text-align:center;}
+.sitem{border:1px solid #ff04;background:#110;border-radius:6px;padding:12px 14px;color:#ff0;font-size:clamp(10px,2.8vw,13px);cursor:pointer;min-width:clamp(100px,28vw,160px);text-align:center;}
 
 .sitem:hover{background:#ff02;border-color:#ff0;}
 
@@ -141,7 +141,7 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 #shopx{color:#f00;letter-spacing:3px;font-size:11px;cursor:pointer;border:1px solid #f004;padding:8px 18px;}
 
-#warn{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);font-size:15px;letter-spacing:3px;opacity:0;pointer-events:none;z-index:25;transition:opacity .4s;text-align:center;}
+#warn{position:fixed;top:38%;left:50%;transform:translate(-50%,-50%);font-size:clamp(13px,4vw,20px);letter-spacing:3px;opacity:0;pointer-events:none;z-index:25;transition:opacity .4s;text-align:center;padding:0 16px;}
 
 #warn.show{opacity:1;}
 
@@ -155,9 +155,9 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 #morning.on{display:flex;}
 
-#morning h2{font-size:20px;letter-spacing:8px;text-shadow:0 0 30px #0f0;}
+#morning h2{font-size:clamp(20px,6vw,36px);letter-spacing:8px;text-shadow:0 0 30px #0f0;}
 
-#mmsg{color:#0f05;font-size:12px;letter-spacing:3px;}
+#mmsg{color:#0f05;font-size:clamp(12px,3.5vw,18px);letter-spacing:3px;}
 
 #mearn{color:#ff0;font-size:15px;letter-spacing:4px;}
 
@@ -193,7 +193,7 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 
 
-<button id="settingsbtn" onclick="openSettings()" style="position:fixed;bottom:10px;left:10px;border:1px solid #0f05;color:#0f06;padding:6px 14px;cursor:pointer;font-size:10px;letter-spacing:3px;background:rgba(0,0,0,.7);font-family:inherit;z-index:320;">⚙ SETTINGS</button>
+<button id="settingsbtn" onclick="openSettings()" style="position:fixed;bottom:10px;left:10px;border:1px solid #0f05;color:#0f06;padding:10px 16px;cursor:pointer;font-size:clamp(10px,2.5vw,13px);letter-spacing:3px;background:rgba(0,0,0,.7);font-family:inherit;z-index:320;">⚙ SETTINGS</button>
 
 
 
@@ -439,11 +439,12 @@ var G = {
 };
 
 var MONS = {
-  left:  {id:'left',  pos:0, speed:0.000055, baseSpeed:0.000055, frozen:false, knockTimer:4500, defIdx:0, waiting:false, waitTimer:0, spawnDelay:0, rushing:false},
-  front: {id:'front', pos:0, speed:0.000040, baseSpeed:0.000040, frozen:false, knockTimer:5500, defIdx:1, waiting:false, waitTimer:0, spawnDelay:0, rushing:false},
-  right: {id:'right', pos:0, speed:0.000045, baseSpeed:0.000045, frozen:false, knockTimer:4200, defIdx:2, waiting:false, waitTimer:0, spawnDelay:0, rushing:false}
+  left:  {id:'left',  pos:0, speed:0.000055, baseSpeed:0.000055, frozen:false, knockTimer:4500, defIdx:0, waiting:false, waitTimer:0, spawnDelay:0, rushing:false, _isHollowSlot:false},
+  front: {id:'front', pos:0, speed:0.000040, baseSpeed:0.000040, frozen:false, knockTimer:5500, defIdx:1, waiting:false, waitTimer:0, spawnDelay:0, rushing:false, _isHollowSlot:false},
+  right: {id:'right', pos:0, speed:0.000045, baseSpeed:0.000045, frozen:false, knockTimer:4200, defIdx:2, waiting:false, waitTimer:0, spawnDelay:0, rushing:false, _isHollowSlot:false}
 };
 var VENT = {stage:0, timer:0, stageInterval:30000, frozen:false, freezeTimer:0, defIdx:3, active:false};
+var lastActiveSides = []; // corridors used last night — excluded from next night's pick
 
 var corrLights = {}, flashSpots = {}, ventGlow, leftDoor3D, rightDoor3D, frontDoor3D, ventMesh;
 var officeLamp, offFlickT = 0;
@@ -904,17 +905,113 @@ function buildRoom() {
 
   var bin=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.1,0.3,8),mMet);bin.position.set(-1.3,0.15,-0.5);gSc.add(bin);
 
-  // Notice board
+  // Notice board — moved to RIGHT side wall (x=3.9), visible when player looks right
+  // Side wall at x≈4, board faces inward (-x direction)
+  gB(3.88,2.0,-2.5, 0.05,0.9,1.4, new THREE.MeshLambertMaterial({color:0x2a1e0e}));
+  gB(3.86,2.0,-2.5, 0.05,0.78,1.25, new THREE.MeshLambertMaterial({color:0x5a3818}));
+  [[0,-0.1,0.15],[0,0.1,-0.2],[0,-0.05,-0.35],[0,0.18,0.3]].forEach(function(p){
+    var np=new THREE.Mesh(new THREE.PlaneGeometry(0.22,0.16),new THREE.MeshBasicMaterial({color:0xd4c8a0}));
+    np.rotation.y=Math.PI/2; np.position.set(3.83,2.0+p[1],-2.5+p[2]); gSc.add(np);
+    var pin2=new THREE.Mesh(new THREE.SphereGeometry(0.015,6,4),new THREE.MeshBasicMaterial({color:0xff2020}));
+    pin2.position.set(3.82,2.08+p[1],-2.5+p[2]); gSc.add(pin2);
+  });
+  // String connecting pins
+  var strMat = new THREE.MeshBasicMaterial({color:0xcc4400});
+  var str1=new THREE.Mesh(new THREE.BoxGeometry(0.004,0.004,0.55),strMat); str1.position.set(3.83,2.05,-2.35); gSc.add(str1);
+  var str2=new THREE.Mesh(new THREE.BoxGeometry(0.004,0.004,0.38),strMat); str2.rotation.y=0.3; str2.position.set(3.83,1.92,-2.55); gSc.add(str2);
 
-  gB(2.2,2.1,bz+0.08,1.4,0.9,0.05,new THREE.MeshLambertMaterial({color:0x2a1e0e}));
+  // Back wall decorations (z≈4.8 — behind player)
+  var mWallBack = new THREE.MeshLambertMaterial({color:0x1a1208});
+  // Clock on back wall
+  var clockFace = new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,0.04,16), new THREE.MeshPhongMaterial({color:0xc8b88a,specular:0x444433,shininess:30}));
+  clockFace.rotation.x=Math.PI/2; clockFace.position.set(-1.5,2.2,4.88); gSc.add(clockFace);
+  var clockRim = new THREE.Mesh(new THREE.TorusGeometry(0.22,0.025,6,16), new THREE.MeshPhongMaterial({color:0x222215,specular:0x444430,shininess:60}));
+  clockRim.position.set(-1.5,2.2,4.88); gSc.add(clockRim);
+  // Clock hands
+  var handM=new THREE.Mesh(new THREE.BoxGeometry(0.012,0.16,0.02),new THREE.MeshBasicMaterial({color:0x111108}));
+  handM.position.set(-1.5,2.28,4.90); gSc.add(handM);
+  var handH=new THREE.Mesh(new THREE.BoxGeometry(0.016,0.11,0.02),new THREE.MeshBasicMaterial({color:0x111108}));
+  handH.rotation.z=0.9; handH.position.set(-1.46,2.25,4.90); gSc.add(handH);
 
-  gB(2.2,2.1,bz+0.11,1.25,0.78,0.02,new THREE.MeshLambertMaterial({color:0x5a3818}));
+  // Small shelving unit on back wall
+  var mShelf2=new THREE.MeshPhongMaterial({color:0x2a1a08,specular:0x080400,shininess:10});
+  gB(1.8,1.6,4.88, 0.6,0.06,0.3, mShelf2);
+  gB(1.8,1.1,4.88, 0.6,0.06,0.3, mShelf2);
+  gB(1.52,1.35,4.88, 0.06,0.55,0.3, mShelf2);
+  gB(2.08,1.35,4.88, 0.06,0.55,0.3, mShelf2);
+  // Items on shelves
+  var mBott=new THREE.MeshPhongMaterial({color:0x0a1a28,specular:0x224466,shininess:60});
+  var bottle=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.04,0.22,8),mBott); bottle.position.set(1.72,1.73,4.82); gSc.add(bottle);
+  var lid=new THREE.Mesh(new THREE.CylinderGeometry(0.028,0.035,0.04,8),new THREE.MeshPhongMaterial({color:0x223344,specular:0x446688,shininess:80})); lid.position.set(1.72,1.86,4.82); gSc.add(lid);
+  // Small box on lower shelf
+  var sbox=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.1,0.12),new THREE.MeshLambertMaterial({color:0x3a2808})); sbox.position.set(1.88,1.18,4.82); gSc.add(sbox);
 
-  [[0.1,0.1],[-.2,-0.05],[0.3,-0.15],[-0.1,0.2]].forEach(function(p){var np=new THREE.Mesh(new THREE.PlaneGeometry(0.32,0.24),new THREE.MeshBasicMaterial({color:0xd4c8a0}));np.position.set(2.2+p[0],2.1+p[1],bz+0.13);gSc.add(np);var pin2=new THREE.Mesh(new THREE.SphereGeometry(0.018,6,4),new THREE.MeshBasicMaterial({color:0xff2020}));pin2.position.set(2.2+p[0],2.22+p[1],bz+0.14);gSc.add(pin2);});
+  // Worn poster frame on back wall left side
+  gB(-2.2,1.8,4.88, 0.65,0.9,0.04, new THREE.MeshLambertMaterial({color:0x0e0e0e}));
+  var moonCanvas2=document.createElement('canvas'); moonCanvas2.width=65; moonCanvas2.height=90;
+  var mc2=moonCanvas2.getContext('2d');
+  mc2.fillStyle='#080820'; mc2.fillRect(0,0,65,90);
+  mc2.fillStyle='#cc1100'; mc2.beginPath(); mc2.arc(32,45,24,0,Math.PI*2); mc2.fill();
+  mc2.fillStyle='#080820'; mc2.beginPath(); mc2.arc(41,36,18,0,Math.PI*2); mc2.fill();
+  var moonTex2=new THREE.CanvasTexture(moonCanvas2);
+  var moonPoster=new THREE.Mesh(new THREE.PlaneGeometry(0.58,0.82),new THREE.MeshBasicMaterial({map:moonTex2}));
+  moonPoster.rotation.y=Math.PI; moonPoster.position.set(-2.2,1.8,4.85); gSc.add(moonPoster);
 
   // Wall frames — only left side (center one was blocking tunnel view)
 
   [[-2.2,2.0,0x1a2810]].forEach(function(p){gB(p[0],p[1],bz+0.08,0.9,0.65,0.05,new THREE.MeshLambertMaterial({color:0x3a2a1a}));var img2=new THREE.Mesh(new THREE.PlaneGeometry(0.82,0.58),new THREE.MeshBasicMaterial({color:p[2]}));img2.position.set(p[0],p[1],bz+0.11);gSc.add(img2);});
+
+  // ── DETAILED CLOCK — above center corridor on front wall ──
+  var clockX = 0, clockY = (TH+CH)/2 + 0.1, clockZ = bz + 0.06;
+  var mClkBody = new THREE.MeshPhongMaterial({color:0x1a1208, specular:0x2a2010, shininess:20});
+  var mClkFace = new THREE.MeshPhongMaterial({color:0xd4c8a0, specular:0x443322, shininess:15});
+  var mClkRim  = new THREE.MeshPhongMaterial({color:0x222218, specular:0x444430, shininess:60});
+  var mClkHand = new THREE.MeshBasicMaterial({color:0x0a0a08});
+  var mClkSec  = new THREE.MeshBasicMaterial({color:0xcc2200});
+  var mClkNum  = new THREE.MeshBasicMaterial({color:0x1a1208});
+
+  // Case
+  var clkCase = new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,0.06,24), mClkBody);
+  clkCase.rotation.x = Math.PI/2; clkCase.position.set(clockX, clockY, clockZ-0.02); gSc.add(clkCase);
+  // Outer rim
+  var clkRim = new THREE.Mesh(new THREE.TorusGeometry(0.38,0.03,8,24), mClkRim);
+  clkRim.position.set(clockX, clockY, clockZ+0.01); gSc.add(clkRim);
+  // Face
+  var clkFace = new THREE.Mesh(new THREE.CircleGeometry(0.35,24), mClkFace);
+  clkFace.position.set(clockX, clockY, clockZ+0.02); gSc.add(clkFace);
+
+  // Hour markers (12 ticks)
+  for (var ti=0; ti<12; ti++) {
+    var ang = ti/12 * Math.PI*2;
+    var isMajor = ti%3===0;
+    var tkW = isMajor ? 0.025 : 0.012;
+    var tkH = isMajor ? 0.07  : 0.04;
+    var tkR = 0.295;
+    var tk = new THREE.Mesh(new THREE.BoxGeometry(tkW, tkH, 0.01), mClkNum);
+    tk.position.set(clockX + Math.sin(ang)*tkR, clockY + Math.cos(ang)*tkR, clockZ+0.025);
+    tk.rotation.z = -ang; gSc.add(tk);
+  }
+
+  // Center pin
+  var clkPin = new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.04,8), mClkRim);
+  clkPin.rotation.x = Math.PI/2; clkPin.position.set(clockX, clockY, clockZ+0.03); gSc.add(clkPin);
+
+  // Clock hands — stored for animation
+  var clkHourHand = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.18, 0.012), mClkHand);
+  clkHourHand.position.set(clockX, clockY, clockZ+0.035); gSc.add(clkHourHand);
+
+  var clkMinHand = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.26, 0.012), mClkHand);
+  clkMinHand.position.set(clockX, clockY, clockZ+0.04); gSc.add(clkMinHand);
+
+  var clkSecHand = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.30, 0.012), mClkSec);
+  clkSecHand.position.set(clockX, clockY, clockZ+0.045); gSc.add(clkSecHand);
+
+  // Store hands for update
+  gSc.userData.clkHour = clkHourHand;
+  gSc.userData.clkMin  = clkMinHand;
+  gSc.userData.clkSec  = clkSecHand;
+  gSc.userData.clkX    = clockX;
+  gSc.userData.clkY    = clockY;
 
   // Stain on floor
 
@@ -3110,6 +3207,7 @@ function checkKnock(dt) {
         mn.waitTimer = 12000 + Math.random() * 8000;
 
         mn.pos = 0; mn.rushing = false; mn.frozen = false;
+        G.lastMonsterLeft = Date.now(); // globalny cooldown — następny bot poczeka
 
         var mesh = monMeshes[side]; if (mesh) mesh.visible = false;
 
@@ -3195,11 +3293,40 @@ function checkMorning() {
 
   var pct = G.nightTimer / dur;
 
-  var hr = Math.floor(12 + 12 * pct) % 24, mn = Math.floor((12 * 60 * pct) % 60);
+  // Night goes from 12:00 PM (noon) to 12:00 AM (midnight)
+  var totalMins = Math.floor(pct * 720); // 720 minutes = 12 hours
+  var rawHr24 = 12 + Math.floor(totalMins / 60); // 12..23
+  var mn = totalMins % 60;
+  var displayHr = rawHr24 % 12 || 12; // 12h format: 12,1,2..11,12
+  var ampm = rawHr24 < 12 ? 'AM' : (rawHr24 < 24 ? 'PM' : 'AM');
+  // 12=PM, 13-23=PM, but 12 noon=PM, 0=AM — here rawHr24 starts at 12 (PM)
+  ampm = rawHr24 >= 12 && rawHr24 < 24 ? 'PM' : 'AM';
+  if (rawHr24 === 24 || rawHr24 === 0) { displayHr = 12; ampm = 'AM'; }
 
-  var hrStr = hr === 0 ? '00' : String(hr).padStart(2,'0');
+  document.getElementById('day').textContent = 'NIGHT ' + G.day + ' ' + String(displayHr).padStart(2,'0') + ':' + String(mn).padStart(2,'0') + ' ' + ampm;
 
-  document.getElementById('day').textContent = 'NIGHT ' + G.day + ' ' + hrStr + ':' + String(mn).padStart(2,'0');
+  // Animate 3D clock hands
+  if (gSc && gSc.userData.clkHour) {
+    var cx = gSc.userData.clkX, cy = gSc.userData.clkY;
+    var secReal = (G.nightTimer / 1000) % 60;
+    var minReal = (G.nightTimer / 60000) % 60;
+    var hrReal  = (G.nightTimer / 3600000) % 12;
+    var secAng  = secReal / 60 * Math.PI * 2;
+    var minAng  = (minReal + secReal/60) / 60 * Math.PI * 2;
+    var hrAng   = (hrReal + minReal/60) / 12 * Math.PI * 2;
+
+    var hh = gSc.userData.clkHour;
+    hh.position.set(cx + Math.sin(hrAng)*0.055, cy + Math.cos(hrAng)*0.055, hh.position.z);
+    hh.rotation.z = -hrAng;
+
+    var mh = gSc.userData.clkMin;
+    mh.position.set(cx + Math.sin(minAng)*0.08, cy + Math.cos(minAng)*0.08, mh.position.z);
+    mh.rotation.z = -minAng;
+
+    var sh = gSc.userData.clkSec;
+    sh.position.set(cx + Math.sin(secAng)*0.09, cy + Math.cos(secAng)*0.09, sh.position.z);
+    sh.rotation.z = -secAng;
+  }
 
 }
 
@@ -3553,106 +3680,69 @@ function resetNight() {
 
   }
 
-  // Night 1: 1 monster, Night 2: 2 monsters, Night 3+: 3 monsters
-
-  var numActive = G.day >= 3 ? 3 : G.day === 2 ? 2 : 1;
+  // Night 1: max 1 active bot at once, Night 2: max 2, Night 3+: max 3
+  var maxActive = G.day >= 3 ? 3 : G.day >= 2 ? 2 : 1;
 
   var allSides = ['left', 'front', 'right'];
 
-  // Znajdź który slot to HOLLOW
-
-  var hollowSideSlot = null;
-
-  ['left','front','right'].forEach(function(side) {
-
-    if (MDEFS[MONS[side].defIdx] && MDEFS[MONS[side].defIdx].special === 'hollow') hollowSideSlot = side;
-
-  });
-
-  // Losuj korytarze dla normalnych potworów
-
-  var shuffled = allSides.slice();
-
-  for (var si2 = shuffled.length - 1; si2 > 0; si2--) {
-
-    var rj = Math.floor(Math.random() * (si2 + 1));
-
-    var tmp = shuffled[si2]; shuffled[si2] = shuffled[rj]; shuffled[rj] = tmp;
-
+  function shuffleArr(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
   }
 
-  var activeSides = shuffled.slice(0, numActive);
-
-  // Pula normalnych potworów (rotacja bez HOLLOW)
-
-  var monsterPool = [];
-
-  for (var mi2 = 0; mi2 < numActive; mi2++) {
-
-    monsterPool.push(normalPool[(d + mi2) % normalPool.length]);
-
-  }
-
-  // Losuj który korytarz dostanie HOLLOW (od nocy 2)
-
+  // HOLLOW setup (night 3+)
   var hollowActive = G.day >= 3;
+  var hollowSide = allSides[Math.floor(Math.random() * allSides.length)];
+  var hollowDefIdx = MDEFS.findIndex(function(m){ return m.special === 'hollow'; });
 
-  var hollowSide = allSides[Math.floor(Math.random() * allSides.length)]; // hollow w losowym korytarzu
+  // Build shuffled normal monster pool for this night
+  var shuffledPool = normalPool.slice();
+  shuffleArr(shuffledPool);
 
+  // G.nightMaxActive — used by the dynamic spawner below
+  G.nightMaxActive = maxActive;
+  G.nightMonsterPool = shuffledPool;
+  G.nightMonsterPoolIdx = 0;
+  G.lastMonsterLeft = null; // reset cooldown na start nocy
+
+  // Initialize all corridor slots — ALL are "open" (no spawnDelay=-1)
   allSides.forEach(function(side) {
 
     var mn = MONS[side];
 
     mn.pos = 0;
-
     mn.frozen = false;
-
-    mn.waiting = false;
-
+    mn.waiting = true;   // start waiting — spawner will activate when quota allows
     mn.waitTimer = 0;
-
     mn.rushing = false;
-
     mn.knockTimer = (side==='left'?4500:side==='right'?4200:5500) + Math.random()*3000;
 
     var mesh = monMeshes[side];
-
     if (mesh) { mesh.visible = false; mesh.position.copy(monPos3D(side, 0)); }
 
     if (hollowActive && side === hollowSide) {
-
-      // Ten korytarz to HOLLOW
-
-      var hollowDefIdx = MDEFS.findIndex(function(m){ return m.special === 'hollow'; });
-
-      mn.defIdx = hollowDefIdx;
-
+      // HOLLOW slot
+      mn.defIdx    = hollowDefIdx;
       mn.baseSpeed = MDEFS[hollowDefIdx].speed * spd;
-
-      mn.speed = mn.baseSpeed;
-
+      mn.speed     = mn.baseSpeed;
       mn.spawnDelay = 0;
-
-      mn.waiting = true;
-
-      // Pierwsze pojawienie się losowo 30-48s
-
+      mn.waiting   = true;
       mn.waitTimer = 15000 + Math.random() * 15000;
-
+      mn._isHollowSlot = true;
     } else {
-
-      // Normalny potwór
-
-      var isActive = activeSides.indexOf(side) >= 0;
-
-      mn.defIdx = isActive ? monsterPool[activeSides.indexOf(side)] : normalPool[d % normalPool.length];
-
+      // Normal slot — pick a monster type from pool
+      mn.defIdx    = shuffledPool[G.nightMonsterPoolIdx % shuffledPool.length];
+      G.nightMonsterPoolIdx++;
       mn.baseSpeed = MDEFS[mn.defIdx].speed * spd;
-
-      mn.speed = mn.baseSpeed;
-
-      mn.spawnDelay = isActive ? (activeSides.indexOf(side) * 7000 + Math.random() * 5000) : 999999;
-
+      mn.speed     = mn.baseSpeed;
+      mn.spawnDelay = 0;
+      mn._isHollowSlot = false;
+      // Start with a random initial delay so they don't all rush at once
+      mn.waiting   = true;
+      mn.waitTimer = 8000 + Math.random() * 10000; // 8-18s initial wait
     }
 
   });
@@ -4160,6 +4250,8 @@ function buildShopUI() {
     if (!isBought) {
 
       div.onclick = (function(item) { return function() {
+
+        if (bought[item.id]) { return; } // already bought — extra guard
 
         if (G.money < item.cost) { return; }
 
@@ -4890,7 +4982,41 @@ function update(dt) {
 
     var def3 = MDEFS[mn.defIdx];
 
-    // Spawn delay at start of night
+    // === DYNAMIC CORRIDOR QUOTA ===
+    if (!mn._isHollowSlot) {
+      if (mn.waiting) {
+        mn.waitTimer -= dt;
+        if (mn.waitTimer <= 0) {
+          // Zlicz ile botów już jest aktywnych (nie czeka)
+          var activeCount = ['left','front','right'].filter(function(s) {
+            return !MONS[s]._isHollowSlot && !MONS[s].waiting;
+          }).length;
+
+          var cooldownOk = !G.lastMonsterLeft || (Date.now() - G.lastMonsterLeft) > 2500;
+
+          if (activeCount < G.nightMaxActive && cooldownOk) {
+            // Ruszaj — losuj typ potwora
+            var pool2 = G.nightMonsterPool;
+            mn.defIdx = pool2[Math.floor(Math.random() * pool2.length)];
+            mn.baseSpeed = MDEFS[mn.defIdx].speed * Math.max(0.3, 1 + (G.day - 1) * 0.10);
+            mn.speed = mn.baseSpeed;
+            mn.waiting = false;
+            mn.pos = 0;
+            G.lastMonsterLeft = null; // reset cooldown po spawnie
+          } else {
+            // Quota pełna lub cooldown — sprawdź za chwilę
+            mn.waitTimer = 1500 + Math.random() * 2000;
+            var mesh0 = monMeshes[mn.id]; if (mesh0) mesh0.visible = false;
+            return;
+          }
+        } else {
+          var mesh0b = monMeshes[mn.id]; if (mesh0b) mesh0b.visible = false;
+          return;
+        }
+      }
+    }
+
+    // Spawn delay (legacy, keep 0 now but guard anyway)
 
     if (mn.spawnDelay > 0) {
 
@@ -4902,17 +5028,16 @@ function update(dt) {
 
     }
 
-    // Waiting
-
+    // Waiting (tylko hollow — non-hollow obsłużone wyżej w quota check)
     if (mn.waiting) {
 
       mn.waitTimer -= dt;
 
       if (mn.waitTimer <= 0) { mn.waiting = false; mn.pos = 0; }
 
-      var mesh2 = monMeshes[mn.id];
+      var mesh2b = monMeshes[mn.id];
 
-      if (mesh2) mesh2.visible = false;
+      if (mesh2b) mesh2b.visible = false;
 
       return;
 
@@ -5361,7 +5486,7 @@ function startGame(loadSave) {
 
   G.dead=false;G.morning=false;G.powerCutTriggered=false;
 
-  if (!loadSave) resetNight();
+  resetNight(); // always randomize corridors fresh
 
   G.running=true;
 
@@ -5521,4 +5646,4 @@ function closeHelp() {
 
 </body>
 
-</html>`
+</html>
