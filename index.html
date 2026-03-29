@@ -484,7 +484,7 @@ var MDEFS = [
 
    poses:[{n:'LURKING',tt:0.15,ls:0.08,ar:-0.3,ht:0.05},{n:'ATTACKING',tt:0.45,ls:0.25,ar:0.6,ht:0.2},{n:'WATCHING',tt:0,ls:0.05,ar:-0.8,ht:-0.1},{n:'STANDING',tt:0,ls:0,ar:-0.6,ht:0}],
 
-   speed:0.000032},
+   speed:0.000023},
 
   {letter:'I',name:'IMPALER',night:1,bodyCol:0xaa5a10,accentCol:0x6a3208,eyeCol:0xffcc00,teethCol:0xddccaa,bloodCol:0xaa2200,skinCol:0x883808,
 
@@ -492,7 +492,7 @@ var MDEFS = [
 
    poses:[{n:'REACHING',tt:0.2,ls:0.1,ar:0.8,ht:0.1},{n:'CROUCHING',tt:0.5,ls:0.4,ar:0.1,ht:0.3},{n:'RUNNING',tt:0.3,ls:0.3,ar:0.4,ht:0.15},{n:'GROWLING',tt:0.25,ls:0.08,ar:-0.2,ht:0.25}],
 
-   speed:0.000024},
+   speed:0.000021},
 
   {letter:'G',name:'GAUNT',night:1,bodyCol:0x1010cc,accentCol:0x08088a,eyeCol:0x88ccff,teethCol:0xaaccff,bloodCol:0x0000cc,skinCol:0x080888,
 
@@ -500,7 +500,7 @@ var MDEFS = [
 
    poses:[{n:'CRAWLING',tt:0.7,ls:0.35,ar:0.3,ht:0.4},{n:'LISTENING',tt:0.1,ls:0.05,ar:-0.9,ht:-0.3},{n:'LEAPING',tt:0.3,ls:0.5,ar:0.5,ht:0.2},{n:'SWAYING',tt:0.35,ls:0.1,ar:-0.1,ht:0.5}],
 
-   speed:0.000028},
+   speed:0.000021},
 
   {letter:'H',name:'HOLLOW',night:2,bodyCol:0x208020,accentCol:0x104010,eyeCol:0xff0000,teethCol:0xaaffaa,bloodCol:0x005500,skinCol:0x155015,
 
@@ -516,7 +516,7 @@ var MDEFS = [
 
    poses:[{n:'SCREAMING',tt:0.1,ls:0.08,ar:0.9,ht:-0.2},{n:'RUNNING',tt:0.25,ls:0.35,ar:0.3,ht:0.1},{n:'RAGING',tt:0.35,ls:0.25,ar:0.7,ht:0.3},{n:'FLOATING',tt:-0.1,ls:0.05,ar:-0.2,ht:-0.15}],
 
-   speed:0.000040},
+   speed:0.000029},
 
   {letter:'W',name:'WRAITH',night:3,bodyCol:0x888888,accentCol:0x444444,eyeCol:0xffffff,teethCol:0xeeeeee,bloodCol:0x444444,skinCol:0x666660,
 
@@ -524,7 +524,7 @@ var MDEFS = [
 
    poses:[{n:'CEILING',tt:-0.8,ls:0.4,ar:-0.3,ht:-0.5},{n:'WALL',tt:0.3,ls:0.5,ar:0.4,ht:0.2},{n:'GLIDING',tt:0,ls:0.1,ar:-0.8,ht:0},{n:'STANDING',tt:0,ls:0,ar:-0.6,ht:0}],
 
-   speed:0.000030},
+   speed:0.000022},
 
   {letter:'A',name:'ABYSS',night:4,bodyCol:0x003060,accentCol:0x001830,eyeCol:0x00ccff,teethCol:0x88ddff,bloodCol:0x000066,skinCol:0x002050,
 
@@ -532,7 +532,7 @@ var MDEFS = [
 
    poses:[{n:'DRAGGING',tt:0.65,ls:0.4,ar:0.15,ht:0.45},{n:'FLOWING',tt:0.2,ls:0.15,ar:0,ht:0.1},{n:'ATTACKING',tt:0.3,ls:0.25,ar:0.8,ht:0.2},{n:'WAITING',tt:0.1,ls:0.05,ar:-0.5,ht:0.05}],
 
-   speed:0.000042},
+   speed:0.000032},
 
   {letter:'T',name:'TERROR',night:5,bodyCol:0xaa4000,accentCol:0x882000,eyeCol:0xff8800,teethCol:0xffaa66,bloodCol:0xaa0000,skinCol:0x883000,
 
@@ -556,7 +556,7 @@ var MDEFS = [
 
    poses:[{n:'OLD GAIT',tt:0.3,ls:0.08,ar:-0.15,ht:0.2},{n:'FALLING',tt:0.8,ls:0.3,ar:-0.4,ht:0.6},{n:'GROWING',tt:-0.1,ls:0.05,ar:-0.7,ht:-0.05},{n:'DEADENS',tt:0.15,ls:0.06,ar:0.1,ht:0.15}],
 
-   speed:0.000026}
+   speed:0.000023}
 
 ];
 
@@ -583,7 +583,8 @@ function initGame() {
 
   gR = new THREE.WebGLRenderer({canvas: gc, antialias: true});
 
-  gR.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  // Mobile: use native pixel ratio for sharpness, cap at 2 for perf
+  gR.setPixelRatio(Math.min(devicePixelRatio, window.navigator.maxTouchPoints > 0 ? 2 : 1.5));
 
   gR.setSize(innerWidth, innerHeight);
 
@@ -597,7 +598,9 @@ function initGame() {
 
   gSc.fog = new THREE.FogExp2(0x000000, 0.032);
 
-  gCam = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 60);
+  // Wider FOV on mobile/portrait for better visibility
+  var baseFov = (innerWidth < 600) ? 85 : (innerWidth < 1024) ? 78 : 72;
+  gCam = new THREE.PerspectiveCamera(baseFov, innerWidth / innerHeight, 0.1, 60);
 
   gCam.position.set(0, 1.6, 0);
 
@@ -606,6 +609,7 @@ function initGame() {
     gR.setSize(innerWidth, innerHeight);
 
     gCam.aspect = innerWidth / innerHeight;
+    gCam.fov = (innerWidth < 600) ? 85 : (innerWidth < 1024) ? 78 : 72;
 
     gCam.updateProjectionMatrix();
 
@@ -808,25 +812,57 @@ function buildRoom() {
 
   gB(0.1,0.8,-1.0,0.55,0.02,0.18,new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x202020,shininess:30}));
 
-  gB(0,0.8,-1.05,0.32,0.04,0.28,mMet);gB(0,0.95,-1.05,0.06,0.22,0.06,mMet);gB(0,1.2,-1.06,0.72,0.52,0.06,mMet);
+  // Detect device type
+  var isMobile = /iPhone|Android.*Mobile|iPod/.test(navigator.userAgent);
+  var isTablet = /iPad|Android(?!.*Mobile)/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && window.innerWidth >= 600 && window.innerWidth < 1200);
+  var deviceType = isMobile ? 'phone' : isTablet ? 'tablet' : 'laptop';
 
-  // Monitor screen with red moon
+  if (deviceType === 'laptop') {
+    // Laptop: screen + base + keyboard
+    gB(0,0.8,-1.05,0.32,0.04,0.28,mMet);
+    gB(0,0.95,-1.05,0.06,0.22,0.06,mMet);
+    gB(0,1.2,-1.06,0.72,0.52,0.06,mMet);
+  } else if (deviceType === 'tablet') {
+    // Tablet: slim rectangular slab propped up
+    gB(0,0.84,-1.0,0.55,0.04,0.36,mMet); // stand base
+    gB(0,0.96,-1.05,0.04,0.22,0.04,mMet); // stand pole
+    gB(0,1.15,-1.06,0.58,0.78,0.05,new THREE.MeshPhongMaterial({color:0x111111,specular:0x333333,shininess:60})); // tablet body
+    // rounded corners effect - thin bezels
+    gB(0,1.15,-1.03,0.52,0.70,0.01,new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x111111,shininess:20})); // screen bezel
+  } else {
+    // Phone: lying flat on desk
+    var mPhone = new THREE.MeshPhongMaterial({color:0x111111, specular:0x444444, shininess:80});
+    var phoneBody = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.035, 0.44), mPhone);
+    phoneBody.position.set(0.3, 0.813, -0.95); gSc.add(phoneBody);
+    // Camera bump
+    var phoneCam = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.005,8), new THREE.MeshPhongMaterial({color:0x333333,specular:0x666666,shininess:100}));
+    phoneCam.position.set(0.3, 0.833, -0.76); gSc.add(phoneCam);
+  }
+
+  // Screen canvas (same for all devices, size adapts)
   var scrCanvas = document.createElement('canvas');
   scrCanvas.width = 128; scrCanvas.height = 92;
   var scrCtx = scrCanvas.getContext('2d');
-  scrCtx.fillStyle = '#080820';
-  scrCtx.fillRect(0,0,128,92);
-  // Red moon crescent
-  scrCtx.fillStyle = '#cc1100';
-  scrCtx.beginPath(); scrCtx.arc(64,46,28,0,Math.PI*2); scrCtx.fill();
-  scrCtx.fillStyle = '#080820';
-  scrCtx.beginPath(); scrCtx.arc(76,38,22,0,Math.PI*2); scrCtx.fill();
-  // Glow
+  scrCtx.fillStyle = '#080820'; scrCtx.fillRect(0,0,128,92);
+  scrCtx.fillStyle = '#cc1100'; scrCtx.beginPath(); scrCtx.arc(64,46,28,0,Math.PI*2); scrCtx.fill();
+  scrCtx.fillStyle = '#080820'; scrCtx.beginPath(); scrCtx.arc(76,38,22,0,Math.PI*2); scrCtx.fill();
   var grd = scrCtx.createRadialGradient(52,50,4,52,50,32);
   grd.addColorStop(0,'rgba(200,20,0,0.22)'); grd.addColorStop(1,'rgba(0,0,0,0)');
   scrCtx.fillStyle=grd; scrCtx.fillRect(0,0,128,92);
   var scrTex = new THREE.CanvasTexture(scrCanvas);
-  var scr=new THREE.Mesh(new THREE.BoxGeometry(0.64,0.46,0.01),new THREE.MeshBasicMaterial({map:scrTex}));scr.position.set(0,1.2,-1.02);gSc.add(scr);
+  var scr;
+  if (deviceType === 'phone') {
+    // Flat screen on top of lying phone
+    scr = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.004, 0.38), new THREE.MeshBasicMaterial({map:scrTex}));
+    scr.position.set(0.3, 0.833, -0.95);
+  } else if (deviceType === 'tablet') {
+    scr = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.68, 0.01), new THREE.MeshBasicMaterial({map:scrTex}));
+    scr.position.set(0, 1.15, -1.02);
+  } else {
+    scr = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.46, 0.01), new THREE.MeshBasicMaterial({map:scrTex}));
+    scr.position.set(0, 1.2, -1.02);
+  }
+  gSc.add(scr);
   gSc.userData.monitorScr = scr;
   gSc.userData.monitorScrTex = scrTex;
   gSc.userData.monitorScrOffTex = (function(){
@@ -915,11 +951,18 @@ function buildRoom() {
   clockFace.rotation.x=Math.PI/2; clockFace.position.set(-1.5,2.2,4.88); gSc.add(clockFace);
   var clockRim = new THREE.Mesh(new THREE.TorusGeometry(0.22,0.025,6,16), new THREE.MeshPhongMaterial({color:0x222215,specular:0x444430,shininess:60}));
   clockRim.position.set(-1.5,2.2,4.88); gSc.add(clockRim);
-  // Clock hands
-  var handM=new THREE.Mesh(new THREE.BoxGeometry(0.012,0.16,0.02),new THREE.MeshBasicMaterial({color:0x111108}));
-  handM.position.set(-1.5,2.28,4.90); gSc.add(handM);
+  // Clock hands — pivot at center (position = center, rotation around z)
   var handH=new THREE.Mesh(new THREE.BoxGeometry(0.016,0.11,0.02),new THREE.MeshBasicMaterial({color:0x111108}));
-  handH.rotation.z=0.9; handH.position.set(-1.46,2.25,4.90); gSc.add(handH);
+  handH.position.set(-1.5,2.2,4.90); gSc.add(handH);
+  var handM=new THREE.Mesh(new THREE.BoxGeometry(0.012,0.15,0.02),new THREE.MeshBasicMaterial({color:0x111108}));
+  handM.position.set(-1.5,2.2,4.91); gSc.add(handM);
+  var handS=new THREE.Mesh(new THREE.BoxGeometry(0.005,0.18,0.02),new THREE.MeshBasicMaterial({color:0xcc2200}));
+  handS.position.set(-1.5,2.2,4.92); gSc.add(handS);
+  gSc.userData.wallClkHour = handH;
+  gSc.userData.wallClkMin  = handM;
+  gSc.userData.wallClkSec  = handS;
+  gSc.userData.wallClkCX = -1.5;
+  gSc.userData.wallClkCY = 2.2;
 
   // Small shelving unit on back wall
   var mShelf2=new THREE.MeshPhongMaterial({color:0x2a1a08,specular:0x080400,shininess:10});
@@ -983,13 +1026,11 @@ function buildRoom() {
   var clkMinHand = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.26, 0.012), mClkHand);
   clkMinHand.position.set(clockX, clockY, clockZ+0.04); gSc.add(clkMinHand);
 
-  var clkSecHand = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.30, 0.012), mClkSec);
-  clkSecHand.position.set(clockX, clockY, clockZ+0.045); gSc.add(clkSecHand);
+
 
   // Store hands for update
   gSc.userData.clkHour = clkHourHand;
   gSc.userData.clkMin  = clkMinHand;
-  gSc.userData.clkSec  = clkSecHand;
   gSc.userData.clkX    = clockX;
   gSc.userData.clkY    = clockY;
 
@@ -1981,7 +2022,7 @@ function hollowPassage(side, mn, def) {
 
         MONS[s].waiting = true;
 
-        MONS[s].waitTimer = 15000 + Math.random() * 15000;
+        MONS[s].waitTimer = 30000 + Math.random() * 10000;
 
         MONS[s].rushing = false;
 
@@ -1992,13 +2033,21 @@ function hollowPassage(side, mn, def) {
         // Odblokuj pozostałych — krótka przerwa 3-5s
 
         MONS[s].frozen = false;
+        MONS[s].waiting = true;
 
-        if (!MONS[s].waiting) {
-
-          MONS[s].waiting = true;
-
-          MONS[s].waitTimer = 3000 + Math.random() * 2000;
-
+        // Zwolnij bota który był w tym korytarzu
+        if (G.bots) {
+          for (var hbi = 0; hbi < G.bots.length; hbi++) {
+            if (G.bots[hbi].side === s) {
+              G.bots[hbi].side = null;
+              G.bots[hbi].waitTimer = 3000 + Math.random() * 2000;
+              if (G.bots[hbi]._wasHollowSlot) {
+                MONS[s]._isHollowSlot = true;
+                G.bots[hbi]._wasHollowSlot = false;
+              }
+              break;
+            }
+          }
         }
 
       }
@@ -2483,7 +2532,11 @@ function setupInput() {
 
   gc.addEventListener('mouseup', function(e) { if (!mdragged) onCanvasClick(e); });
 
-  gc.addEventListener('touchend', function(e) { e.preventDefault(); if (!tdragged) onCanvasClick(e); }, {passive: false});
+  gc.addEventListener('touchend', function(e) {
+    if (!tdragged && e.changedTouches && e.changedTouches.length > 0) {
+      onCanvasClick(e);
+    }
+  }, {passive: true});
 
   // Charge bar removed from game - charging only in day room
 
@@ -2808,11 +2861,16 @@ function showMiniOverlay() {
 
   var pct = Math.round((G.battery / G.maxBattery) * 100);
 
+  var remaining = G.maxBattery - G.battery;
+  var tasksLeft = Math.ceil(remaining / (G.maxBattery * 0.28));
+
   div.innerHTML =
 
     '<div style="color:#0f0;font-size:11px;letter-spacing:4px;">BATTERY: ' + pct + '%</div>' +
 
     '<div style="color:#ff0;font-size:13px;letter-spacing:3px;">CHARGING GENERATOR</div>' +
+
+    '<div style="color:#ff08;font-size:9px;letter-spacing:2px;">TASKS TO FULL: ' + tasksLeft + '</div>' +
 
     '<div id="cmtask" style="color:#0f0;font-size:10px;letter-spacing:2px;">' + task.label + '<span id="cmcnt">0</span>/' + task.needed + '</div>' +
 
@@ -3156,9 +3214,27 @@ function checkKnock(dt) {
 
     if (isDoorOpen && mn.pos >= 0.82) {
 
-      (function(d, s) { setTimeout(function() { triggerJS(d, s); }, 200); })(def, side);
+      mn.waiting = true;
+      mn.pos = 0; mn.rushing = false;
+      G.lastMonsterLeft = Date.now();
+      var msh = monMeshes[side]; if (msh) msh.visible = false;
 
-      mn.pos = 1; // stop advancing
+      // Zwolnij korytarz
+      if (G.bots) {
+        for (var bi3 = 0; bi3 < G.bots.length; bi3++) {
+          if (G.bots[bi3].side === side) {
+            G.bots[bi3].side = null;
+            G.bots[bi3].waitTimer = 4000 + Math.random() * 4000;
+            if (G.bots[bi3]._wasHollowSlot) {
+              MONS[side]._isHollowSlot = true;
+              G.bots[bi3]._wasHollowSlot = false;
+            }
+            break;
+          }
+        }
+      }
+
+      (function(d, s) { setTimeout(function() { triggerJS(d, s); }, 200); })(def, side);
 
       return;
 
@@ -3183,13 +3259,26 @@ function checkKnock(dt) {
         // Knock opens door and monster retreats
 
         mn.waiting = true;
-
-        mn.waitTimer = 12000 + Math.random() * 8000;
-
         mn.pos = 0; mn.rushing = false; mn.frozen = false;
-        G.lastMonsterLeft = Date.now(); // globalny cooldown — następny bot poczeka
+        G.lastMonsterLeft = Date.now();
 
         var mesh = monMeshes[side]; if (mesh) mesh.visible = false;
+
+        // Zwolnij korytarz — znajdź bota który go zajmował i daj mu nowy timer
+        if (G.bots) {
+          for (var bi2 = 0; bi2 < G.bots.length; bi2++) {
+            if (G.bots[bi2].side === side) {
+              G.bots[bi2].side = null;
+              G.bots[bi2].waitTimer = 4000 + Math.random() * 4000;
+              // Przywróć hollow slot jeśli bot go zajmował
+              if (G.bots[bi2]._wasHollowSlot) {
+                MONS[side]._isHollowSlot = true;
+                G.bots[bi2]._wasHollowSlot = false;
+              }
+              break;
+            }
+          }
+        }
 
         setTimeout(function() {
 
@@ -3288,12 +3377,12 @@ function checkMorning() {
   // Animate 3D clock hands
   if (gSc && gSc.userData.clkHour) {
     var cx = gSc.userData.clkX, cy = gSc.userData.clkY;
-    var secReal = (G.nightTimer / 1000) % 60;
-    var minReal = (G.nightTimer / 60000) % 60;
-    var hrReal  = (G.nightTimer / 3600000) % 12;
-    var secAng  = secReal / 60 * Math.PI * 2;
-    var minAng  = (minReal + secReal/60) / 60 * Math.PI * 2;
-    var hrAng   = (hrReal + minReal/60) / 12 * Math.PI * 2;
+
+    var gameMin2  = totalMins % 60;
+    var gameHr2   = (rawHr24 - 12 + 12) % 12;
+
+    var minAng  = (gameMin2 / 60) * Math.PI * 2;
+    var hrAng   = ((gameHr2 + gameMin2 / 60) / 12) * Math.PI * 2;
 
     var hh = gSc.userData.clkHour;
     hh.position.set(cx + Math.sin(hrAng)*0.055, cy + Math.cos(hrAng)*0.055, hh.position.z);
@@ -3302,10 +3391,24 @@ function checkMorning() {
     var mh = gSc.userData.clkMin;
     mh.position.set(cx + Math.sin(minAng)*0.08, cy + Math.cos(minAng)*0.08, mh.position.z);
     mh.rotation.z = -minAng;
+  }
 
-    var sh = gSc.userData.clkSec;
-    sh.position.set(cx + Math.sin(secAng)*0.09, cy + Math.cos(secAng)*0.09, sh.position.z);
-    sh.rotation.z = -secAng;
+  // Zegar na tylnej ścianie — dokładnie ta sama godzina co HUD
+  if (gSc && gSc.userData.wallClkMin) {
+    var wx = gSc.userData.wallClkCX, wy = gSc.userData.wallClkCY;
+
+    // Sekundy w czasie gry (czas gry jest przyspieszony)
+    var gameSec  = (G.nightTimer / 1000) % 60;
+    var gameMin  = totalMins % 60;           // minuty z HUD (0-59)
+    var gameHr12 = (rawHr24 - 12 + 12) % 12; // godzina 0-11 (12:00=0, 13:00=1...)
+
+    var wSecAng = (gameSec / 60) * Math.PI * 2;
+    var wMinAng = ((gameMin + gameSec / 60) / 60) * Math.PI * 2;
+    var wHrAng  = ((gameHr12 + gameMin / 60) / 12) * Math.PI * 2;
+
+    gSc.userData.wallClkHour.rotation.z = -wHrAng;
+    gSc.userData.wallClkMin.rotation.z  = -wMinAng;
+    gSc.userData.wallClkSec.rotation.z  = -wSecAng;
   }
 
 }
@@ -3661,8 +3764,8 @@ function resetNight() {
 
   }
 
-  // Night 1: max 1 active bot at once, Night 2: max 2, Night 3+: max 3
-  var maxActive = G.day >= 3 ? 3 : G.day >= 2 ? 2 : 1;
+  // Liczba botów: noc 1=1, noc 2=2, noc 3+=2 (hollow osobno)
+  var numBots = G.day >= 2 ? 2 : 1;
 
   var allSides = ['left', 'front', 'right'];
 
@@ -3679,54 +3782,47 @@ function resetNight() {
   var hollowSide = allSides[Math.floor(Math.random() * allSides.length)];
   var hollowDefIdx = MDEFS.findIndex(function(m){ return m.special === 'hollow'; });
 
-  // Build shuffled normal monster pool for this night
+  // Pula normalnych potworów
   var shuffledPool = normalPool.slice();
   shuffleArr(shuffledPool);
 
-  // G.nightMaxActive — used by the dynamic spawner below
-  G.nightMaxActive = maxActive;
   G.nightMonsterPool = shuffledPool;
-  G.nightMonsterPoolIdx = 0;
-  G.lastMonsterLeft = null; // reset cooldown na start nocy
+  G.lastMonsterLeft = null;
 
-  // Initialize all corridor slots — ALL are "open" (no spawnDelay=-1)
+  // Inicjalizuj wszystkie korytarze jako puste/czekające
   allSides.forEach(function(side) {
-
     var mn = MONS[side];
-
     mn.pos = 0;
     mn.frozen = false;
-    mn.waiting = true;   // start waiting — spawner will activate when quota allows
+    mn.waiting = true;
     mn.waitTimer = 0;
     mn.rushing = false;
     mn.knockTimer = (side==='left'?4500:side==='right'?4200:5500) + Math.random()*3000;
-
+    mn.spawnDelay = 0;
+    mn._isHollowSlot = false;
     var mesh = monMeshes[side];
     if (mesh) { mesh.visible = false; mesh.position.copy(monPos3D(side, 0)); }
-
-    if (hollowActive && side === hollowSide) {
-      // HOLLOW slot
-      mn.defIdx    = hollowDefIdx;
-      mn.baseSpeed = MDEFS[hollowDefIdx].speed * spd;
-      mn.speed     = mn.baseSpeed;
-      mn.spawnDelay = 0;
-      mn.waiting   = true;
-      mn.waitTimer = 15000 + Math.random() * 15000;
-      mn._isHollowSlot = true;
-    } else {
-      // Normal slot — pick a monster type from pool
-      mn.defIdx    = shuffledPool[G.nightMonsterPoolIdx % shuffledPool.length];
-      G.nightMonsterPoolIdx++;
-      mn.baseSpeed = MDEFS[mn.defIdx].speed * spd;
-      mn.speed     = mn.baseSpeed;
-      mn.spawnDelay = 0;
-      mn._isHollowSlot = false;
-      // Start with a random initial delay so they don't all rush at once
-      mn.waiting   = true;
-      mn.waitTimer = 8000 + Math.random() * 10000; // 8-18s initial wait
-    }
-
   });
+
+  // Ustaw hollow slot
+  if (hollowActive) {
+    var hmn = MONS[hollowSide];
+    hmn.defIdx    = hollowDefIdx;
+    hmn.baseSpeed = MDEFS[hollowDefIdx].speed * spd;
+    hmn.speed     = hmn.baseSpeed;
+    hmn.waiting   = true;
+    hmn.waitTimer = 30000 + Math.random() * 10000;
+    hmn._isHollowSlot = true;
+  }
+
+  // Stwórz boty jako niezależne byty z timerem
+  G.bots = [];
+  for (var bi = 0; bi < numBots; bi++) {
+    G.bots.push({
+      side: null, // null = czeka, 'left'/'front'/'right' = w korytarzu
+      waitTimer: 2000 + bi * 2000 + Math.random() * 3000 // rozłożone starty
+    });
+  }
 
   // Przebuduj meshes potworów żeby kolory pasowały do aktualnych defIdx
 
@@ -4000,12 +4096,6 @@ var SITEMS = [
 
    apply:function(){G.upgrades.painting=1;upgradePainting(1);}},
 
-  {id:'off4b', name:'Posters',       desc:'Dark NIGHTWATCH posters on the walls', cost:50, icon:'🖼',
-
-   preview:'Office: posters on the walls',
-
-   apply:function(){G.upgrades.posters=1;upgradePosters(1);}},
-
   {id:'off5', name:'Potted plant', desc:'Large black plant in the corner of the room', cost:60,  icon:'🌿',
 
    preview:'Office: black plant in the corner',
@@ -4097,9 +4187,10 @@ function upgradePosters(lvl) {
     var mf = new THREE.MeshLambertMaterial({color:0x0e0e0e});
     var mp = new THREE.MeshBasicMaterial({color:0x001500});
     var frame = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.05, 0.05), mf);
-    frame.position.set(p[0], p[1], -4.96); gSc.add(frame);
+    frame.position.set(p[0], p[1], 4.96); gSc.add(frame);
     var poster = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.94), mp);
-    poster.position.set(p[0], p[1], -4.93); gSc.add(poster);
+    poster.rotation.y = Math.PI;
+    poster.position.set(p[0], p[1], 4.93); gSc.add(poster);
     // Red moon on poster
     var moonCanvas = document.createElement('canvas');
     moonCanvas.width = 64; moonCanvas.height = 94;
@@ -4979,76 +5070,82 @@ function update(dt) {
 
   });
 
+  // === GLOBALNY SPAWNER ===
+  // Odejmuj timery botów
+  if (G.bots) {
+    G.bots.forEach(function(bot) {
+      if (bot.waitTimer > 0) bot.waitTimer -= dt;
+    });
+
+    var cooldownOk = !G.lastMonsterLeft || (Date.now() - G.lastMonsterLeft) > 2500;
+
+    // Dla każdego bota który skończył czekać — daj mu wolny korytarz
+    G.bots.forEach(function(bot) {
+      if (bot.side !== null) return; // już w korytarzu
+      if (bot.waitTimer > 0) return; // jeszcze czeka
+      if (!cooldownOk) return;
+
+      // Wolne korytarze = te gdzie nie ma żadnego aktywnego bota ani hollow
+      var occupied = [];
+      G.bots.forEach(function(b) { if (b.side !== null) occupied.push(b.side); });
+      ['left','front','right'].forEach(function(s) {
+        if (MONS[s]._isHollowSlot && !MONS[s].waiting) occupied.push(s);
+      });
+
+      var free = ['left','front','right'].filter(function(s) {
+        if (occupied.indexOf(s) >= 0) return false;
+        // Hollow slot wolny tylko gdy hollow czeka
+        if (MONS[s]._isHollowSlot) return MONS[s].waiting && !hollowRunning;
+        return true;
+      });
+
+      if (free.length === 0) {
+        bot.waitTimer = 1000;
+        return;
+      }
+
+      // Losuj wolny korytarz
+      var side = free[Math.floor(Math.random() * free.length)];
+      bot.side = side;
+
+      // Ustaw slot korytarza — tymczasowo wyłącz hollow flag jeśli bot go zajmuje
+      var mn = MONS[side];
+      var wasHollowSlot = mn._isHollowSlot;
+      mn._isHollowSlot = false; // bot zajął ten slot tymczasowo
+      bot._wasHollowSlot = wasHollowSlot; // zapamiętaj żeby przywrócić
+      var pool2 = G.nightMonsterPool;
+      mn.defIdx    = pool2[Math.floor(Math.random() * pool2.length)];
+      mn.baseSpeed = MDEFS[mn.defIdx].speed * Math.max(0.3, 1 + (G.day - 1) * 0.10);
+      mn.speed     = mn.baseSpeed;
+      mn.waiting   = false;
+      mn.pos       = 0;
+      mn.rushing   = false;
+      mn.frozen    = false;
+      mn.knockTimer = (side==='left'?4500:side==='right'?4200:5500) + Math.random()*3000;
+      G.lastMonsterLeft = null;
+
+      // Przebuduj mesh dla nowego typu
+      var oldMesh = monMeshes[side];
+      if (oldMesh) gSc.remove(oldMesh);
+      var newMesh = buildGameMonMesh(MDEFS[mn.defIdx]);
+      newMesh.visible = false;
+      newMesh.position.copy(monPos3D(side, 0));
+      gSc.add(newMesh);
+      monMeshes[side] = newMesh;
+    });
+  }
+
   Object.values(MONS).forEach(function(mn) {
 
     var def3 = MDEFS[mn.defIdx];
 
-    // === DYNAMIC CORRIDOR QUOTA ===
-    if (!mn._isHollowSlot) {
-      if (mn.waiting) {
-        mn.waitTimer -= dt;
-        if (mn.waitTimer <= 0) {
-          // Zlicz ile botów już jest aktywnych (nie czeka)
-          var activeCount = ['left','front','right'].filter(function(s) {
-            return !MONS[s]._isHollowSlot && !MONS[s].waiting;
-          }).length;
-
-          var cooldownOk = !G.lastMonsterLeft || (Date.now() - G.lastMonsterLeft) > 2500;
-
-          if (activeCount < G.nightMaxActive && cooldownOk) {
-            // Losuj WOLNY korytarz — może to być dowolny z trzech,
-            // włącznie z hollow-slotem gdy hollow akurat czeka
-            var freeSlots = ['left','front','right'].filter(function(s) {
-              var m = MONS[s];
-              // slot wolny: normalny i czekający LUB hollow-slot gdy hollow czeka
-              return (m === mn) || // własny slot zawsze ok
-                     (!m._isHollowSlot && m.waiting) ||
-                     (m._isHollowSlot && m.waiting && !hollowRunning);
-            });
-            var targetSide = freeSlots[Math.floor(Math.random() * freeSlots.length)];
-
-            // Jeśli losujemy inny korytarz niż własny — zamień dane między slotami
-            if (targetSide !== mn.id) {
-              var tgt = MONS[targetSide];
-              // Przenieś dane bota do docelowego slotu
-              var tmpDef = mn.defIdx, tmpBase = mn.baseSpeed, tmpSpd = mn.speed;
-              tgt.defIdx    = tmpDef;
-              tgt.baseSpeed = tmpBase;
-              tgt.speed     = tmpSpd;
-              tgt.waiting   = false;
-              tgt.pos       = 0;
-              tgt.rushing   = false;
-              tgt.frozen    = false;
-              tgt.waitTimer = 0;
-              // Ten slot wraca do czekania z nowym timerem
-              mn.waitTimer = 8000 + Math.random() * 8000;
-              var mesh0 = monMeshes[mn.id]; if (mesh0) mesh0.visible = false;
-              G.lastMonsterLeft = null;
-              return;
-            }
-
-            // Własny korytarz — ruszaj normalnie
-            var pool2 = G.nightMonsterPool;
-            mn.defIdx = pool2[Math.floor(Math.random() * pool2.length)];
-            mn.baseSpeed = MDEFS[mn.defIdx].speed * Math.max(0.3, 1 + (G.day - 1) * 0.10);
-            mn.speed = mn.baseSpeed;
-            mn.waiting = false;
-            mn.pos = 0;
-            G.lastMonsterLeft = null;
-          } else {
-            // Quota pełna lub cooldown — sprawdź za chwilę
-            mn.waitTimer = 1500 + Math.random() * 2000;
-            var mesh0 = monMeshes[mn.id]; if (mesh0) mesh0.visible = false;
-            return;
-          }
-        } else {
-          var mesh0b = monMeshes[mn.id]; if (mesh0b) mesh0b.visible = false;
-          return;
-        }
-      }
+    // Korytarz nieaktywny — ukryj
+    if (!mn._isHollowSlot && mn.waiting) {
+      var mesh0 = monMeshes[mn.id]; if (mesh0) mesh0.visible = false;
+      return;
     }
 
-    // Spawn delay (legacy, keep 0 now but guard anyway)
+    // Spawn delay (legacy)
 
     if (mn.spawnDelay > 0) {
 
@@ -5060,7 +5157,7 @@ function update(dt) {
 
     }
 
-    // Waiting (tylko hollow — non-hollow obsłużone wyżej w quota check)
+    // Waiting (tylko hollow)
     if (mn.waiting) {
 
       mn.waitTimer -= dt;
@@ -5230,7 +5327,7 @@ var SETTINGS = {
 
   mouseSens: 4,
 
-  touchSens: 6,
+  touchSens: (function(){ var ua=navigator.userAgent; if(/iPhone|Android.*Mobile|iPod/.test(ua)) return 9; if(/iPad|Android(?!.*Mobile)/.test(ua)) return 7; return 6; })(),
 
   edgeScroll: true
 
