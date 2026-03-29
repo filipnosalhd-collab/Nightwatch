@@ -23,7 +23,8 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 @keyframes glow{0%,100%{opacity:1}50%{opacity:.45}}
 
-.lb{color:#0f0;border:2px solid #0f07;padding:14px 36px;cursor:pointer;letter-spacing:4px;font-size:clamp(12px,3.5vw,16px);background:transparent;font-family:inherit;transition:all .18s;min-width:200px;}
+.lb{color:#0f0;border:2px solid #0f07;padding:14px 36px;cursor:pointer;letter-spacing:4px;font-size:clamp(12px,3.5vw,16px);background:transparent;font-family:inherit;transition:background .12s,border-color .12s;min-width:200px;-webkit-tap-highlight-color:transparent;}
+@media(hover:none){.lb:hover{background:transparent;border-color:#0f07;}.lb.mb:hover{background:transparent;border-color:#f806;}}
 
 .lb:hover{background:#0f02;border-color:#0f0;}
 
@@ -73,7 +74,7 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
 #vinfo{padding:7px;flex:1;overflow-y:auto;font-size:9px;line-height:1.7;color:#444;}
 
-#gc{position:fixed;top:0;left:0;display:none;}
+#gc{position:fixed;top:0;left:0;display:none;touch-action:none;}
 
 #gc.show{display:block;}
 
@@ -179,13 +180,22 @@ body{background:#000;overflow:hidden;font-family:'Segoe UI','Helvetica Neue',Ari
 
   <div style="color:#0f04;font-size:10px;letter-spacing:5px;">survive the night</div>
 
+  <!-- Mobile not supported overlay -->
+  <div id="mobilewarn" style="display:none;text-align:center;border:1px solid #f004;padding:24px 32px;max-width:300px;background:#0a0000;">
+    <div style="color:#f00;font-size:18px;letter-spacing:4px;margin-bottom:12px;">⚠ MOBILE</div>
+    <div style="color:#f006;font-size:10px;letter-spacing:2px;line-height:2.2;">
+      This game does not support<br>mobile devices.<br><br>
+      Play on a desktop<br>or laptop computer.
+    </div>
+  </div>
 
-
+  <div id="lobbybtns">
   <button class="lb" onclick="continueGame()" id="lobbycont" style="display:none;">CONTINUE (NIGHT <span id="lobbyday">1</span>)</button>
 
   <button class="lb" onclick="startFresh()">NEW GAME</button>
 
   <button onclick="openHelp()" style="border:2px solid #0af;color:#0af;padding:14px 36px;cursor:pointer;font-size:15px;letter-spacing:5px;background:rgba(0,10,20,.5);font-family:inherit;margin-top:4px;">? HOW TO PLAY</button>
+  </div>
 
   <div id="lnl">N I G H T W A T C H</div>
 
@@ -812,34 +822,17 @@ function buildRoom() {
 
   gB(0.1,0.8,-1.0,0.55,0.02,0.18,new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x202020,shininess:30}));
 
-  // Detect device type
-  var isMobile = /iPhone|Android.*Mobile|iPod/.test(navigator.userAgent);
-  var isTablet = /iPad|Android(?!.*Mobile)/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && window.innerWidth >= 600 && window.innerWidth < 1200);
-  var deviceType = isMobile ? 'phone' : isTablet ? 'tablet' : 'laptop';
+  // Always show laptop on desk
+  var deviceType = 'laptop';
 
-  if (deviceType === 'laptop') {
+  if (true) {
     // Laptop: screen + base + keyboard
     gB(0,0.8,-1.05,0.32,0.04,0.28,mMet);
     gB(0,0.95,-1.05,0.06,0.22,0.06,mMet);
     gB(0,1.2,-1.06,0.72,0.52,0.06,mMet);
-  } else if (deviceType === 'tablet') {
-    // Tablet: slim rectangular slab propped up
-    gB(0,0.84,-1.0,0.55,0.04,0.36,mMet); // stand base
-    gB(0,0.96,-1.05,0.04,0.22,0.04,mMet); // stand pole
-    gB(0,1.15,-1.06,0.58,0.78,0.05,new THREE.MeshPhongMaterial({color:0x111111,specular:0x333333,shininess:60})); // tablet body
-    // rounded corners effect - thin bezels
-    gB(0,1.15,-1.03,0.52,0.70,0.01,new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x111111,shininess:20})); // screen bezel
-  } else {
-    // Phone: lying flat on desk
-    var mPhone = new THREE.MeshPhongMaterial({color:0x111111, specular:0x444444, shininess:80});
-    var phoneBody = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.035, 0.44), mPhone);
-    phoneBody.position.set(0.3, 0.813, -0.95); gSc.add(phoneBody);
-    // Camera bump
-    var phoneCam = new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.012,0.005,8), new THREE.MeshPhongMaterial({color:0x333333,specular:0x666666,shininess:100}));
-    phoneCam.position.set(0.3, 0.833, -0.76); gSc.add(phoneCam);
   }
 
-  // Screen canvas (same for all devices, size adapts)
+  // Screen canvas
   var scrCanvas = document.createElement('canvas');
   scrCanvas.width = 128; scrCanvas.height = 92;
   var scrCtx = scrCanvas.getContext('2d');
@@ -851,17 +844,8 @@ function buildRoom() {
   scrCtx.fillStyle=grd; scrCtx.fillRect(0,0,128,92);
   var scrTex = new THREE.CanvasTexture(scrCanvas);
   var scr;
-  if (deviceType === 'phone') {
-    // Flat screen on top of lying phone
-    scr = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.004, 0.38), new THREE.MeshBasicMaterial({map:scrTex}));
-    scr.position.set(0.3, 0.833, -0.95);
-  } else if (deviceType === 'tablet') {
-    scr = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.68, 0.01), new THREE.MeshBasicMaterial({map:scrTex}));
-    scr.position.set(0, 1.15, -1.02);
-  } else {
-    scr = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.46, 0.01), new THREE.MeshBasicMaterial({map:scrTex}));
-    scr.position.set(0, 1.2, -1.02);
-  }
+  scr = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.46, 0.01), new THREE.MeshBasicMaterial({map:scrTex}));
+  scr.position.set(0, 1.2, -1.02);
   gSc.add(scr);
   gSc.userData.monitorScr = scr;
   gSc.userData.monitorScrTex = scrTex;
@@ -1725,14 +1709,17 @@ var raycaster = new THREE.Raycaster();
 
 function onCanvasClick(e) {
   if (!G.running || G.dead || G.morning || G.shopOpen) return;
-  var gc = document.getElementById('gc');
-  var rect = gc.getBoundingClientRect();
-  var cx = e.clientX || (e.changedTouches && e.changedTouches[0].clientX) || 0;
-  var cy = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
-  raycaster.setFromCamera(
-    new THREE.Vector2(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1),
-    gCam
-  );
+  var cx, cy;
+  if (e.changedTouches && e.changedTouches.length > 0) {
+    cx = e.changedTouches[0].clientX;
+    cy = e.changedTouches[0].clientY;
+  } else {
+    cx = e.clientX;
+    cy = e.clientY;
+  }
+  var nx = (cx / innerWidth) * 2 - 1;
+  var ny = -(cy / innerHeight) * 2 + 1;
+  raycaster.setFromCamera(new THREE.Vector2(nx, ny), gCam);
   // Check lever (arm, grip ball, or big click zone)
   var leverH = gSc && gSc.userData.leverHandle;
   var leverGrip = gSc && gSc.userData.leverGrip;
@@ -2533,9 +2520,7 @@ function setupInput() {
   gc.addEventListener('mouseup', function(e) { if (!mdragged) onCanvasClick(e); });
 
   gc.addEventListener('touchend', function(e) {
-    if (!tdragged && e.changedTouches && e.changedTouches.length > 0) {
-      onCanvasClick(e);
-    }
+    if (!tdragged && e.changedTouches && e.changedTouches.length > 0) onCanvasClick(e);
   }, {passive: true});
 
   // Charge bar removed from game - charging only in day room
@@ -2771,17 +2756,15 @@ function setupInput() {
 
     if (!ttouch) return;
 
-    if (G.camLocked) return; // zablokowane podczas przejścia hollow
+    if (G.camLocked) return;
 
     var dx = e.touches[0].clientX - tstart;
 
     var dy = e.touches[0].clientY - tstartY;
 
-    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) tdragged = true;
+    if (Math.abs(dx) > 12 || Math.abs(dy) > 12) tdragged = true;
 
     G.targetYaw -= dx * (SETTINGS.touchSens * 0.001);
-
-    // full 360 rotation — no clamp
 
     tstart = e.touches[0].clientX;
 
@@ -3496,6 +3479,11 @@ function showDayRoom(earned) {
     '<div style="color:#0f03;font-size:9px;letter-spacing:2px;">or go to the monitor to charge your battery</div>';
 
   document.body.appendChild(d);
+  // Mobile tap fix dla dynamicznych elementów day room
+  ['daymonitor','dayexitdoor'].forEach(function(id){
+    var el = document.getElementById(id); if (el) fixMobileTap(el);
+  });
+  d.querySelectorAll('button').forEach(fixMobileTap);
 
 }
 
@@ -3540,6 +3528,9 @@ function openDayMonitor() {
     '<div style="color:#f004;font-size:9px;letter-spacing:3px;cursor:pointer;border:1px solid #f003;padding:6px 18px;" onclick="closeDayMonitor()">X EXIT</div>';
 
   document.body.appendChild(d);
+  // Mobile tap fix dla przycisków monitora
+  var exitBtn = d.querySelector('[onclick="closeDayMonitor()"]');
+  if (exitBtn) fixMobileTap(exitBtn);
 
   startDayChargeTask(0, 0);
 
@@ -3652,6 +3643,7 @@ function startDayChargeTask(taskIdx, clicks) {
       }
 
     };
+    btn.ontouchstart = function(e) { e.preventDefault(); btn.click(); };
 
   }
 
@@ -5545,9 +5537,35 @@ function initLobby() {
 
   }
 
+  // Sprawdź mobile po rozmiarze ekranu i touch
+  var isMobileDevice = (window.innerWidth < 1024 || window.innerHeight < 600)
+    && (navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
+  if (isMobileDevice) {
+    document.getElementById('mobilewarn').style.display = 'block';
+    document.getElementById('lobbybtns').style.display = 'none';
+  }
+
 }
 
-window.addEventListener('load', function() { loadSettings(); initLobby(); });
+// Mobile fast-tap: eliminuje 300ms opóźnienie dla wszystkich przycisków
+function fixMobileTap(el) {
+  if (!el) return;
+  var fired = false;
+  el.addEventListener('touchstart', function(e) { fired = false; }, {passive: true});
+  el.addEventListener('touchend', function(e) {
+    if (fired) return;
+    fired = true;
+    e.preventDefault();
+    el.click();
+  });
+}
+
+window.addEventListener('load', function() {
+  loadSettings();
+  initLobby();
+  // Napraw 300ms delay dla przycisków lobby na mobile
+  document.querySelectorAll('.lb, #settingsbtn, #helpbtn, #shopbtn, #shopx, #mnext').forEach(fixMobileTap);
+});
 
 function continueGame() {
 
