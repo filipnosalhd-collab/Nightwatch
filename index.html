@@ -822,15 +822,10 @@ function buildRoom() {
 
   gB(0.1,0.8,-1.0,0.55,0.02,0.18,new THREE.MeshPhongMaterial({color:0x0a0a0a,specular:0x202020,shininess:30}));
 
-  // Always show laptop on desk
-  var deviceType = 'laptop';
-
-  if (true) {
-    // Laptop: screen + base + keyboard
-    gB(0,0.8,-1.05,0.32,0.04,0.28,mMet);
-    gB(0,0.95,-1.05,0.06,0.22,0.06,mMet);
-    gB(0,1.2,-1.06,0.72,0.52,0.06,mMet);
-  }
+  // Laptop on desk (always)
+  gB(0,0.8,-1.05,0.32,0.04,0.28,mMet);
+  gB(0,0.95,-1.05,0.06,0.22,0.06,mMet);
+  gB(0,1.2,-1.06,0.72,0.52,0.06,mMet);
 
   // Screen canvas
   var scrCanvas = document.createElement('canvas');
@@ -5537,13 +5532,26 @@ function initLobby() {
 
   }
 
-  // Sprawdź mobile po rozmiarze ekranu i touch
-  var isMobileDevice = (window.innerWidth < 1024 || window.innerHeight < 600)
-    && (navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
-  if (isMobileDevice) {
+  // Czekaj na pierwszą interakcję - touch = mobile, mouse = OK
+  var inputDetected = false;
+  function onFirstTouch() {
+    if (inputDetected) return;
+    inputDetected = true;
+    isMobileTouch = true;
+    document.removeEventListener('touchstart', onFirstTouch);
+    document.removeEventListener('mousedown', onFirstMouse);
     document.getElementById('mobilewarn').style.display = 'block';
     document.getElementById('lobbybtns').style.display = 'none';
   }
+  function onFirstMouse() {
+    if (inputDetected) return;
+    inputDetected = true;
+    document.removeEventListener('touchstart', onFirstTouch);
+    document.removeEventListener('mousedown', onFirstMouse);
+    // mouse = OK, nic nie rób
+  }
+  document.addEventListener('touchstart', onFirstTouch, {passive: true});
+  document.addEventListener('mousedown', onFirstMouse);
 
 }
 
@@ -5587,7 +5595,11 @@ function startFresh() {
 
 }
 
+var isMobileTouch = false; // ustawiane przy pierwszym touch
+
 function startGame(loadSave) {
+
+  if (isMobileTouch) return; // zablokuj na mobile
 
   document.getElementById('lobby').style.display = 'none';
 
